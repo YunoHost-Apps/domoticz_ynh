@@ -1,0 +1,5 @@
+SOURCE_URL=http://www.domoticz.com/download.php?channel=release&type=release&system=__OS__&machine=__MACH__
+SOURCE_SUM=__SHA256_SUM__
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=tar.gz
+SOURCE_IN_SUBDIR=false

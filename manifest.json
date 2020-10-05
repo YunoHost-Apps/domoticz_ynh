@@ -1,0 +1,66 @@
+{
+    "name": "Domoticz",
+    "id": "domoticz",
+    "packaging_format": 1,
+    "description": {
+        "en": "Domoticz is a very light weight open sources home automation system that lets you monitor and configure miscellaneous devices",
+        "fr": "Domoticz est un logiciel open sources et gratuit de domotique qui vous permet de configurer un grand nombre d'appareils"
+    },
+    "version": "2020.2~ynh1",
+    "url": "https://www.domoticz.com",
+    "license": " GPL-3.0 License",
+    "maintainer": {
+        "name": "Krakinou",
+        "email": "misterl56@hotmail.com"
+    },
+    "requirements": {
+        "yunohost": ">= 4.0"
+    },
+    "multi_instance": false,
+    "services": [
+        "nginx",
+        "php7.0-fpm"
+    ],
+    "arguments": {
+        "install" : [
+            {
+                "name": "domain",
+                "type": "domain",
+                "ask": {
+                    "en": "Choose a domain name for domoticz",
+                    "fr": "Choisissez un nom de domaine pour domoticz"
+                },
+                "example": "example.com"
+            },
+            {
+                "name": "path",
+                "type": "path",
+                "ask": {
+                    "en": "Choose a path for domoticz",
+                    "fr": "Choisissez un chemin pour domoticz"
+                },
+                "example": "/domoticz",
+                "default": "/domoticz"
+            },
+            {
+                "name": "is_public",
+                "type": "boolean",
+                "ask": {
+                    "en": "Is it a public application?",
+                    "fr": "Est-ce une application publique ?"
+                },
+                "default": false
+            },
+            {
+                "name": "language",
+                "type": "string",
+                "ask": {
+                    "en": "Choose the application language",
+                    "fr": "Choisissez la langue de l'application"
+                },
+                "choices": ["fr", "en"],
+                "default": "fr"
+            }
+        ]
+    }
+}
