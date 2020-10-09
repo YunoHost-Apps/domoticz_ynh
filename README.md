@@ -1,55 +1,60 @@
-# Usage of this package (REMOVE THIS SECTION BEFORE RELEASE)
-- Copy this app before working on it.
-- Edit the `conf/nginx.conf` file to match app prerequisites.
-- Edit the `manifest.json` with app specific info.
-- Edit the `install`, `upgrade`, `remove`, `backup`, and `restore` scripts.
-  - Using the [script helpers documentation.](https://yunohost.org/#/packaging_apps_helpers)
-- Add a `LICENSE` file for the package.
-- Edit `README.md` and `README_fr.md`.
+# Domoticz for YunoHost
 
-# Example app for YunoHost
-
-[![Integration level](https://dash.yunohost.org/integration/REPLACEBYYOURAPP.svg)](https://dash.yunohost.org/appci/app/REPLACEBYYOURAPP) ![](https://ci-apps.yunohost.org/ci/badges/REPLACEBYYOURAPP.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/REPLACEBYYOURAPP.maintain.svg)  
-[![Install REPLACEBYYOURAPP with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=REPLACEBYYOURAPP)
+[![Integration level](https://dash.yunohost.org/integration/domoticz.svg)](https://dash.yunohost.org/appci/app/domoticz) ![](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)  
+[![Install domoticz with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=domoticz)
 
 *[Lire ce readme en français.](./README_fr.md)*
 
-> *This package allows you to install REPLACEBYYOURAPP quickly and simply on a YunoHost server.  
+> *This package allows you to install domoticz quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/install) to learn how to install it.*
 
 ## Overview
-Quick description of this app.
+Domoticz is a Home Automation system design to control various devices and receive input from various sensors.
+For example this system can be used with: 
 
-**Shipped version:** 1.0
+-Light switches
 
-## Screenshots
+-Door sensors
 
-![](Link to a screenshot of this app.)
+-Doorbells
 
-## Demo
+-Security devices
 
-* [Official demo](Link to a demo site for this app.)
+-Weather sensors like: UV/Rain/Wind Meters
+
+-Temperature Sensors
+
+-Pulse Meters
+
+-Voltage / AD Meters
+
+-And more ...
+
+
+**Shipped version:** Always the last stable one
+
 
 ## Configuration
 
-How to configure this app: From an admin panel, a plain file with SSH, or any other way.
+All the configuration of the app take place inside the app itself.
+
 
 ## Documentation
 
- * Official documentation: Link to the official documentation of this app
+ * Official documentation: Please use the [wiki](https://www.domoticz.com/wiki/Main_Page) and [user manual](https://www.domoticz.com/DomoticzManual.pdf) for further info.
  * YunoHost documentation: If specific documentation is needed, feel free to contribute.
 
 ## YunoHost specific features
 
 #### Multi-user support
 
-Are LDAP and HTTP auth supported?
-Can the app be used by multiple users?
+No user management so far : the app do not have user or LDAP integrated.
+This function is [not planned to be implemented into the app](https://github.com/domoticz/domoticz/issues/838), hence it's not planned into the package neither.
 
 #### Supported architectures
 
-* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/REPLACEBYYOURAPP%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/REPLACEBYYOURAPP/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/REPLACEBYYOURAPP%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/REPLACEBYYOURAPP/)
+Both ARM and x86 architectures should be supported.
+Compiled sources are directly downloaded by the package.
 
 ## Limitations
 
@@ -64,9 +69,9 @@ https://yunohost.org/packaging_apps
 
 ## Links
 
- * Report a bug: https://github.com/YunoHost-Apps/REPLACEBYYOURAPP_ynh/issues
- * App website: Link to the official website of this app.
- * Upstream app repository: Link to the official repository of the upstream app.
+ * Report a bug: https://github.com/Krakinou/domoticz_ynh/issues
+ * App website: https://domoticz.com/
+ * Upstream app repository: https://github.com/domoticz/domoticz
  * YunoHost website: https://yunohost.org/
 
 ---
@@ -75,11 +80,11 @@ Developer info
 ----------------
 
 **Only if you want to use a testing branch for coding, instead of merging directly into master.**
-Please send your pull request to the [testing branch](https://github.com/YunoHost-Apps/REPLACEBYYOURAPP_ynh/tree/testing).
+Please send your pull request to the [testing branch](https://github.com/Krakinou/domoticz_ynh/tree/testing).
 
 To try the testing branch, please proceed like that.
 ```
-sudo yunohost app install https://github.com/YunoHost-Apps/REPLACEBYYOURAPP_ynh/tree/testing --debug
+sudo yunohost app install https://github.com/Krakinou/domoticz_ynh/tree/testing --debug
 or
-sudo yunohost app upgrade REPLACEBYYOURAPP -u https://github.com/YunoHost-Apps/REPLACEBYYOURAPP_ynh/tree/testing --debug
+sudo yunohost app upgrade domoticz -u https://github.com/Krakinou/domoticz_ynh/tree/testing --debug
 ```
