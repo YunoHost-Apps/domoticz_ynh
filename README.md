@@ -31,7 +31,8 @@ For example this system can be used with:
 -And more ...
 
 
-**Shipped version:** Always the last stable one
+**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./beta)
+Once installed, updates from the uptream app are managed from within the app.
 
 
 ## Configuration

@@ -30,7 +30,7 @@ Il peut par exemple être utilisé avec :
 
 -Et bien d'autres
 
-**Version incluse :** Toujours la dernière version stable
+**Version incluse :** Toujours la dernière version stable. La dernière version compilée est récupérée dans [ce répertoire](https://releases.domoticz.com/releases/?dir=./beta)
 
 
 ## Configuration
