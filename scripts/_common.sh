@@ -10,7 +10,7 @@
 pkg_dependencies="libudev-dev python3-dev"
 
 
-#ALL FOLLOWING LINE FROM THE STANDARD installation bash script
+#ALL FOLLOWING LINE FROM THE upstream bash installation script
 DEBIAN_ID=$(grep -oP '(?<=^ID=).+' /etc/*-release | tr -d '"')
 DEBIAN_VERSION=$(grep -oP '(?<=^VERSION_ID=).+' /etc/*-release | tr -d '"')
 if test ${DEBIAN_VERSION} -lt 10
