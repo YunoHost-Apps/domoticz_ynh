@@ -31,6 +31,8 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+backup_OS=$(ynh_app_setting_get --app=$app --key=OS)
+backup_mach=$(ynh_app_setting_get --app=$app --key=mach)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -41,6 +43,10 @@ ynh_webpath_available --domain=$domain --path_url=$path_url \
 	|| ynh_die --message="Path not available: ${domain}${path_url}"
 test ! -d $final_path \
 	|| ynh_die --message="There is already a directory: $final_path "
+test "$backup_OS" = "$OS" \
+	|| ynh_die --message="Cannot restore : previous OS is $backup_OS, current OS is $OS, please reinstall"
+test "$backup_mach" = "$MACH" \
+	|| ynh_die --message="Cannot restore : previous machine type is $backup_mach, current machine type is $MACH, please reinstall"
 
 #=================================================
 # STANDARD RESTORATION STEPS

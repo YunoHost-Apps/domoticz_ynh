@@ -47,8 +47,12 @@ ynh_script_progression --message="Storing installation settings..." --weight=1
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-#ynh_app_setting_set --app=$app --key=admin --value=$admin
 ynh_app_setting_set --app=$app --key=is_public --value=$is_public
+
+#Will be used in restore script to check that we're restoring on the same OS/Board type
+ynh_app_setting_set --app=$app --key=OS --value=$OS
+ynh_app_setting_set --app=$app --key=mach --value=$MACH
+
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -176,7 +180,7 @@ ynh_script_progression --message="Configuring SSOwat..." --weight=1
 if [ $is_public -eq 1 ]
 then
 	# unprotected_uris allows SSO credentials to be passed anyway.
-	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
+	ynh_permission_update --permission "main" --add visitors
 fi
 
 #=================================================

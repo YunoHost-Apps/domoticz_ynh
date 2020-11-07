@@ -1,5 +1,9 @@
 #!/bin/bash
 
+version_gt() { 
+	test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
+}
+
 #=================================================
 # GENERIC START
 #=================================================
@@ -40,6 +44,7 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
 
+
 # Fix is_public as a boolean value
 if [ "$is_public" = "Yes" ]; then
 	ynh_app_setting_set --app=$app --key=is_public --value=1
@@ -47,6 +52,11 @@ if [ "$is_public" = "Yes" ]; then
 elif [ "$is_public" = "No" ]; then
 	ynh_app_setting_set --app=$app --key=is_public --value=0
 	is_public=0
+#Previous domoticz version did not have public/private settings 
+elif [ -z "is_public" ]; then
+	ynh_app_setting_set --app=$app --key=is_public --value=1
+	is_public=1
+	ynh_print_warn --message="Application is set as public, if you require to set it as private, please use the authorization config panel in Users/Manage Groups and permissions"
 fi
 
 
@@ -61,18 +71,32 @@ fi
 #=================================================
 ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=10
 
+#ugly hack so that existing backup for previous version work
+current_upstream_version=$(ynh_app_upstream_version --manifest="/etc/yunohost/apps/$app/manifest.json")
+current_package_version=$(ynh_app_package_version --manifest="/etc/yunohost/apps/$app/manifest.json")
+if version_gt "4.9701" "$current_upstream_version" && version_gt "2" $current_package_version ; then
+	touch /etc/cron.d/$app
+fi
+
 # Backup the current version of the app
 ynh_backup_before_upgrade
 ynh_clean_setup () {
 	# restore it if the upgrade fails
 	ynh_restore_upgradebackup
 }
+
+#remove ugly hack
+if [ -f /etc/cron.d/$app ]; then
+	rm /etc/cron.d/$app
+fi
+
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
 #=================================================
 # CHECK THE PATH
 #=================================================
+
 
 # Normalize the URL path syntax
 # N.B. : this is for app installations before YunoHost 2.7
@@ -217,7 +241,7 @@ ynh_script_progression --message="Upgrading SSOwat configuration..." --weight=1
 if [ $is_public -eq 1 ]
 then
 	# unprotected_uris allows SSO credentials to be passed anyway
-	ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
+	ynh_permission_update --permission "main" --add visitors
 fi
 
 #=================================================
@@ -227,8 +251,13 @@ ynh_script_progression --message="Reloading nginx web server..." --weight=1
 
 ynh_systemd_action --service_name=nginx --action=reload
 
+
+
+
 #=================================================
 # END OF SCRIPT
 #=================================================
+
+
 
 ynh_script_progression --message="Upgrade of $app completed" --last
