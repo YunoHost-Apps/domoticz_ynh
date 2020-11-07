@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=__APP__
 Group=__APP__
-ExecStart=__FINALPATH__/domoticz -www __PORT__ -log /var/log/__APP__/__APP__.log -loglevel normal,status
+ExecStart=__FINALPATH__/domoticz -www __PORT__ -sslwww 0 -log /var/log/__APP__/__APP__.log -loglevel normal,status
 WorkingDirectory=__FINALPATH__/
 PermissionsStartOnly=true
 ExecStartPre=setcap 'cap_net_bind_service=+ep' __FINALPATH__/domoticz
