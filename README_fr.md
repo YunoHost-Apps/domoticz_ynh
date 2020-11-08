@@ -44,10 +44,6 @@ Toute la configuration a lieu à l'intérieur de l'application elle-même.
 
 ## Caractéristiques spécifiques YunoHost
 
-#### Support multi-utilisateur
-
-Pas de gestion d'utilisateurs pour l'instant.
-L'application ne [prévoit pas de gérer les utilisateurs par LDAP](https://github.com/domoticz/domoticz/issues/838), donc le package non plus.
 
 #### Architectures supportées
 
@@ -56,11 +52,9 @@ Les sources compilées sont directement téléchargées par le package.
 
 ## Limitations
 
-* Limitations connues.
+* Pas de gestion d'utilisateurs ni d'intégration LDAP. L'application ne [prévoit pas de gérer les utilisateurs par LDAP](https://github.com/domoticz/domoticz/issues/838), donc le package non plus.
+* Un backup ne peut pas être restauré sur un type de machine différente de celle d'origine (x86, arm...) car les sources compilées doivent être différente
 
-## Informations additionnelles
-
-* Autres informations que vous souhaitez ajouter sur cette application.
 
 **Plus d'informations sur la page de documentation :**  
 https://yunohost.org/packaging_apps

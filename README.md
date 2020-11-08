@@ -47,11 +47,6 @@ All the configuration of the app take place inside the app itself.
 
 ## YunoHost specific features
 
-#### Multi-user support
-
-No user management so far : the app do not have user or LDAP integrated.
-This function is [not planned to be implemented into the app](https://github.com/domoticz/domoticz/issues/838), hence it's not planned into the package neither.
-
 #### Supported architectures
 
 Both ARM and x86 architectures should be supported.
@@ -59,11 +54,9 @@ Compiled sources are directly downloaded by the package.
 
 ## Limitations
 
-* Any known limitations.
+* No user management nor LDAP integration This function is [not planned to be implemented into the app](https://github.com/domoticz/domoticz/issues/838), hence it's not planned into the package neither.
+* Backup cannot be restored on a different machine type (arm, x86...) as compiled sources are different
 
-## Additional information
-
-* Other info you would like to add about this app.
 
 **More info on the documentation page:**  
 https://yunohost.org/packaging_apps
