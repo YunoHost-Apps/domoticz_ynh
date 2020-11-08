@@ -212,10 +212,9 @@ ynh_add_systemd_config
 #=================================================
 
 # Set permissions to app files
-chown -R root: $final_path
-#Both folder and database file must be own by app user for domoticz to work, other files are owned by root
-chown $app: $final_path
-chown $app: $final_path/domoticz.db
+#chown -R root: $final_path
+#Both folder and database file must be own by app user for domoticz to work and allow internal upgrade
+chown -R $app: $final_path
 
 #=================================================
 # SETUP LOGROTATE
