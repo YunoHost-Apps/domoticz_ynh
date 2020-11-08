@@ -60,6 +60,7 @@ ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 #=================================================
 
 ynh_backup --src_path="/etc/logrotate.d/$app"
+ynh_backup --src_path="/etc/sudoers.d/$app"
 
 #=================================================
 # BACKUP SYSTEMD

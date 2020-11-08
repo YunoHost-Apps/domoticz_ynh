@@ -25,7 +25,8 @@ path_url=$(ynh_app_setting_get --app=$app --key=path)
 is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
-#language=$(ynh_app_setting_get --app=$app --key=language)
+current_OS=$(ynh_app_setting_get --app=$app --key=OS)
+current_mach=$(ynh_app_setting_get --app=$app --key=mach)
 
 #=================================================
 # CHECK VERSION
@@ -53,12 +54,20 @@ elif [ "$is_public" = "No" ]; then
 	ynh_app_setting_set --app=$app --key=is_public --value=0
 	is_public=0
 #Previous domoticz version did not have public/private settings 
-elif [ -z "is_public" ]; then
+elif [ -z "$is_public" ]; then
 	ynh_app_setting_set --app=$app --key=is_public --value=1
 	is_public=1
-	ynh_print_warn --message="Application is set as public, if you require to set it as private, please use the authorization config panel in Users/Manage Groups and permissions"
+	ynh_print_warn --message="Application was set as public in the previous version,meaning it's available without authentifaction."
+	ynh_print_warn --message="if you require to set it as private, please use the authorization config panel in Users/Manage Groups and permissions"
 fi
 
+#Store OS and machine (to be used in restore script)
+if [ -z "$current_OS" ]; then
+	ynh_app_setting_set --app=$app --key=OS --value=$OS
+fi
+if [ -z "$current_mach" ]; then
+	ynh_app_setting_set --app=$app --key=mach --value=$MACH
+fi
 
 # If final_path doesn't exist, create it
 if [ -z "$final_path" ]; then
@@ -158,6 +167,12 @@ ynh_script_progression --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
 ynh_system_user_create --username=$app
+
+#allow app user to restart service on startup
+cp ../conf/sudoer ../conf/$app.conf
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../conf/$app.conf"
+mv ../conf/$app.conf /etc/sudoers.d/$app
+chmod 440 /etc/sudoers.d/$app
 
 #=================================================
 # SPECIFIC UPGRADE

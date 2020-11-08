@@ -111,6 +111,12 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 # Create a system user
 ynh_system_user_create --username=$app
 
+#allow app user to restart service on startup
+cp ../conf/sudoer ../conf/$app.conf
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../conf/$app.conf"
+mv ../conf/$app.conf /etc/sudoers.d/$app
+chmod 440 /etc/sudoers.d/$app
+
 #=================================================
 # SPECIFIC SETUP
 #=================================================
@@ -119,7 +125,6 @@ ynh_system_user_create --username=$app
 
 mkdir -p /var/log/$app
 chown -R domoticz: /var/log/$app
-
 
 #=================================================
 # SETUP SYSTEMD

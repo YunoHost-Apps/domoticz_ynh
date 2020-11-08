@@ -32,7 +32,7 @@ For example this system can be used with:
 
 
 **Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./beta)
-Once installed, updates from the uptream app are managed from within the app.
+Once installed, **updates from the uptream app are managed from within the app.**. Yunohost upgrade script will only upgrade the Yunohost package. 
 
 
 ## Configuration

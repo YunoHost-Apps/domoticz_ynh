@@ -43,6 +43,9 @@ ynh_webpath_available --domain=$domain --path_url=$path_url \
 	|| ynh_die --message="Path not available: ${domain}${path_url}"
 test ! -d $final_path \
 	|| ynh_die --message="There is already a directory: $final_path "
+#As we are downloading compiled binaries for each system, we have to check if the restore occurs
+#on the same system type. If we are restoring on another system type it won't work and in that
+#case we must go through a reinstall process.
 test "$backup_OS" = "$OS" \
 	|| ynh_die --message="Cannot restore : previous OS is $backup_OS, current OS is $OS, please reinstall"
 test "$backup_mach" = "$MACH" \
@@ -70,6 +73,10 @@ ynh_script_progression --message="Recreating the dedicated system user..." --wei
 
 # Create the dedicated user (if not existing)
 ynh_system_user_create --username=$app
+
+#Restore user authorization to restart server
+ynh_restore_file --origin_path="/etc/sudoers.d/$app"
+
 
 #=================================================
 # RESTORE USER RIGHTS

@@ -31,7 +31,7 @@ Il peut par exemple être utilisé avec :
 -Et bien d'autres
 
 **Version incluse :** Toujours la dernière version stable. La dernière version compilée est récupérée dans [ce répertoire](https://releases.domoticz.com/releases/?dir=./beta)
-
+Une fois installée, **les mises à jour de l'application sont gérées depuis les menus de l'application elle même.**. Le script de mise à jour Yunohost mettra uniquement à jour de nouvelles version du package.
 
 ## Configuration
 
