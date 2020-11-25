@@ -73,6 +73,9 @@ ynh_script_progression --message="Recreating the dedicated system user..." --wei
 
 # Create the dedicated user (if not existing)
 ynh_system_user_create --username=$app
+#allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.)
+usermod -a -G dialout $app
+
 
 #Restore user authorization to restart server
 ynh_restore_file --origin_path="/etc/sudoers.d/$app"
