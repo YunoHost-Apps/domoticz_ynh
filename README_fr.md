@@ -61,7 +61,7 @@ https://yunohost.org/packaging_apps
 
 ## Liens
 
- * Signaler un bug : https://github.com/Krakinou/domoticz_ynh/issues
+ * Signaler un bug : https://github.com/Yunohost-Apps/domoticz_ynh/issues
  * Site de l'application : https://domoticz.com/
  * Dépôt de l'application principale : https://github.com/domoticz/domoticz
  * Site web YunoHost : https://yunohost.org/
@@ -76,7 +76,7 @@ Merci de faire vos pull request sur la [branche testing](https://github.com/Yuno
 
 Pour essayer la branche testing, procédez comme suit.
 ```
-sudo yunohost app install https://github.com/Krakinou/domoticz_ynh/tree/testing --debug
+sudo yunohost app install https://github.com/Yunohost-Apps/domoticz_ynh/tree/testing --debug
 ou
-sudo yunohost app upgrade domoticz -u https://github.com/Krakinou/domoticz_ynh/tree/testing --debug
+sudo yunohost app upgrade domoticz -u https://github.com/Yunohost-Apps/domoticz_ynh/tree/testing --debug
 ```
