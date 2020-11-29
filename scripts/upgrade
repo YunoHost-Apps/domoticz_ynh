@@ -75,6 +75,28 @@ if [ -z "$final_path" ]; then
 	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 fi
 
+# Create the permission "domoticz_API" only if it doesn't exist.
+if ! ynh_permission_exists --permission="domoticz_API"
+then
+	# This is a fake permission without any URL.
+	# The purpose of this permission is only to trigger hooks post_app_add/removeaccess when it's modified.
+	# We can't use a real permission for now because the actual permision system doesn't support regex.
+	ynh_permission_create --permission="domoticz_API" --allowed="visitors"
+
+	# Make API public if necessary
+	if [ $is_public -eq 0 ]
+	then
+		if [ "$path_url" == "/" ]; then
+			# If the path is /, clear it to prevent any error with the regex.
+			path_url=""
+		fi
+		# Modify the domain to be used in a regex
+		domain_regex=$(echo "$domain" | sed 's@-@.@g')
+		ynh_app_setting_set --app=$app --key=unprotected_regex --value="$domain_regex$path_url/json.htm.*$"
+	fi
+fi
+
+
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
@@ -184,13 +206,20 @@ mkdir -p /var/log/$app
 chown -R domoticz: /var/log/$app
 
 #=================================================
+# SETUP HOOKS FILE
+#=================================================
+
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_app_addaccess"
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_app_removeaccess"
+
+
+#=================================================
 # SETUP SYSTEMD
 #=================================================
 ynh_script_progression --message="Upgrading systemd configuration..." --weight=1
-#Standard yunohost does not change __PORT__ in systemd.service
-ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="../conf/systemd.service"
+
 # Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_add_systemd_config --others_var="port"
 
 #=================================================
 # MODIFY A CONFIG FILE
