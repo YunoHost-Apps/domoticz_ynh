@@ -19,6 +19,8 @@ old_path=$YNH_APP_OLD_PATH
 new_domain=$YNH_APP_NEW_DOMAIN
 new_path=$YNH_APP_NEW_PATH
 
+old_api=/api_$old_path
+new_api=/api_$new_path
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -117,16 +119,10 @@ fi
 ynh_script_progression --message="Upgrading SSOwat configuration..." --weight=1
 
 # If the app is private, API should stays publicly accessible.
-if [ $is_public -eq 0 ]
-then
-	if [ "$path_url" == "/" ]; then
-	    # If the path is /, clear it to prevent any error with the regex.
-	    path_url=""
-	fi
-	# Modify the domain to be used in a regex
-	domain_regex=$(echo "$new_domain" | sed 's@-@.@g')
-	ynh_app_setting_set --app=$app --key=unprotected_regex --value="$domain_regex$path_url/json.htm.*$"
-fi
+ynh_app_setting_delete --app=$app --key="api_path"
+ynh_app_setting_set --app=$app --key="api_path" --value=$new_api
+
+ynh_permission_url --permission="domoticz_API" --url="$new_domain$new_api" --allowed="visitors"
 
 
 #=================================================

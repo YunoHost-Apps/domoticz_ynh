@@ -27,6 +27,7 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 current_OS=$(ynh_app_setting_get --app=$app --key=OS)
 current_mach=$(ynh_app_setting_get --app=$app --key=mach)
+api_path=$(ynh_app_setting_get --app=$app --key=api_path)
 
 #=================================================
 # CHECK VERSION
@@ -57,7 +58,7 @@ elif [ "$is_public" = "No" ]; then
 elif [ -z "$is_public" ]; then
 	ynh_app_setting_set --app=$app --key=is_public --value=1
 	is_public=1
-	ynh_print_warn --message="Application was set as public in the previous version,meaning it's available without authentifaction."
+ynh_print_warn --message="Application was set as public in the previous version,meaning it's available without authentication."
 	ynh_print_warn --message="if you require to set it as private, please use the authorization config panel in Users/Manage Groups and permissions"
 fi
 
@@ -75,25 +76,19 @@ if [ -z "$final_path" ]; then
 	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 fi
 
+#Create a dedicated path for the api access
+if [ -z "$api_path" ]; then
+	api_path=/api_$path_url
+	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+#	ynh_webpath_register --app=$app --domain=$domain --path_url=$api_path
+fi
+
+
 # Create the permission "domoticz_API" only if it doesn't exist.
 if ! ynh_permission_exists --permission="domoticz_API"
 then
-	# This is a fake permission without any URL.
-	# The purpose of this permission is only to trigger hooks post_app_add/removeaccess when it's modified.
-	# We can't use a real permission for now because the actual permision system doesn't support regex.
-	ynh_permission_create --permission="domoticz_API" --allowed="visitors"
-
-	# Make API public if necessary
-	if [ $is_public -eq 0 ]
-	then
-		if [ "$path_url" == "/" ]; then
-			# If the path is /, clear it to prevent any error with the regex.
-			path_url=""
-		fi
-		# Modify the domain to be used in a regex
-		domain_regex=$(echo "$domain" | sed 's@-@.@g')
-		ynh_app_setting_set --app=$app --key=unprotected_regex --value="$domain_regex$path_url/json.htm.*$"
-	fi
+	# API Authorization wit dedicated URL
+	ynh_permission_create --permission="domoticz_API" ---url="$domain$api_path" --allowed="visitors"
 fi
 
 
@@ -173,7 +168,7 @@ fi
 ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=1
 
 # Create a dedicated nginx config
-#ynh_add_nginx_config
+ynh_add_nginx_config
 
 #=================================================
 # UPGRADE DEPENDENCIES
