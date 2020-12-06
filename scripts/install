@@ -30,8 +30,11 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 app=$YNH_APP_INSTANCE_NAME
 
 #Set dedicated variables
-api_path=/api_$path_url
-
+if [ "$path_url" == "/" ]; then
+	api_path=/api_/$app
+else
+	api_path=/api_$path_url
+fi
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
@@ -107,7 +110,7 @@ fi
 ynh_script_progression --message="Configuring nginx web server..." --weight=2
 
 # Create a dedicated nginx config
-ynh_add_nginx_config
+ynh_add_nginx_config "api_path"
 
 #=================================================
 # CREATE DEDICATED USER

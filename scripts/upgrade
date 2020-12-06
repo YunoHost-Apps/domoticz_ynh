@@ -78,16 +78,19 @@ fi
 
 #Create a dedicated path for the api access
 if [ -z "$api_path" ]; then
-	api_path=/api_$path_url
-	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-#	ynh_webpath_register --app=$app --domain=$domain --path_url=$api_path
+	if [ "$path_url" == "/" ]; then
+		api_path=/api_/$app
+	else
+		api_path=/api_$path_url
+	fi
+	ynh_app_setting_set --app=$app --key=api_path --value=$api_path
 fi
 
 
 # Create the permission "domoticz_API" only if it doesn't exist.
 if ! ynh_permission_exists --permission="domoticz_API"
 then
-	# API Authorization wit dedicated URL
+	# API Authorization with dedicated URL
 	ynh_permission_create --permission="domoticz_API" ---url="$domain$api_path" --allowed="visitors"
 fi
 
@@ -118,19 +121,6 @@ fi
 
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
-
-#=================================================
-# CHECK THE PATH
-#=================================================
-
-
-# Normalize the URL path syntax
-# N.B. : this is for app installations before YunoHost 2.7
-# where this value might be something like /foo/ or foo/
-# instead of /foo ....
-# If nobody installed your app before 2.7, then you may
-# safely remove this line
-path_url=$(ynh_normalize_url_path --path_url=$path_url)
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -168,7 +158,7 @@ fi
 ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=1
 
 # Create a dedicated nginx config
-ynh_add_nginx_config
+ynh_add_nginx_config "api_path"
 
 #=================================================
 # UPGRADE DEPENDENCIES
@@ -199,13 +189,6 @@ chmod 440 /etc/sudoers.d/$app
 
 mkdir -p /var/log/$app
 chown -R domoticz: /var/log/$app
-
-#=================================================
-# SETUP HOOKS FILE
-#=================================================
-
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_app_addaccess"
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../hooks/post_app_removeaccess"
 
 
 #=================================================

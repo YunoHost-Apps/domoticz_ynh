@@ -19,8 +19,6 @@ old_path=$YNH_APP_OLD_PATH
 new_domain=$YNH_APP_NEW_DOMAIN
 new_path=$YNH_APP_NEW_PATH
 
-old_api=/api_$old_path
-new_api=/api_$new_path
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -32,6 +30,14 @@ ynh_script_progression --message="Loading installation settings..." --weight=1
 # Needed for helper "ynh_add_nginx_config"
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
+old_api=$(ynh_app_setting_get --app=$app --key=api_path)
+
+if [ "$new_path" == "/" ]; then
+	new_api=/api_/$app
+else
+	new_api=/api_$new_path
+fi
+
 
 
 #=================================================
@@ -92,7 +98,8 @@ then
 	domain="$old_domain"
 	path_url="$new_path"
 	# Create a dedicated nginx config
-	ynh_add_nginx_config
+	# Create a dedicated nginx config
+	ynh_add_nginx_config "api_path"
 fi
 
 # Change the domain for nginx
@@ -121,7 +128,6 @@ ynh_script_progression --message="Upgrading SSOwat configuration..." --weight=1
 # If the app is private, API should stays publicly accessible.
 ynh_app_setting_delete --app=$app --key="api_path"
 ynh_app_setting_set --app=$app --key="api_path" --value=$new_api
-
 ynh_permission_url --permission="domoticz_API" --url="$new_domain$new_api" --allowed="visitors"
 
 
