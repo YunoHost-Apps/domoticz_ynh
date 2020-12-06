@@ -42,12 +42,12 @@ Main configuration of the app take place inside the app itself.
 
 ### Access and API
 By default, access for the [JSON API](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) is allowed on following path `/yourdomain.tld/api_/domoticzpath`.
-So if you access domoticz via https://mydomainname.tld/domoticz, use the following webpath for the api : `https://mydomainname.tld/api_/domoticz/json.htm?yourapicommand`
+So if you access domoticz via https://mydomainname.tld/domoticz, use the following webpath for the api : `/mydomainname.tld/api_/domoticz/json.htm?yourapicommand`
 
 By default, only sensor updates and switch toogle are authorized. To authorized a new command, you have (for now) to manually update the nginx config file :
 ````
 sudo nano /etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf
-```
+````
 Then edit the following block by adding the regex of the command you want to allow:
 ````
   #set the list of authorized json command here in regex format
