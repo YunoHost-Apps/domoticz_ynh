@@ -73,7 +73,7 @@ As far as I know, there is no way to use such filter for IPv6 address : You may 
 allow ::/1;
 ````
 This will authorized only IPv4 within local network to access your domoticz API.
-
+You may add individual IPv6 address in the same way.
 
 ## Documentation
 

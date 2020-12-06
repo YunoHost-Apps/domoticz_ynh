@@ -72,6 +72,7 @@ A ma connaissance, il n'y a pas moyen d'effectuer un tel filtre pour les adresse
 allow ::/1;
 ````
 Ceci autorisera seulement les adresses IPv4 local a accéder aux API de domoticz.
+Vous pouvez ajouter des adresses IPv6 de la même façon.
 
 ## Documentation
 
