@@ -91,7 +91,7 @@ fi
 if ! ynh_permission_exists --permission="domoticz_API"
 then
 	# API Authorization with dedicated URL
-	ynh_permission_create --permission="domoticz_API" ---url="$domain$api_path" --allowed="visitors"
+	ynh_permission_create --permission="domoticz_API" --url="$domain$api_path" --allowed="visitors"
 fi
 
 
