@@ -13,11 +13,10 @@
 		pkg_linter=1
 		setup_sub_dir=1
 		setup_root=1
-		setup_nourl=0
 		setup_private=1
 		setup_public=1
 		upgrade=1
-#		upgrade=1	from_commit=
+		upgrade=1	from_commit=cf402923ff6feeead1c87555c6e9207b8c7f6595
 		backup_restore=1
 		multi_instance=0
 		port_already_use=1
