@@ -35,7 +35,44 @@ Une fois installée, **les mises à jour de l'application sont gérées depuis l
 
 ## Configuration
 
-Toute la configuration a lieu à l'intérieur de l'application elle-même.
+### Senseurs, langue et ce genre de choses
+Toute la configuration de l'application a lieu dans l'application elle même
+Main configuration of the app take place inside the app itself.
+
+### Accès et API
+Par défaut, l'accès aux [API JSON](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) est autorisé sur cette URL `/votredomaine.tld/api_/chemindedomoticz`.
+Donc, si vous accédez à domoticz par https://votredomaine.tld/domoticz, utilisez le chemin suivant pour l'api: `/votredomaine.tld/api_/domoticz/json.htm?votrecommandeapi`
+
+Par défaut, seuls la mise à jour de senseur et les interrupteurs sont autorisés. Pour autoriser une nouvelle commande, vous devez (pour l'instant) manuellement éditer le fichier de configuration nginx :
+````
+sudo nano /etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf
+````
+Puis éditer le bloc suivant en y ajoutant le regex de la commmande à autoriser :
+````
+  #set the list of authorized json command here in regex format
+  #you may retrieve the command from https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's
+  #By default, sensors updates and toggle switch are authorized
+  if ( $args ~* type=command&param=udevice&idx=[0-9]*&nvalue=[0-9]*&svalue=.*$|type=command&param=switchlight&idx=[0-9]*&switchcmd=Toggle$) {
+    set $api "1";
+    }
+````
+Par exemple, pour ajouter la commmande json pour retrouver le statut d'un équipement (/json.htm?type=devices&rid=IDX),il faut modifier la ligne comme ceci:
+````
+  #set the list of authorized json command here in regex format
+  #you may retrieve the command from https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's
+  #By default, sensors updates and toggle switch are authorized
+  if ( $args ~* type=command&param=udevice&idx=[0-9]*&nvalue=[0-9]*&svalue=.*$|type=command&param=switchlight&idx=[0-9]*&switchcmd=Toggle$|type=devices&rid=[0-9]* ) {
+    set $api "1";
+    }
+````
+
+Toutes les adresses IPv6 et les adresses IPv4 du réseau local (192.168.0.0/24) sont autorisées pour l'API.
+A ma connaissance, il n'y a pas moyen d'effectuer un tel filtre pour les adresses IPv6, vous pouvez donc retirer leur autorisation en enlevant ou en commentant la ligne suivante dans `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
+````
+allow ::/1;
+````
+Ceci autorisera seulement les adresses IPv4 local a accéder aux API de domoticz.
+Vous pouvez ajouter des adresses IPv6 de la même façon.
 
 ## Documentation
 
