@@ -66,8 +66,8 @@ Par exemple, pour ajouter la commmande json pour retrouver le statut d'un équip
     }
 ````
 
-Toutes les adresses IPv6 et les adresses IPv4 du réseau local (192.168.0.0/24) sont autorisées pour l'API.
-A ma connaissance, il n'y a pas moyen d'effectuer un tel filtre pour les adresses IPv6, vous pouvez donc retirer leur autorisation en enlevant ou en commentant la ligne suivante dans `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
+Toutes les adresses IPv4 du réseau local (192.168.0.0/24) et toutes les adresses IPv6 sont autorisées pour l'API.
+A ma connaissance, il n'y a pas moyen d'effectuer un filtre pour les adresses IPv6 sur le réseau local, vous pouvez donc retirer leur autorisation en enlevant ou en commentant la ligne suivante dans `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
 ````
 allow ::/1;
 ````

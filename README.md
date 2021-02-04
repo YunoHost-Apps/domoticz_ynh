@@ -67,8 +67,8 @@ For example, to add the json command to retrieve the status of a device (/json.h
     }
 ````
 
-All IPv6 and IPv4 address within the local network (192.168.0.0/24) are authorized as API.
-As far as I know, there is no way to use such filter for IPv6 address : You may remove the authorization by removing or commenting this line in `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
+All IPv4 addresses within the local network (192.168.0.0/24) and *all IPv6* addresses are authorized as API.
+As far as I know, there is no way to filter for IPv6 address on local network : You may remove the authorization by removing or commenting this line in `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
 ````
 allow ::/1;
 ````
