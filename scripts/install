@@ -120,10 +120,15 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 # Create a system user
 ynh_system_user_create --username=$app
 #allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
-usermod -a -G dialout $app
-usermod -a -G i2c $app
-usermod -a -G gpio $app
-
+if grep dialout -q < /etc/group; then
+	usermod -a -G dialout $app
+fi
+if grep i2c -q < /etc/group; then
+	usermod -a -G i2c $app
+fi
+if grep gpio -q < /etc/group; then
+	usermod -a -G gpio $app
+fi
 
 #allow app user to restart service on startup
 cp ../conf/sudoer ../conf/$app.conf
