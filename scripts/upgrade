@@ -175,7 +175,9 @@ ynh_script_progression --message="Making sure dedicated system user exists..."
 # Create a dedicated user (if not existing)
 ynh_system_user_create --username=$app
 #allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
-usermod -a -G dialout i2c gpio $app
+usermod -a -G dialout $app
+usermod -a -G i2c $app
+usermod -a -G gpio $app
 
 #allow app user to restart service on startup
 cp ../conf/sudoer ../conf/$app.conf
