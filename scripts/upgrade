@@ -76,21 +76,6 @@ if [ -f /etc/cron.d/$app ]; then
 	rm /etc/cron.d/$app
 fi
 
-# Fix is_public as a boolean value
-if [ "$is_public" = "Yes" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=1
-	is_public=1
-elif [ "$is_public" = "No" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=0
-	is_public=0
-#Previous domoticz version did not have public/private settings 
-elif [ -z "$is_public" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=1
-	is_public=1
-ynh_print_warn --message="Application was set as public in the previous version,meaning it's available without authentication."
-	ynh_print_warn --message="if you require to set it as private, please use the authorization config panel in Users/Manage Groups and permissions"
-fi
-
 #Store OS and machine (to be used in restore script)
 if [ -z "$current_OS" ]; then
 	ynh_app_setting_set --app=$app --key=OS --value=$OS
