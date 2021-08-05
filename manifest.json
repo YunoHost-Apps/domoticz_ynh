@@ -8,13 +8,20 @@
     },
     "version": "2020.2~ynh2",
     "url": "https://www.domoticz.com",
+    "upstream": {
+        "license": "free",
+        "website": "https://domoticz.com/",
+        "admindoc": "https://www.domoticz.com/wiki/Main_Page",
+        "userdoc": "https://www.domoticz.com/DomoticzManual.pdf",
+        "code": "https://github.com/domoticz/domoticz"
+    },
     "license": "GPL-3.0-or-later",
     "maintainer": {
         "name": "Krakinou",
         "email": "misterl56@hotmail.com"
     },
     "requirements": {
-        "yunohost": ">= 4.0"
+        "yunohost": ">= 4.1.3"
     },
     "multi_instance": false,
     "services": [
@@ -25,29 +32,17 @@
             {
                 "name": "domain",
                 "type": "domain",
-                "ask": {
-                    "en": "Choose a domain name for domoticz",
-                    "fr": "Choisissez un nom de domaine pour domoticz"
-                },
                 "example": "example.com"
             },
             {
                 "name": "path",
                 "type": "path",
-                "ask": {
-                    "en": "Choose a path for domoticz",
-                    "fr": "Choisissez un chemin pour domoticz"
-                },
                 "example": "/domoticz",
                 "default": "/domoticz"
             },
             {
                 "name": "is_public",
                 "type": "boolean",
-                "ask": {
-                    "en": "Is it a public application?",
-                    "fr": "Est-ce une application publique ?"
-                },
                 "default": false,
                 "help": "Attention, cette application n'a pas de gestion d'utilisateur par défaut, si vous la mettez public, n importe qui y aura accès!"
             }

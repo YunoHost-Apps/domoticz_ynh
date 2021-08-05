@@ -9,7 +9,6 @@
 #other dependencies are from standard install script... seems quite useles...
 pkg_dependencies="libudev-dev python3-dev"
 
-
 #ALL FOLLOWING LINE FROM THE upstream bash installation script
 DEBIAN_ID=$(grep -oP '(?<=^ID=).+' /etc/*-release | tr -d '"')
 DEBIAN_VERSION=$(grep -oP '(?<=^VERSION_ID=).+' /etc/*-release | tr -d '"')
@@ -32,7 +31,6 @@ then
  MACH="armv7l"
 fi
 SHA256=$(wget -qO- https://releases.domoticz.com/releases/release/domoticz_${OS}_${MACH}.tgz.sha256sum | sed 's/ update.tgz//' | sed 's/  domoticz_linux_x86_64.tgz//')
-
 
 #=================================================
 # PERSONAL HELPERS
