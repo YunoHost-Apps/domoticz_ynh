@@ -40,6 +40,14 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."0
 
+# Ugly hack so that previous version backup script from "https://github.com/anubister/domoticz_ynh" works : 
+# It creates a dummy file in /etc/cron.d so that the backup do not fail.
+current_upstream_version=$(ynh_app_upstream_version --manifest="/etc/yunohost/apps/$app/manifest.json")
+current_package_version=$(ynh_app_package_version --manifest="/etc/yunohost/apps/$app/manifest.json")
+if version_gt "4.9701" "$current_upstream_version" && version_gt "2" $current_package_version ; then
+	touch /etc/cron.d/$app
+fi
+
 # Backup the current version of the app
 ynh_backup_before_upgrade
 ynh_clean_setup () {
@@ -47,6 +55,12 @@ ynh_clean_setup () {
 	# Restore it if the upgrade fails
 	ynh_restore_upgradebackup
 }
+
+#remove ugly hack
+if [ -f /etc/cron.d/$app ]; then
+	rm /etc/cron.d/$app
+fi
+
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
@@ -63,18 +77,6 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
-
-#ugly hack so that existing backup for previous version work
-current_upstream_version=$(ynh_app_upstream_version --manifest="/etc/yunohost/apps/$app/manifest.json")
-current_package_version=$(ynh_app_package_version --manifest="/etc/yunohost/apps/$app/manifest.json")
-if version_gt "4.9701" "$current_upstream_version" && version_gt "2" $current_package_version ; then
-	touch /etc/cron.d/$app
-fi
-
-#remove ugly hack
-if [ -f /etc/cron.d/$app ]; then
-	rm /etc/cron.d/$app
-fi
 
 #Store OS and machine (to be used in restore script)
 if [ -z "$current_OS" ]; then
