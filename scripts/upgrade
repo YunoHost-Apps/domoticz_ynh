@@ -22,7 +22,6 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
-is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 current_OS=$(ynh_app_setting_get --app=$app --key=OS)
@@ -32,35 +31,52 @@ api_path=$(ynh_app_setting_get --app=$app --key=api_path)
 #=================================================
 # CHECK VERSION
 #=================================================
+ynh_script_progression --message="Checking version..."
 
-### This helper will compare the version of the currently installed app and the version of the upstream package.
-### $upgrade_type can have 2 different values
-### - UPGRADE_APP if the upstream app version has changed
-### - UPGRADE_PACKAGE if only the YunoHost package has changed
-### ynh_check_app_version_changed will stop the upgrade if the app is up to date.
-### UPGRADE_APP should be used to upgrade the core app only if there's an upgrade to do.
 upgrade_type=$(ynh_check_app_version_changed)
+
+#=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."0
+
+# Ugly hack so that previous version backup script from "https://github.com/anubister/domoticz_ynh" works : 
+# It creates a dummy file in /etc/cron.d so that the backup do not fail.
+current_upstream_version=$(ynh_app_upstream_version --manifest="/etc/yunohost/apps/$app/manifest.json")
+current_package_version=$(ynh_app_package_version --manifest="/etc/yunohost/apps/$app/manifest.json")
+if version_gt "4.9701" "$current_upstream_version" && version_gt "2" $current_package_version ; then
+	touch /etc/cron.d/$app
+fi
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+	ynh_clean_check_starting
+	# Restore it if the upgrade fails
+	ynh_restore_upgradebackup
+}
+
+#remove ugly hack
+if [ -f /etc/cron.d/$app ]; then
+	rm /etc/cron.d/$app
+fi
+
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
+# STANDARD UPGRADE STEPS
+#=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Stopping a systemd service..." --weight=2
+
+ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
-
-
-# Fix is_public as a boolean value
-if [ "$is_public" = "Yes" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=1
-	is_public=1
-elif [ "$is_public" = "No" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=0
-	is_public=0
-#Previous domoticz version did not have public/private settings 
-elif [ -z "$is_public" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=1
-	is_public=1
-ynh_print_warn --message="Application was set as public in the previous version,meaning it's available without authentication."
-	ynh_print_warn --message="if you require to set it as private, please use the authorization config panel in Users/Manage Groups and permissions"
-fi
 
 #Store OS and machine (to be used in restore script)
 if [ -z "$current_OS" ]; then
@@ -86,6 +102,12 @@ if [ -z "$api_path" ]; then
 	ynh_app_setting_set --app=$app --key=api_path --value=$api_path
 fi
 
+# Cleaning legacy permissions
+if ynh_legacy_permissions_exists; then
+	ynh_legacy_permissions_delete_all
+
+	ynh_app_setting_delete --app=$app --key=is_public
+fi
 
 # Create the permission "domoticz_API" only if it doesn't exist.
 if ! ynh_permission_exists --permission="domoticz_API"
@@ -94,42 +116,30 @@ then
 	ynh_permission_create --permission="domoticz_API" --url="$domain$api_path" --allowed="visitors"
 fi
 
-
 #=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+# CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=10
+ynh_script_progression --message="Making sure dedicated system user exists..."
 
-#ugly hack so that existing backup for previous version work
-current_upstream_version=$(ynh_app_upstream_version --manifest="/etc/yunohost/apps/$app/manifest.json")
-current_package_version=$(ynh_app_package_version --manifest="/etc/yunohost/apps/$app/manifest.json")
-if version_gt "4.9701" "$current_upstream_version" && version_gt "2" $current_package_version ; then
-	touch /etc/cron.d/$app
+# Create a dedicated user (if not existing)
+ynh_system_user_create --username=$app --home_dir=$final_path
+
+#allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
+if grep dialout -q < /etc/group; then
+	usermod -a -G dialout $app
+fi
+if grep i2c -q < /etc/group; then
+	usermod -a -G i2c $app
+fi
+if grep gpio -q < /etc/group; then
+	usermod -a -G gpio $app
 fi
 
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-	# restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-
-#remove ugly hack
-if [ -f /etc/cron.d/$app ]; then
-	rm /etc/cron.d/$app
-fi
-
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
-# STANDARD UPGRADE STEPS
-#=================================================
-# STOP SYSTEMD SERVICE
-#=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=2
-
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+#allow app user to restart service on startup
+cp ../conf/sudoer ../conf/$app.conf
+ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../conf/$app.conf"
+mv ../conf/$app.conf /etc/sudoers.d/$app
+chmod 440 /etc/sudoers.d/$app
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -152,13 +162,17 @@ then
 	fi
 fi
 
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=1
+ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
-# Create a dedicated nginx config
-ynh_add_nginx_config "api_path"
+# Create a dedicated NGINX config
+ynh_add_nginx_config
 
 #=================================================
 # UPGRADE DEPENDENCIES
@@ -168,75 +182,24 @@ ynh_script_progression --message="Upgrading dependencies..." --weight=5
 ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..."
-
-# Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app
-#allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
-if grep dialout -q < /etc/group; then
-	usermod -a -G dialout $app
-fi
-if grep i2c -q < /etc/group; then
-	usermod -a -G i2c $app
-fi
-if grep gpio -q < /etc/group; then
-	usermod -a -G gpio $app
-fi
-
-#allow app user to restart service on startup
-cp ../conf/sudoer ../conf/$app.conf
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../conf/$app.conf"
-mv ../conf/$app.conf /etc/sudoers.d/$app
-chmod 440 /etc/sudoers.d/$app
-
-#=================================================
 # SPECIFIC UPGRADE
-#=================================================
-# ...
-#=================================================
-
-mkdir -p /var/log/$app
-chown -R domoticz: /var/log/$app
-
-
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Upgrading systemd configuration..." --weight=1
+ynh_script_progression --message="Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
-ynh_add_systemd_config --others_var="port"
-
-#=================================================
-# MODIFY A CONFIG FILE
-#=================================================
-
-### Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
-### And create a backup of this file if the checksum is different. So the file will be backed up if the admin had modified it.
-#ynh_backup_if_checksum_is_different --file="$final_path/CONFIG_FILE"
-
-#ynh_replace_string --match_string="match_string" --replace_string="replace_string" --target_file="$final_path/CONFIG_FILE"
-
-# Recalculate and store the checksum of the file for the next upgrade.
-#ynh_store_file_checksum --file="$final_path/CONFIG_FILE"
+ynh_add_systemd_config
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-# Set permissions to app files
-#chown -R root: $final_path
-#Both folder and database file must be own by app user for domoticz to work and allow internal upgrade
-chown -R $app: $final_path
-
-#=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..." --weight=1
+ynh_script_progression --message="Upgrading logrotate configuration..."
+
+mkdir -p /var/log/$app
+chown -R domoticz: /var/log/$app
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append
@@ -244,9 +207,9 @@ ynh_use_logrotate --non-append
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
+ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add $app --description "Domotique open sources" --log "/var/log/$app/$app.log"
+yunohost service add $app --description="Domotique open sources" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -256,39 +219,14 @@ ynh_script_progression --message="Starting a systemd service..." --weight=3
 ynh_systemd_action --service_name=$app --action="start"
 
 #=================================================
-# UPGRADE FAIL2BAN
-#=================================================
-#ynh_script_progression --message="Reconfiguring fail2ban..." --time --weight=1
-
-# Create a dedicated fail2ban config
-#ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failregex="Regex to match into the log for a failed login"
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Upgrading SSOwat configuration..." --weight=1
-
-# Make app public if necessary
-if [ $is_public -eq 1 ]
-then
-	# unprotected_uris allows SSO credentials to be passed anyway
-	ynh_permission_update --permission "main" --add visitors
-fi
-
-#=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..." --weight=1
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
-
-
-
 
 #=================================================
 # END OF SCRIPT
 #=================================================
-
-
 
 ynh_script_progression --message="Upgrade of $app completed" --last

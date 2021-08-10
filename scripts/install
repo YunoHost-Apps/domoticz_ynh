@@ -14,8 +14,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 ynh_clean_setup () {
-	### Remove this function if there's nothing to clean before calling the remove script.
-	true
+	ynh_clean_check_starting
 }
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
@@ -27,6 +26,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
+
 app=$YNH_APP_INSTANCE_NAME
 
 #Set dedicated variables
@@ -38,24 +38,21 @@ fi
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_script_progression --message="Validating installation parameters..." --weight=1
+ynh_script_progression --message="Validating installation parameters..."
 
 final_path=/opt/yunohost/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
 # Register (book) web path
 ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
-#ynh_webpath_register --app=$app --domain=$domain --path_url=$api_path
-
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..." --weight=1
+ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 
 #Will be used in restore script to check that we're restoring on the same OS/Board type
 ynh_app_setting_set --app=$app --key=OS --value=$OS
@@ -64,12 +61,12 @@ ynh_app_setting_set --app=$app --key=mach --value=$MACH
 #path used by api to read/update domoticz
 ynh_app_setting_set --app=$app --key=api_path --value=$api_path
 
-
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
+ynh_script_progression --message="Finding an available port..."
 
 # Find an available port
 port=$(ynh_find_port --port=8080)
@@ -83,42 +80,13 @@ ynh_script_progression --message="Installing dependencies..." --weight=15
 ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
-# DOWNLOAD, CHECK AND UNPACK SOURCE
-#=================================================
-ynh_script_progression --message="Setting up source files..." --weight=5
-
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-# Download, check integrity, uncompress and patch the source from app.src
-# Create an app.src for the correct version of domoticz
-# match string are fulfilled in _common.sh via the upstream bash installation script
-cp ../conf/app.src.default ../conf/app.src
-ynh_replace_string --match_string="__OS__" --replace_string="$OS" --target_file="../conf/app.src"
-ynh_replace_string --match_string="__MACH__" --replace_string="$MACH" --target_file="../conf/app.src"
-ynh_replace_string --match_string="__SHA256_SUM__" --replace_string="$SHA256" --target_file="../conf/app.src"
-
-ynh_setup_source --dest_dir="$final_path"
-#Create the database file
-if [ ! -f $final_path/domoticz.db ]; then
-	touch $final_path/domoticz.db
-	chmod 644 $final_path/domoticz.db
-fi
-
-
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring nginx web server..." --weight=2
-
-# Create a dedicated nginx config
-ynh_add_nginx_config "api_path"
-
-#=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..." --weight=1
+ynh_script_progression --message="Configuring system user..."
 
 # Create a system user
-ynh_system_user_create --username=$app
+ynh_system_user_create --username=$app --home_dir=$final_path
+
 #allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
 if grep dialout -q < /etc/group; then
 	usermod -a -G dialout $app
@@ -137,46 +105,58 @@ mv ../conf/$app.conf /etc/sudoers.d/$app
 chmod 440 /etc/sudoers.d/$app
 
 #=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression --message="Setting up source files..." --weight=5
+
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+# Download, check integrity, uncompress and patch the source from app.src
+# Create an app.src for the correct version of domoticz
+# match string are fulfilled in _common.sh via the upstream bash installation script
+cp ../conf/app.src.default ../conf/app.src
+ynh_replace_string --match_string="__OS__" --replace_string="$OS" --target_file="../conf/app.src"
+ynh_replace_string --match_string="__MACH__" --replace_string="$MACH" --target_file="../conf/app.src"
+ynh_replace_string --match_string="__SHA256_SUM__" --replace_string="$SHA256" --target_file="../conf/app.src"
+
+ynh_setup_source --dest_dir="$final_path"
+
+#Create the database file
+if [ ! -f $final_path/domoticz.db ]; then
+	touch $final_path/domoticz.db
+	chmod 640 $final_path/domoticz.db
+fi
+
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configuring NGINX web server..." --weight=2
+
+# Create a dedicated NGINX config
+ynh_add_nginx_config
+
+#=================================================
 # SPECIFIC SETUP
-#=================================================
-#create log path and assing permission
-#=================================================
-
-mkdir -p /var/log/$app
-chown -R domoticz: /var/log/$app
-
-
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..." --weight=1
+ynh_script_progression --message="Configuring a systemd service..."
 
 # Create a dedicated systemd config
-ynh_add_systemd_config --others_var="port"
-
-#ynh_store_file_checksum --file="$final_path/CONFIG_FILE"
-
-
+ynh_add_systemd_config
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-### For security reason, any app should set the permissions to root: before anything else.
-### Then, if write authorization is needed, any access should be given only to directories
-### that really need such authorization.
-
-# Set permissions to app files
-#chown -R root: $final_path
-#Both folder and database file must be own by app user for domoticz to work and allow internal upgrade
-chown -R $app: $final_path
-
-#=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..." --weight=1
+ynh_script_progression --message="Configuring log rotation..."
+
+mkdir -p /var/log/$app
+chown -R domoticz: /var/log/$app
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate
@@ -184,37 +164,38 @@ ynh_use_logrotate
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
+ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add $app --description "Domotique open sources" --log "/var/log/$app/$app.log"
+yunohost service add $app --description="Domotique open sources" --log="/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression --message="Starting a systemd service..."
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
-# --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..." --weight=1
+ynh_script_progression --message="Configuring permissions..."
 
 # Make app public if necessary
-if [ $is_public -eq 1 ]; then
-	ynh_permission_update --permission "main" --add visitors
+if [ $is_public -eq 1 ]
+then
+	# Everyone can access the app.
+	# The "main" permission is automatically created before the install script.
+	ynh_permission_update --permission="main" --add="visitors"
 fi
+
 #API should stay publicly accessible.
 ynh_permission_create --permission="domoticz_API" --url="$domain$api_path" --allowed="visitors"
-
-
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..." --weight=1
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
