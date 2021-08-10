@@ -123,7 +123,7 @@ ynh_setup_source --dest_dir="$final_path"
 #Create the database file
 if [ ! -f $final_path/domoticz.db ]; then
 	touch $final_path/domoticz.db
-	chmod 644 $final_path/domoticz.db
+	chmod 640 $final_path/domoticz.db
 fi
 
 chmod 750 "$final_path"
