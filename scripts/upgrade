@@ -27,6 +27,7 @@ port=$(ynh_app_setting_get --app=$app --key=port)
 current_OS=$(ynh_app_setting_get --app=$app --key=OS)
 current_mach=$(ynh_app_setting_get --app=$app --key=mach)
 api_path=$(ynh_app_setting_get --app=$app --key=api_path)
+mqtt_path=$(ynh_app_setting_get --app=$app --key=mqtt_path)
 
 #=================================================
 # CHECK VERSION
@@ -38,7 +39,7 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."0
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
 
 # Ugly hack so that previous version backup script from "https://github.com/anubister/domoticz_ynh" works : 
 # It creates a dummy file in /etc/cron.d so that the backup do not fail.
@@ -73,6 +74,7 @@ ynh_script_progression --message="Stopping a systemd service..." --weight=2
 
 ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
 
+
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
@@ -102,6 +104,17 @@ if [ -z "$api_path" ]; then
 	ynh_app_setting_set --app=$app --key=api_path --value=$api_path
 fi
 
+#Create a dedicated path for the api access
+if [ -z "$mqtt_path" ]; then
+	if [ "$path_url" == "/" ]; then
+		mqtt_path=/mqtt/$app
+	else
+		mqtt_path=/mqtt$path_url
+	fi
+	ynh_app_setting_set --app=$app --key=mqtt_path --value=$mqtt_path
+fi
+
+
 # Cleaning legacy permissions
 if ynh_legacy_permissions_exists; then
 	ynh_legacy_permissions_delete_all
@@ -115,6 +128,14 @@ then
 	# API Authorization with dedicated URL
 	ynh_permission_create --permission="domoticz_API" --url="$domain$api_path" --allowed="visitors"
 fi
+
+# Create the permission "domoticz_MQTT" only if it doesn't exist.
+if ! ynh_permission_exists --permission="domoticz_MQTT"
+then
+	# API Authorization with dedicated URL
+	ynh_permission_create --permission="domoticz_MQTT" --url="$domain$mqtt_path" --allowed="visitors"
+fi
+
 
 #=================================================
 # CREATE DEDICATED USER
@@ -136,9 +157,7 @@ if grep gpio -q < /etc/group; then
 fi
 
 #allow app user to restart service on startup
-cp ../conf/sudoer ../conf/$app.conf
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../conf/$app.conf"
-mv ../conf/$app.conf /etc/sudoers.d/$app
+ynh_add_config --template="../conf/sudoer" --destination="/etc/sudoers.d/$app"
 chmod 440 /etc/sudoers.d/$app
 
 #=================================================
@@ -150,10 +169,7 @@ then
 	ynh_script_progression --message="Upgrading source files..." --weight=15
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	cp ../conf/app.src.default ../conf/app.src
-	ynh_replace_string --match_string="__OS__" --replace_string="$OS" --target_file="../conf/app.src"
-	ynh_replace_string --match_string="__MACH__" --replace_string="$MACH" --target_file="../conf/app.src"
-	ynh_replace_string --match_string="__SHA256_SUM__" --replace_string="$SHA256" --target_file="../conf/app.src"
+	ynh_add_config --template="../conf/app.src.default" --destination="../conf/app.src"
 	ynh_setup_source --dest_dir="$final_path"
 	#Create the database file
 	if [ ! -f $final_path/domoticz.db ]; then
@@ -165,6 +181,28 @@ fi
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
 chown -R $app:$app "$final_path"
+
+#=================================================
+# SET MOSQUITTO SETTINGS
+#=================================================
+ynh_script_progression --message="Setting up mosquitto..." --weight=5
+
+#Installing packages
+ynh_install_extra_app_dependencies --repo="deb https://repo.mosquitto.org/debian buster main" --package="$extra_pkg_dependencies" --key="http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
+
+#Setting up conf file for access
+if [ ! -f "/etc/mosquitto/conf.d/domoticz_mosquitto.conf" ]
+then
+	ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/domoticz_mosquitto.conf"
+
+	#Setting up user&pwd for mqtt access
+	ynh_app_setting_set --app=$app --key=mqtt_user --value=$(ynh_string_random --length=8)
+	ynh_app_setting_set --app=$app --key=mqtt_pwd --value=$(ynh_string_random)
+	echo $(ynh_app_setting_get --app=$app --key=mqtt_user):$(ynh_app_setting_get --app=$app --key=mqtt_pwd) > /etc/mosquitto/conf.d/credentials
+	mosquitto_passwd -U /etc/mosquitto/conf.d/credentials
+
+	ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
+fi
 
 #=================================================
 # NGINX CONFIGURATION
@@ -203,6 +241,7 @@ chown -R domoticz: /var/log/$app
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append
+ynh_use_logrotate --logfile="/var/log/mosquitto/" --non-append
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -210,6 +249,7 @@ ynh_use_logrotate --non-append
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add $app --description="Domotique open sources" --log="/var/log/$app/$app.log"
+yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -217,6 +257,9 @@ yunohost service add $app --description="Domotique open sources" --log="/var/log
 ynh_script_progression --message="Starting a systemd service..." --weight=3
 
 ynh_systemd_action --service_name=$app --action="start"
+
+#Restarting mosquitto to take changes into account
+ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # RELOAD NGINX

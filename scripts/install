@@ -32,8 +32,10 @@ app=$YNH_APP_INSTANCE_NAME
 #Set dedicated variables
 if [ "$path_url" == "/" ]; then
 	api_path=/api_/$app
+	mqtt_path=/mqtt/$app
 else
 	api_path=/api_$path_url
+	mqtt_path=/mqtt$path_url
 fi
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -55,11 +57,12 @@ ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 
 #Will be used in restore script to check that we're restoring on the same OS/Board type
-ynh_app_setting_set --app=$app --key=OS --value=$OS
-ynh_app_setting_set --app=$app --key=mach --value=$MACH
+ynh_app_setting_set --app=$app --key=OS --value=$os
+ynh_app_setting_set --app=$app --key=mach --value=$mach
 
-#path used by api to read/update domoticz
+#path used by api & mqtt to read/update domoticz
 ynh_app_setting_set --app=$app --key=api_path --value=$api_path
+ynh_app_setting_set --app=$app --key=mqtt_path --value=$mqtt_path
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -71,6 +74,9 @@ ynh_script_progression --message="Finding an available port..."
 # Find an available port
 port=$(ynh_find_port --port=8080)
 ynh_app_setting_set --app=$app --key=port --value=$port
+
+mqtt_port=$(ynh_find_port --port=1883)
+ynh_app_setting_set --app=$app --key=mqtt_port --value=$mqtt_port
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -99,9 +105,7 @@ if grep gpio -q < /etc/group; then
 fi
 
 #allow app user to restart service on startup
-cp ../conf/sudoer ../conf/$app.conf
-ynh_replace_string --match_string="__APP__" --replace_string="$app" --target_file="../conf/$app.conf"
-mv ../conf/$app.conf /etc/sudoers.d/$app
+ynh_add_config --template="../conf/sudoer" --destination="/etc/sudoers.d/$app"
 chmod 440 /etc/sudoers.d/$app
 
 #=================================================
@@ -113,10 +117,7 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 # Create an app.src for the correct version of domoticz
 # match string are fulfilled in _common.sh via the upstream bash installation script
-cp ../conf/app.src.default ../conf/app.src
-ynh_replace_string --match_string="__OS__" --replace_string="$OS" --target_file="../conf/app.src"
-ynh_replace_string --match_string="__MACH__" --replace_string="$MACH" --target_file="../conf/app.src"
-ynh_replace_string --match_string="__SHA256_SUM__" --replace_string="$SHA256" --target_file="../conf/app.src"
+ynh_add_config --template="../conf/app.src.default" --destination="../conf/app.src"
 
 ynh_setup_source --dest_dir="$final_path"
 
@@ -130,6 +131,25 @@ chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
 chown -R $app:$app "$final_path"
 
+
+#=================================================
+# SET MOSQUITTO SETTINGS
+#=================================================
+ynh_script_progression --message="Setting up mosquitto..." --weight=5
+
+#Installing packages
+ynh_install_extra_app_dependencies --repo="deb https://repo.mosquitto.org/debian buster main" --package="$extra_pkg_dependencies" --key="http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
+
+#Setting up conf file for access
+ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/domoticz_mosquitto.conf"
+
+#Setting up user&pwd for mqtt access
+ynh_app_setting_set --app=$app --key=mqtt_user --value=$(ynh_string_random --length=8)
+ynh_app_setting_set --app=$app --key=mqtt_pwd --value=$(ynh_string_random)
+echo $(ynh_app_setting_get --app=$app --key=mqtt_user):$(ynh_app_setting_get --app=$app --key=mqtt_pwd) > /etc/mosquitto/conf.d/credentials
+mosquitto_passwd -U /etc/mosquitto/conf.d/credentials
+
+ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
@@ -160,6 +180,8 @@ chown -R domoticz: /var/log/$app
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate
+ynh_use_logrotate --logfile="/var/log/mosquitto/"
+
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -167,6 +189,7 @@ ynh_use_logrotate
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add $app --description="Domotique open sources" --log="/var/log/$app/$app.log"
+yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -175,6 +198,9 @@ ynh_script_progression --message="Starting a systemd service..."
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start"
+
+#Restarting mosquitto to take changes into account
+ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # SETUP SSOWAT
@@ -189,8 +215,9 @@ then
 	ynh_permission_update --permission="main" --add="visitors"
 fi
 
-#API should stay publicly accessible.
+#API & MQTT should stay publicly accessible.
 ynh_permission_create --permission="domoticz_API" --url="$domain$api_path" --allowed="visitors"
+ynh_permission_create --permission="domoticz_MQTT" --url="$domain$mqtt_path" --allowed="visitors"
 
 #=================================================
 # RELOAD NGINX

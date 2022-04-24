@@ -66,6 +66,8 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 #=================================================
 
 ynh_backup --src_path="/etc/sudoers.d/$app"
+ynh_backup --src_path="/etc/mosquitto/conf.d"
+
 
 #=================================================
 # END OF SCRIPT

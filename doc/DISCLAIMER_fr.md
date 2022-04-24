@@ -1,42 +1,42 @@
-Domoticz est un système de domotique permettant de controler différents objets et de recevoir des données de divers senseurs
-Il peut par exemple être utilisé avec :
+Domoticz est un systÃ¨me de domotique permettant de controler diffÃ©rents objets et de recevoir des donnÃ©es de divers senseurs
+Il peut par exemple Ãªtre utilisÃ© avec :
 
 -des interrupteurs
 
 -des senseurs de portes
 
--des sonnettes d'entrées
+-des sonnettes d'entrÃ©es
 
--des systèmes de sécurité
+-des systÃ¨mes de sÃ©curitÃ©
 
--des stations météo pour les UV, la pluie, le vent...
+-des stations mÃ©tÃ©o pour les UV, la pluie, le vent...
 
--des sondes de températures
+-des sondes de tempÃ©ratures
 
 -des sondes d'impulsions
 
--des voltmètres
+-des voltmÃ¨tres
 
 -Et bien d'autres
 
-**Version incluse :** Toujours la dernière version stable. La dernière version compilée est récupérée dans [ce répertoire](https://releases.domoticz.com/releases/?dir=./beta)
-Une fois installée, **les mises à jour de l'application sont gérées depuis les menus de l'application elle même.**. Le script de mise à jour Yunohost mettra uniquement à jour de nouvelles version du package.
+**Version incluse :** Toujours la derniÃ¨re version stable. La derniÃ¨re version compilÃ©e est rÃ©cupÃ©rÃ©e dans [ce rÃ©pertoire](https://releases.domoticz.com/releases/?dir=./beta)
+Une fois installÃ©e, **les mises Ã  jour de l'application sont gÃ©rÃ©es depuis les menus de l'application elle mÃªme.**. Le script de mise Ã  jour Yunohost mettra uniquement Ã  jour de nouvelles version du package.
 
 ## Configuration
 
 ### Senseurs, langue et ce genre de choses
-Toute la configuration de l'application a lieu dans l'application elle même
+Toute la configuration de l'application a lieu dans l'application elle mÃªme
 Main configuration of the app take place inside the app itself.
 
-### Accès et API
-Par défaut, l'accès aux [API JSON](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) est autorisé sur cette URL `/votredomaine.tld/api_/chemindedomoticz`.
-Donc, si vous accédez à domoticz par https://votredomaine.tld/domoticz, utilisez le chemin suivant pour l'api: `/votredomaine.tld/api_/domoticz/json.htm?votrecommandeapi`
+### AccÃ¨s et API
+Par dÃ©faut, l'accÃ¨s aux [API JSON](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) est autorisÃ© sur cette URL `/votredomaine.tld/api_/chemindedomoticz`.
+Donc, si vous accÃ©dez Ã  domoticz par https://votredomaine.tld/domoticz, utilisez le chemin suivant pour l'api: `/votredomaine.tld/api_/domoticz/json.htm?votrecommandeapi`
 
-Par défaut, seuls la mise à jour de senseur et les interrupteurs sont autorisés. Pour autoriser une nouvelle commande, vous devez (pour l'instant) manuellement éditer le fichier de configuration nginx :
+Par dÃ©faut, seuls la mise Ã  jour de senseur et les interrupteurs sont autorisÃ©s. Pour autoriser une nouvelle commande, vous devez (pour l'instant) manuellement Ã©diter le fichier de configuration nginx :
 ````
 sudo nano /etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf
 ````
-Puis éditer le bloc suivant en y ajoutant le regex de la commmande à autoriser :
+Puis Ã©diter le bloc suivant en y ajoutant le regex de la commmande Ã  autoriser :
 ````
   #set the list of authorized json command here in regex format
   #you may retrieve the command from https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's
@@ -45,7 +45,7 @@ Puis éditer le bloc suivant en y ajoutant le regex de la commmande à autoriser :
     set $api "1";
     }
 ````
-Par exemple, pour ajouter la commmande json pour retrouver le statut d'un équipement (/json.htm?type=devices&rid=IDX),il faut modifier la ligne comme ceci:
+Par exemple, pour ajouter la commmande json pour retrouver le statut d'un Ã©quipement (/json.htm?type=devices&rid=IDX),il faut modifier la ligne comme ceci:
 ````
   #set the list of authorized json command here in regex format
   #you may retrieve the command from https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's
@@ -55,15 +55,15 @@ Par exemple, pour ajouter la commmande json pour retrouver le statut d'un équipe
     }
 ````
 
-Toutes les adresses IPv4 du réseau local (192.168.0.0/24) et toutes les adresses IPv6 sont autorisées pour l'API.
-A ma connaissance, il n'y a pas moyen d'effectuer un filtre pour les adresses IPv6 sur le réseau local, vous pouvez donc retirer leur autorisation en enlevant ou en commentant la ligne suivante dans `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
+Toutes les adresses IPv4 du rÃ©seau local (192.168.0.0/24) et toutes les adresses IPv6 sont autorisÃ©es pour l'API.
+A ma connaissance, il n'y a pas moyen d'effectuer un filtre pour les adresses IPv6 sur le rÃ©seau local, vous pouvez donc retirer leur autorisation en enlevant ou en commentant la ligne suivante dans `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
 ````
 allow ::/1;
 ````
-Ceci autorisera seulement les adresses IPv4 local a accéder aux API de domoticz.
-Vous pouvez ajouter des adresses IPv6 de la même façon.
+Ceci autorisera seulement les adresses IPv4 local a accÃ©der aux API de domoticz.
+Vous pouvez ajouter des adresses IPv6 de la mÃªme faÃ§on.
 
 ## Limitations
 
-* Pas de gestion d'utilisateurs ni d'intégration LDAP. L'application ne [prévoit pas de gérer les utilisateurs par LDAP](https://github.com/domoticz/domoticz/issues/838), donc le package non plus.
-* Un backup ne peut pas être restauré sur un type de machine différente de celle d'origine (x86, arm...) car les sources compilées doivent être différente
+* Pas de gestion d'utilisateurs ni d'intÃ©gration LDAP. L'application ne [prÃ©voit pas de gÃ©rer les utilisateurs par LDAP](https://github.com/domoticz/domoticz/issues/838), donc le package non plus.
+* Un backup ne peut pas Ãªtre restaurÃ© sur un type de machine diffÃ©rente de celle d'origine (x86, arm...) car les sources compilÃ©es doivent Ãªtre diffÃ©rentes

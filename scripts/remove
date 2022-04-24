@@ -33,6 +33,7 @@ if ynh_exec_warn_less yunohost service status $app >/dev/null
 then
 	ynh_script_progression --message="Removing $app service integration..."
 	yunohost service remove $app
+	yunohost service remove mosquitto
 fi
 
 #=================================================
@@ -85,6 +86,7 @@ ynh_script_progression --message="Removing various files..."
 
 # Remove the log files
 ynh_secure_remove --file="/var/log/$app"
+ynh_secure_remove --file="/var/log/mosquitto"
 
 #Delete the sudoer file
 ynh_secure_remove --file="/etc/sudoers.d/$app"

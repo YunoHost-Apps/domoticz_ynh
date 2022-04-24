@@ -33,24 +33,22 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 backup_OS=$(ynh_app_setting_get --app=$app --key=OS)
 backup_mach=$(ynh_app_setting_get --app=$app --key=mach)
 api_path=$(ynh_app_setting_get --app=$app --key=api_path)
+mqtt_path=$(ynh_app_setting_get --app=$app --key=mqtt_path)
+mqtt_user=$(ynh_app_setting_get --app=$app --key=mqtt_user)
+mqtt_pwd=$(ynh_app_setting_get --app=$app --key=mqtt_pwd)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 ynh_script_progression --message="Validating restoration parameters..."
-
-ynh_webpath_available --domain=$domain --path_url=$path_url \
-	|| ynh_die --message="Path not available: ${domain}${path_url}"
-#ynh_webpath_available --domain=$domain --path_url=$api_path \
-#	|| ynh_die --message="Path not available: ${domain}${api_path}"
 test ! -d $final_path \
 	|| ynh_die --message="There is already a directory: $final_path "
 #As we are downloading compiled binaries for each system, we have to check if the restore occurs
 #on the same system type. If we are restoring on another system type it won't work and in that
 #case we must go through a reinstall process.
-test "$backup_OS" = "$OS" \
+test "$backup_OS" = "$os" \
 	|| ynh_die --message="Cannot restore : previous OS is $backup_OS, current OS is $OS, please reinstall"
-test "$backup_mach" = "$MACH" \
+test "$backup_mach" = "$mach" \
 	|| ynh_die --message="Cannot restore : previous machine type is $backup_mach, current machine type is $MACH, please reinstall"
 
 #=================================================
@@ -106,6 +104,16 @@ ynh_script_progression --message="Reinstalling dependencies..." --weight=5
 ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
+# SET MOSQUITTO SETTINGS
+#=================================================
+ynh_script_progression --message="Reinstalling up mosquitto..." --weight=5
+
+#Installing packages
+ynh_install_extra_app_dependencies --repo="deb https://repo.mosquitto.org/debian buster main" --package="$extra_pkg_dependencies" --key="http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
+#reinstalling settings
+ynh_restore_file --origin_path="/etc/mosquitto/conf.d"
+
+#=================================================
 # RESTORE SYSTEMD
 #=================================================
 ynh_script_progression --message="Restoring the systemd configuration..." --weight=3
@@ -119,6 +127,8 @@ systemctl enable $app.service --quiet
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add $app --description="Domotique open sources" --log="/var/log/$app/$app.log"
+yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
+
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -126,6 +136,9 @@ yunohost service add $app --description="Domotique open sources" --log="/var/log
 ynh_script_progression --message="Starting a systemd service..."
 
 ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+
+#Restarting mosquitto to take changes into account
+ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # RESTORE THE LOGROTATE CONFIGURATION
@@ -136,6 +149,7 @@ mkdir -p /var/log/$app
 chown -R domoticz: /var/log/$app
 
 ynh_restore_file --origin_path="/etc/logrotate.d/$app"
+ynh_use_logrotate --logfile="/var/log/mosquitto/"
 
 #=================================================
 # GENERIC FINALIZATION
