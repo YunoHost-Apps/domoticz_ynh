@@ -11,6 +11,9 @@
 pkg_dependencies="libudev-dev python3-dev"
 extra_pkg_dependencies="mosquitto mosquitto-clients"
 
+default_mqtt_port=1883
+default_mqtt_websocket_port=8083
+
 #ALL FOLLOWING LINE FROM THE upstream bash installation script
 DEBIAN_ID=$(grep -oP '(?<=^ID=).+' /etc/*-release | tr -d '"')
 DEBIAN_VERSION=$(grep -oP '(?<=^VERSION_ID=).+' /etc/*-release | tr -d '"')

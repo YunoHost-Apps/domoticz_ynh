@@ -46,11 +46,22 @@ ynh_remove_systemd_config
 
 
 #=================================================
+# CLOSE A PORT
+#=================================================
+
+if yunohost firewall list | grep -q "\- $port$"
+then
+	ynh_script_progression --message="Closing port $port..." --weight=1
+	ynh_exec_warn_less yunohost firewall disallow TCP $port
+fi
+
+#=================================================
 # REMOVE DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Removing dependencies..." --weight=3
 
 # Remove metapackage and its dependencies
+ynh_secure_remove --file="/etc/mosquitto/conf.d"
 ynh_remove_app_dependencies
 
 #=================================================
@@ -67,6 +78,7 @@ ynh_secure_remove --file="$final_path"
 ynh_script_progression --message="Removing NGINX web server configuration..."
 
 # Remove the dedicated NGINX config
+ynh_secure_remove --file="/etc/nginx/"$mqtt_domain".d/mqtt_"$app".conf"
 ynh_remove_nginx_config
 
 #=================================================

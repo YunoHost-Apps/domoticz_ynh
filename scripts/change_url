@@ -30,14 +30,11 @@ ynh_script_progression --message="Loading installation settings..."
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 old_api=$(ynh_app_setting_get --app=$app --key=api_path)
-old_mqtt=$(ynh_app_setting_get --app=$app --key=mqtt_path)
 
 if [ "$new_path" == "/" ]; then
 	new_api=/api_/$app
-	new_mqtt=/mqtt/$app
 else
 	new_api=/api_$new_path
-	new_mqtt=/mqtt$new_path
 fi
 
 
@@ -100,7 +97,6 @@ then
 	domain="$old_domain"
 	path_url="$new_path"
 	api_path="$new_api"
-	mqtt_path="$new_mqtt"
 	# Create a dedicated NGINX config
 	ynh_add_nginx_config
 fi
@@ -126,10 +122,6 @@ ynh_script_progression --message="Upgrading SSOwat configuration..."
 ynh_app_setting_delete --app=$app --key="api_path"
 ynh_app_setting_set --app=$app --key="api_path" --value=$new_api
 ynh_permission_url --permission domoticz_API --url "$new_domain$new_api"
-
-ynh_app_setting_delete --app=$app --key="mqtt_path"
-ynh_app_setting_set --app=$app --key="mqtt_path" --value=$new_mqtt
-ynh_permission_url --permission domoticz_MQTT --url "$new_domain$new_mqtt"
 
 #=================================================
 # GENERIC FINALISATION

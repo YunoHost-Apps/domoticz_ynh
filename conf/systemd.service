@@ -40,7 +40,8 @@ CapabilityBoundingSet=~CAP_LEASE CAP_LINUX_IMMUTABLE CAP_IPC_LOCK
 CapabilityBoundingSet=~CAP_BLOCK_SUSPEND CAP_WAKE_ALARM
 CapabilityBoundingSet=~CAP_SYS_TTY_CONFIG
 CapabilityBoundingSet=~CAP_MAC_ADMIN CAP_MAC_OVERRIDE
-CapabilityBoundingSet=~CAP_NET_ADMIN CAP_NET_BROADCAST CAP_NET_RAW
+#Has to be commented as prevent the service to run
+#CapabilityBoundingSet=~CAP_NET_ADMIN CAP_NET_BROADCAST CAP_NET_RAW
 CapabilityBoundingSet=~CAP_SYS_ADMIN CAP_SYS_PTRACE CAP_SYSLOG 
 
 

@@ -12,9 +12,44 @@ For example this system can be used with:
 * And more ...
 
 
-**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./beta)
+**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./beta) during install
 Once installed, **updates from the uptream app are managed from within the app.**. Yunohost upgrade script will only upgrade the Yunohost package. 
 
+The MQTT broker mosquitto is integrated into the package. It requires its own domain or subdomain. It's an optional setting: during install if you set the same domaine as your main app domain, it won't be installed.
+
+## Configuration
+
+### Broker Mosquitto
+
+During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker is installed at the same time as Domoticz. The broker is Mosquitto with documentation available [here](https://mosquitto.org/). The installed version is the one from the official project repo and not from Debian ones.
+This broker requires a dedicated domain or subdomain to work (ex : mqtt.your.domain.tld) : creating this domain prior installation is a prerequisite
+
+####Use
+
+To use mosquitto, you need to customize the communication between domoticz and the broker by following the [domoticz documentation](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto), part *Add hardware "MQTT Client Gateway"*.
+User and password are automatically generated during installation, you may retrieve them with
+````
+sudo yunohost app setting domoticz mqtt_user
+sudo yunohost app setting domoticz mqtt_pwd
+````
+You can then publish on a device on domoticz with following syntax:
+````
+mosquitto_pub -u *user* -P *password* -h mqtt.your.domain.tld -p 443 -t 'domoticz/in' -m '{ "idx" : 1, "nvalue" : 0, "svalue" : "25.0" }'
+````
+In the same way, you may subscribe to a topic with
+````
+mosquitto_sub -u *user* -P *password* -h mqtt.your.domain.tld -p 443 -t 'domoticz/out'
+````
+
+#### Upgrade from version without mosquitto
+If you have package ynh3 or below, mosquitto is not installed by default.
+If you have chosen to not set a domain during initial installation also.
+So, if you need to activate mosquitto in retrospect, do following actions:
+1/ Create a domain or a subdomain (for example : 'mqtt.your.domain.tld')
+2/ Connect to your server in command line 
+3/ Type following command : `yunohost app setting domoticz mqtt_domain -v mqtt.your.domain.tld`
+4/ Upgrade domoticz to last package.
+If you're already on the last package version, use the following command : `yunohost app upgrade domoticz --force`
 
 ## Configuration
 

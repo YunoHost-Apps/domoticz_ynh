@@ -27,7 +27,9 @@ port=$(ynh_app_setting_get --app=$app --key=port)
 current_OS=$(ynh_app_setting_get --app=$app --key=OS)
 current_mach=$(ynh_app_setting_get --app=$app --key=mach)
 api_path=$(ynh_app_setting_get --app=$app --key=api_path)
-mqtt_path=$(ynh_app_setting_get --app=$app --key=mqtt_path)
+mqtt_domain=$(ynh_app_setting_get --app=$app --key=mqtt_domain)
+mqtt_port=$(ynh_app_setting_get --app=$app --key=mqtt_port)
+mqtt_websocket_port=$(ynh_app_setting_get --app=$app --key=mqtt_websocket_port)
 
 #=================================================
 # CHECK VERSION
@@ -74,7 +76,6 @@ ynh_script_progression --message="Stopping a systemd service..." --weight=2
 
 ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
 
-
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
@@ -104,14 +105,21 @@ if [ -z "$api_path" ]; then
 	ynh_app_setting_set --app=$app --key=api_path --value=$api_path
 fi
 
-#Create a dedicated path for the api access
-if [ -z "$mqtt_path" ]; then
-	if [ "$path_url" == "/" ]; then
-		mqtt_path=/mqtt/$app
-	else
-		mqtt_path=/mqtt$path_url
-	fi
-	ynh_app_setting_set --app=$app --key=mqtt_path --value=$mqtt_path
+#Create a dedicated path for the mqtt access
+if [ -z "$mqtt_domain" ]; then
+	ynh_print_info --message="Mosquitto, a mqtt server, can now be installed during upgrade, pleaser refer to package documentation to activate it"
+fi
+
+#Port to listen for MQTT internal
+if [[ -z "$mqtt_port" && ! -z "$mqtt_domain" ]]; then
+	mqtt_port=$(ynh_find_port --port=$default_mqtt_port)
+	ynh_app_setting_set --app=$app --key=mqtt_port --value=$mqtt_port
+fi
+
+#Port to listen for MQTT websocket
+if [[ -z "$mqtt_websocket_port" && ! -z "$mqtt_domain" ]]; then
+	mqtt_websocket_port=$(ynh_find_port --port=$default_mqtt_websocket_port)
+	ynh_app_setting_set --app=$app --key=mqtt_websocket_port --value=$mqtt_websocket_port
 fi
 
 
@@ -130,10 +138,12 @@ then
 fi
 
 # Create the permission "domoticz_MQTT" only if it doesn't exist.
-if ! ynh_permission_exists --permission="domoticz_MQTT"
-then
-	# API Authorization with dedicated URL
-	ynh_permission_create --permission="domoticz_MQTT" --url="$domain$mqtt_path" --allowed="visitors"
+if [ ! -z $mqtt_domain ]; then
+	if ! ynh_permission_exists --permission="domoticz_MQTT"
+	then
+		# API Authorization with dedicated URL
+		ynh_permission_create --permission="domoticz_MQTT" --url="$mqtt_domain" --allowed="visitors"
+	fi
 fi
 
 
@@ -185,29 +195,35 @@ chown -R $app:$app "$final_path"
 #=================================================
 # SET MOSQUITTO SETTINGS
 #=================================================
-ynh_script_progression --message="Setting up mosquitto..." --weight=5
+if [ ! -z $mqtt_domain ]; then
+	ynh_script_progression --message="Setting up mosquitto..." --weight=5
 
-#Installing packages
-ynh_install_extra_app_dependencies --repo="deb https://repo.mosquitto.org/debian buster main" --package="$extra_pkg_dependencies" --key="http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
+	#Installing packages
+	ynh_install_extra_app_dependencies --repo="deb https://repo.mosquitto.org/debian buster main" --package="$extra_pkg_dependencies" --key="http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
 
-#Setting up conf file for access
-if [ ! -f "/etc/mosquitto/conf.d/domoticz_mosquitto.conf" ]
-then
-	ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/domoticz_mosquitto.conf"
+	#Setting up conf file for access
+	if [ ! -f "/etc/mosquitto/conf.d/"$app"_mosquitto.conf" ]
+	then
+		ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/"$app"_mosquitto.conf"
 
-	#Setting up user&pwd for mqtt access
-	ynh_app_setting_set --app=$app --key=mqtt_user --value=$(ynh_string_random --length=8)
-	ynh_app_setting_set --app=$app --key=mqtt_pwd --value=$(ynh_string_random)
-	echo $(ynh_app_setting_get --app=$app --key=mqtt_user):$(ynh_app_setting_get --app=$app --key=mqtt_pwd) > /etc/mosquitto/conf.d/credentials
-	mosquitto_passwd -U /etc/mosquitto/conf.d/credentials
+		#Setting up user&pwd for mqtt access
+		ynh_app_setting_set --app=$app --key=mqtt_user --value=$(ynh_string_random --length=8)
+		ynh_app_setting_set --app=$app --key=mqtt_pwd --value=$(ynh_string_random)
+		echo $(ynh_app_setting_get --app=$app --key=mqtt_user):$(ynh_app_setting_get --app=$app --key=mqtt_pwd) > "/etc/mosquitto/conf.d/"$app"_credentials"
+		mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
 
-	ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
+		ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
+	fi
 fi
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..."
+
+if [ ! -z $mqtt_domain ]; then
+	ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
+fi
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
@@ -241,7 +257,9 @@ chown -R domoticz: /var/log/$app
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append
-ynh_use_logrotate --logfile="/var/log/mosquitto/" --non-append
+if [ ! -z $mqtt_domain ]; then
+	ynh_use_logrotate --logfile="/var/log/mosquitto/" --non-append
+fi
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -249,7 +267,9 @@ ynh_use_logrotate --logfile="/var/log/mosquitto/" --non-append
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add $app --description="Domotique open sources" --log="/var/log/$app/$app.log"
-yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
+if [ ! -z $mqtt_domain ]; then
+	yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
+fi
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -258,9 +278,10 @@ ynh_script_progression --message="Starting a systemd service..." --weight=3
 
 ynh_systemd_action --service_name=$app --action="start"
 
-#Restarting mosquitto to take changes into account
-ynh_systemd_action --service_name=mosquitto --action="restart"
-
+#Restarting mosquitto to take changes from /etc/mosquitto/conf.d/*.conf into account
+if [ ! -z $mqtt_domain ]; then
+	ynh_systemd_action --service_name=mosquitto --action="restart"
+fi
 #=================================================
 # RELOAD NGINX
 #=================================================

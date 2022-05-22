@@ -11,14 +11,49 @@ Il peut par exemple être utilisé avec :
 * des voltmètres
 * Et bien d'autres
 
-**Version incluse :** Toujours la dernière version stable. La dernière version compilée est récupérée dans [ce répertoire](https://releases.domoticz.com/releases/?dir=./beta)
+**Version incluse :** Toujours la dernière version stable. La dernière version compilée est récupérée dans [ce répertoire](https://releases.domoticz.com/releases/?dir=./beta) lors de l'installation
 Une fois installée, **les mises à jour de l'application sont gérées depuis les menus de l'application elle même.**. Le script de mise à jour Yunohost mettra uniquement à jour de nouvelles version du package.
+
+Le broker MQTT mosquitto est intégré au package et nécessite un sous-domaine ou un domaine distinct. Il est optionnel et si vous indiquez lors de l'installation le même domaine que le domaine principal, il ne sera pas installé.
 
 ## Configuration
 
+### Broker MQTT Mosquitto
+
+A l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT) est installé en même temps que Domoticz. Il s'agit du serveur mosquitto dont la documentation est disponible [ici](https://mosquitto.org/). La version installée est celle du dépot officiel du projet, et non des dépots Debian.
+Ce broker nécessite un domaine ou un sous-domaine particulier pour fonctionner (ex : mqtt.your.domain.tld) : il est nécessaire de créer ce domaine auparavant.
+
+####Utilisation
+
+Pour pouvoir l'utiliser, vous devez paramétrer la communication avec entre domoticz et le broker en suivant la [documentation de domoticz](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto) dans la partie *Add hardware "MQTT Client Gateway"*
+Les users et mot de passe du broker sont automatiquement générés lors de l'installation. Vous pouvez les récupérer en tapant
+````
+sudo yunohost app setting domoticz mqtt_user
+sudo yunohost app setting domoticz mqtt_pwd
+````
+
+Vous pouvez ensuite publier sur ce serveur en utilisant la syntaxe:
+````
+mosquitto_pub -u *user* -P *password* -h mqtt.your.domain.tld -p 443 -t 'domoticz/in' -m '{ "idx" : 1, "nvalue" : 0, "svalue" : "25.0" }'
+````
+De la même manière, vous pouvez suivre ce qu'il se passe avec
+````
+mosquitto_sub -u *user* -P *password* -h mqtt.your.domain.tld -p 443 -t 'domoticz/out'
+````
+
+####Mise à jour depuis les versions n'ayant pas mosquitto
+Si vous êtes sur le package ynh3 ou inférieur, mosquitto n'est pas installé par défaut.
+De même si vous avez choisi de ne pas indiquer de domaine pour mosquitto lors de l'installation initiale.
+Pour pouvoir l'installer après coup, faites les actions suivantes:
+1/ créez un domaine ou sous-domaine pour recevoir les informations (par exemple : 'mqtt.your.domain.tld')
+2/ connecter vous en ligne de commande à votre serveur
+3/ taper la commande suivante : `yunohost app setting domoticz mqtt_domain -v mqtt.your.domain.tld`
+4/ Procédez à la mise à jour.
+Si vous êtes déjà sur la dernière version, utiliser la commmande suivante : `yunohost app upgrade domoticz --force`
+
+
 ### Senseurs, langue et ce genre de choses
 Toute la configuration de l'application a lieu dans l'application elle même
-Main configuration of the app take place inside the app itself.
 
 ### Accès et API
 Par défaut, l'accès aux [API JSON](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) est autorisé sur cette URL `/votredomaine.tld/api_/chemindedomoticz`.
