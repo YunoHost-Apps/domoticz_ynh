@@ -1,24 +1,3 @@
-;; Test sans Mosquitto
-	; Manifest
-	; Checks
-		pkg_linter=1
-		setup_sub_dir=1
-		setup_root=1
-		setup_private=1
-		setup_public=1
-		upgrade=1
-		upgrade=1	from_commit=048ae59a016755b0829a4e8f3ed5d0dbbd1b826b
-		backup_restore=1
-		port_already_use=1
-		change_url=1
-;;; Options
-Email=nicolas@aubonalbanais.ovh
-Notification=none
-;;; Upgrade options
-	; commit=048ae59a016755b0829a4e8f3ed5d0dbbd1b826b
-		name=Package ynh3.
-		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass&
-
 ;; Test avec Mosquitto
 	; pre-install
 		set -euxo pipefail
@@ -27,17 +6,20 @@ Notification=none
 		set -euxo pipefail
 		yunohost app setting domoticz mqtt_domain -v mqtt.domain.tld
 	; Manifest
+		domain="domain.tld" (DOMAIN)
+		path="/domoticz" (PATH)
+		is_public=1 (PUBLIC|public=1|private=0)
 		mqtt_domain="mqtt.domain.tld"
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
 		setup_root=1
 		setup_private=1
-		setup_public=1
+		setup_public=0
 		upgrade=1
 		upgrade=1	from_commit=048ae59a016755b0829a4e8f3ed5d0dbbd1b826b
 		backup_restore=1
-		port_already_use=1
+		port_already_use=0
 		change_url=1
 ;;; Options
 Email=nicolas@aubonalbanais.ovh
@@ -45,5 +27,28 @@ Notification=none
 ;;; Upgrade options
 	; commit=048ae59a016755b0829a4e8f3ed5d0dbbd1b826b
 		name=Package ynh3
-		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&language=fr&is_public=1&password=pass
-		
+
+;; Test sans Mosquitto
+	; Manifest
+		domain="domain.tld" (DOMAIN)
+		path="/domoticz" (PATH)
+		is_public=1 (PUBLIC|public=1|private=0)
+		mqtt_domain="sub.domain.tld"
+	; Checks
+		pkg_linter=0
+		setup_sub_dir=1
+		setup_root=1
+		setup_private=1
+		setup_public=0
+		upgrade=1
+		upgrade=1	from_commit=048ae59a016755b0829a4e8f3ed5d0dbbd1b826b
+		backup_restore=1
+		port_already_use=0
+		change_url=1
+;;; Options
+Email=nicolas@aubonalbanais.ovh
+Notification=none
+;;; Upgrade options
+	; commit=048ae59a016755b0829a4e8f3ed5d0dbbd1b826b
+		name=Package ynh3
+

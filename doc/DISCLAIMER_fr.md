@@ -11,8 +11,8 @@ Il peut par exemple être utilisé avec :
 * des voltmètres
 * Et bien d'autres
 
-**Version incluse :** Toujours la dernière version stable. La dernière version compilée est récupérée dans [ce répertoire](https://releases.domoticz.com/releases/?dir=./beta) lors de l'installation
-Une fois installée, **les mises à jour de l'application sont gérées depuis les menus de l'application elle même.**. Le script de mise à jour Yunohost mettra uniquement à jour de nouvelles version du package.
+**Version incluse :** Toujours la dernière version stable. La dernière version compilée est récupérée dans [ce répertoire](https://releases.domoticz.com/releases/?dir=./beta) lors de l'installation.
+Une fois installée, **les mises à jour de l'application sont gérées depuis les menus de l'application elle même**. Le script de mise à jour Yunohost mettra uniquement à jour de nouvelles version du package.
 
 Le broker MQTT mosquitto est intégré au package et nécessite un sous-domaine ou un domaine distinct. Il est optionnel et si vous indiquez lors de l'installation le même domaine que le domaine principal, il ne sera pas installé.
 
@@ -20,7 +20,7 @@ Le broker MQTT mosquitto est intégré au package et nécessite un sous-domaine 
 
 ### Broker MQTT Mosquitto
 
-A l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT) est installé en même temps que Domoticz. Il s'agit du serveur mosquitto dont la documentation est disponible [ici](https://mosquitto.org/). La version installée est celle du dépot officiel du projet, et non des dépots Debian.
+A l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT), [Mosquitto](https://mosquitto.org/), est installé en même temps que Domoticz. La version installée est celle du dépot officiel du projet, et non des dépots Debian.
 Ce broker nécessite un domaine ou un sous-domaine particulier pour fonctionner (ex : mqtt.your.domain.tld) : il est nécessaire de créer ce domaine auparavant.
 
 ####Utilisation

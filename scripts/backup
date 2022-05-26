@@ -47,8 +47,7 @@ ynh_backup --src_path="$final_path"
 #=================================================
 
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-
-ynh_backup --src_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_$app.conf"  --not_mandatory
+[[ ! -z "$mqtt_domain" ]] && ynh_backup --src_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_$app.conf"  --not_mandatory
 
 #=================================================
 # SPECIFIC BACKUP
@@ -69,7 +68,7 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 #=================================================
 
 ynh_backup --src_path="/etc/sudoers.d/$app"
-ynh_backup --src_path="/etc/mosquitto/conf.d" --not_mandatory
+[[ ! -z "$mqtt_domain" ]] && ynh_backup --src_path="/etc/mosquitto/conf.d" --not_mandatory
 
 
 #=================================================

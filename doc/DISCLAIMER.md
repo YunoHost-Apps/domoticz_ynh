@@ -12,8 +12,8 @@ For example this system can be used with:
 * And more ...
 
 
-**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./beta) during install
-Once installed, **updates from the uptream app are managed from within the app.**. Yunohost upgrade script will only upgrade the Yunohost package. 
+**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./beta) during install.
+Once installed, **updates from the uptream app are managed from within the app**. Yunohost upgrade script will only upgrade the Yunohost package. 
 
 The MQTT broker mosquitto is integrated into the package. It requires its own domain or subdomain. It's an optional setting: during install if you set the same domaine as your main app domain, it won't be installed.
 
@@ -21,10 +21,10 @@ The MQTT broker mosquitto is integrated into the package. It requires its own do
 
 ### Broker Mosquitto
 
-During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker is installed at the same time as Domoticz. The broker is Mosquitto with documentation available [here](https://mosquitto.org/). The installed version is the one from the official project repo and not from Debian ones.
+During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker, [Mosquitto](https://mosquitto.org/), is installed at the same time as Domoticz. The installed version is the one from the official project repo and not from Debian ones.
 This broker requires a dedicated domain or subdomain to work (ex : mqtt.your.domain.tld) : creating this domain prior installation is a prerequisite
 
-####Use
+#### Use
 
 To use mosquitto, you need to customize the communication between domoticz and the broker by following the [domoticz documentation](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto), part *Add hardware "MQTT Client Gateway"*.
 User and password are automatically generated during installation, you may retrieve them with

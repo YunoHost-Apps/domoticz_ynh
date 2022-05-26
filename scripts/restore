@@ -25,23 +25,20 @@ ynh_abort_if_errors
 #=================================================
 ynh_script_progression --message="Loading installation settings..."
 
-app=$YNH_APP_INSTANCE_NAME
+app="$YNH_APP_INSTANCE_NAME"
 
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-backup_OS=$(ynh_app_setting_get --app=$app --key=OS)
-backup_mach=$(ynh_app_setting_get --app=$app --key=mach)
-api_path=$(ynh_app_setting_get --app=$app --key=api_path)
-mqtt_domain=$(ynh_app_setting_get --app=$app --key=mqtt_domain)
-mqtt_user=$(ynh_app_setting_get --app=$app --key=mqtt_user)
-mqtt_pwd=$(ynh_app_setting_get --app=$app --key=mqtt_pwd)
+domain=$(ynh_app_setting_get --app="$app" --key=domain)
+path_url=$(ynh_app_setting_get --app="$app" --key=path)
+final_path=$(ynh_app_setting_get --app="$app" --key=final_path)
+backup_OS=$(ynh_app_setting_get --app="$app" --key=OS)
+backup_mach=$(ynh_app_setting_get --app="$app" --key=mach)
+mqtt_domain=$(ynh_app_setting_get --app="$app" --key=mqtt_domain)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 ynh_script_progression --message="Validating restoration parameters..."
-test ! -d $final_path \
+test ! -d "$final_path" \
 	|| ynh_die --message="There is already a directory: $final_path "
 #As we are downloading compiled binaries for each system, we have to check if the restore occurs
 #on the same system type. If we are restoring on another system type it won't work and in that
@@ -67,17 +64,17 @@ ynh_restore_file --origin_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_$app.conf"
 ynh_script_progression --message="Recreating the dedicated system user..."
 
 # Create the dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir=$final_path
+ynh_system_user_create --username="$app" --home_dir="$final_path"
 
 #allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
 if grep dialout -q < /etc/group; then
-	usermod -a -G dialout $app
+	usermod -a -G dialout "$app"
 fi
 if grep i2c -q < /etc/group; then
-	usermod -a -G i2c $app
+	usermod -a -G i2c "$app"
 fi
 if grep gpio -q < /etc/group; then
-	usermod -a -G gpio $app
+	usermod -a -G gpio "$app"
 fi
 
 #Restore user authorization to restart server
@@ -92,7 +89,7 @@ ynh_restore_file --origin_path="$final_path"
 
 chmod 750 "$final_path"
 chmod -R o-rwx "$final_path"
-chown -R $app:$app "$final_path"
+chown -R "$app":"$app" "$final_path"
 
 #=================================================
 # SPECIFIC RESTORATION
@@ -102,12 +99,12 @@ chown -R $app:$app "$final_path"
 ynh_script_progression --message="Reinstalling dependencies..." --weight=5
 
 # Define and install dependencies
-ynh_install_app_dependencies $pkg_dependencies
+ynh_install_app_dependencies "$pkg_dependencies"
 
 #=================================================
 # SET MOSQUITTO SETTINGS
 #=================================================
-if [ -z $mqtt_domain]; then
+if [ ! -z "$mqtt_domain" ]; then
 	ynh_script_progression --message="Reinstalling up mosquitto..." --weight=5
 
 	#Installing packages
@@ -122,38 +119,37 @@ fi
 ynh_script_progression --message="Restoring the systemd configuration..." --weight=3
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
-systemctl enable $app.service --quiet
+systemctl enable "$app".service --quiet
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add $app --description="Domotique open sources" --log="/var/log/$app/$app.log"
-if [ -z $mqtt_domain ]; then
-	yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
-fi
+yunohost service add "$app" --description="Domotique open sources" --log="/var/log/$app/$app.log"
+[[ ! -z "$mqtt_domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
+
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..."
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
 #Restarting mosquitto to take changes into account
-ynh_systemd_action --service_name=mosquitto --action="restart"
+[[ ! -z "$mqtt_domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # RESTORE THE LOGROTATE CONFIGURATION
 #=================================================
 ynh_script_progression --message="Restoring the logrotate configuration..."
 
-mkdir -p /var/log/$app
-chown -R domoticz: /var/log/$app
+mkdir -p /var/log/"$app"
+chown -R domoticz: /var/log/"$app"
 
 ynh_restore_file --origin_path="/etc/logrotate.d/$app"
-ynh_use_logrotate --logfile="/var/log/mosquitto/"
+[[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto/"
 
 #=================================================
 # GENERIC FINALIZATION
