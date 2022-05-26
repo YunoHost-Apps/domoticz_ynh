@@ -5,7 +5,7 @@ It shall NOT be edited by hand.
 
 # Domoticz for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/domoticz.svg)](https://dash.yunohost.org/appci/app/domoticz) ![](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/domoticz.svg)](https://dash.yunohost.org/appci/app/domoticz) ![Working status](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)  
 [![Install Domoticz with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=domoticz)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -18,9 +18,6 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 Very light weight open sources home automation system that lets you monitor and configure miscellaneous devices
 
 **Shipped version:** 2020.2~ynh4
-
-
-
 ## Disclaimers / important information
 
 Domoticz is a Home Automation system design to control various devices and receive input from various sensors.
@@ -37,8 +34,8 @@ For example this system can be used with:
 * And more ...
 
 
-**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./beta) during install
-Once installed, **updates from the uptream app are managed from within the app.**. Yunohost upgrade script will only upgrade the Yunohost package. 
+**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./beta) during install.
+Once installed, **updates from the uptream app are managed from within the app**. Yunohost upgrade script will only upgrade the Yunohost package. 
 
 The MQTT broker mosquitto is integrated into the package. It requires its own domain or subdomain. It's an optional setting: during install if you set the same domaine as your main app domain, it won't be installed.
 
@@ -46,10 +43,10 @@ The MQTT broker mosquitto is integrated into the package. It requires its own do
 
 ### Broker Mosquitto
 
-During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker is installed at the same time as Domoticz. The broker is Mosquitto with documentation available [here](https://mosquitto.org/). The installed version is the one from the official project repo and not from Debian ones.
+During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker, [Mosquitto](https://mosquitto.org/), is installed at the same time as Domoticz. The installed version is the one from the official project repo and not from Debian ones.
 This broker requires a dedicated domain or subdomain to work (ex : mqtt.your.domain.tld) : creating this domain prior installation is a prerequisite
 
-####Use
+#### Use
 
 To use mosquitto, you need to customize the communication between domoticz and the broker by following the [domoticz documentation](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto), part *Add hardware "MQTT Client Gateway"*.
 User and password are automatically generated during installation, you may retrieve them with
@@ -123,22 +120,23 @@ You may add individual IPv6 address in the same way.
 
 ## Documentation and resources
 
-* Official app website: https://domoticz.com/
-* Official user documentation: https://www.domoticz.com/DomoticzManual.pdf
-* Official admin documentation: https://www.domoticz.com/wiki/Main_Page
-* Upstream app code repository: https://github.com/domoticz/domoticz
-* YunoHost documentation for this app: https://yunohost.org/app_domoticz
-* Report a bug: https://github.com/YunoHost-Apps/domoticz_ynh/issues
+* Official app website: <https://domoticz.com/>
+* Official user documentation: <https://www.domoticz.com/DomoticzManual.pdf>
+* Official admin documentation: <https://www.domoticz.com/wiki/Main_Page>
+* Upstream app code repository: <https://github.com/domoticz/domoticz>
+* YunoHost documentation for this app: <https://yunohost.org/app_domoticz>
+* Report a bug: <https://github.com/YunoHost-Apps/domoticz_ynh/issues>
 
 ## Developer info
 
 Please send your pull request to the [testing branch](https://github.com/YunoHost-Apps/domoticz_ynh/tree/testing).
 
 To try the testing branch, please proceed like that.
-```
+
+``` bash
 sudo yunohost app install https://github.com/YunoHost-Apps/domoticz_ynh/tree/testing --debug
 or
 sudo yunohost app upgrade domoticz -u https://github.com/YunoHost-Apps/domoticz_ynh/tree/testing --debug
 ```
 
-**More info regarding app packaging:** https://yunohost.org/packaging_apps
+**More info regarding app packaging:** <https://yunohost.org/packaging_apps>
