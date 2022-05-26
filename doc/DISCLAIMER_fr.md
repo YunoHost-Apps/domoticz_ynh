@@ -45,10 +45,10 @@ mosquitto_sub -u *user* -P *password* -h mqtt.your.domain.tld -p 443 -t 'domotic
 Si vous êtes sur le package ynh3 ou inférieur, mosquitto n'est pas installé par défaut.
 De même si vous avez choisi de ne pas indiquer de domaine pour mosquitto lors de l'installation initiale.
 Pour pouvoir l'installer après coup, faites les actions suivantes:
-1/ créez un domaine ou sous-domaine pour recevoir les informations (par exemple : 'mqtt.your.domain.tld')
-2/ connecter vous en ligne de commande à votre serveur
-3/ taper la commande suivante : `yunohost app setting domoticz mqtt_domain -v mqtt.your.domain.tld`
-4/ Procédez à la mise à jour.
+1. créez un domaine ou sous-domaine pour recevoir les informations (par exemple : 'mqtt.your.domain.tld')
+2. connecter vous en ligne de commande à votre serveur
+3. taper la commande suivante : `yunohost app setting domoticz mqtt_domain -v mqtt.your.domain.tld`
+4. Procédez à la mise à jour.
 Si vous êtes déjà sur la dernière version, utiliser la commmande suivante : `yunohost app upgrade domoticz --force`
 
 
