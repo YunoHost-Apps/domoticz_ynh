@@ -69,9 +69,8 @@ ynh_app_setting_set --app="$app" --key=mach --value="$mach"
 
 #path used by api & mqtt to read/update domoticz
 ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
-if [ ! -z "$mqtt_domain" ]; then
-	ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
-fi
+[[ ! -z "$mqtt_domain" ]] && ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
+
 
 #=================================================
 # STANDARD MODIFICATIONS
