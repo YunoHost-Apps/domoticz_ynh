@@ -158,6 +158,7 @@ if [ ! -z "$mqtt_domain" ]; then
 
 	#Setting up conf file for access
 	ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/"$app"_mosquitto.conf"
+	chmod 644 /etc/mosquitto/conf.d/"$app"_mosquitto.conf
 
 	#Setting up user&pwd for mqtt access
 	ynh_app_setting_set --app="$app" --key=mqtt_user --value=$(ynh_string_random --length=8)
