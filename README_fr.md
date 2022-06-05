@@ -80,7 +80,7 @@ Si vous souhaitez ouvrir le protocole mqtt depuis l'extérieur afin de pouvoir l
 
 
 
-####Mise à jour depuis les versions n'ayant pas mosquitto
+#### Mise à jour depuis les versions n'ayant pas mosquittoo
 Si vous êtes sur le package ynh3 ou inférieur, mosquitto n'est pas installé par défaut.
 De même si vous avez choisi de ne pas indiquer de domaine pour mosquitto lors de l'installation initiale.
 Pour pouvoir l'installer après coup, faites les actions suivantes:
