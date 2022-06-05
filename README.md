@@ -46,7 +46,7 @@ The MQTT broker mosquitto is integrated into the package. It requires its own do
 During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker, [Mosquitto](https://mosquitto.org/), is installed at the same time as Domoticz. The installed version is the one from the official project repo and not from Debian ones.
 This broker requires a dedicated domain or subdomain to work (ex : mqtt.your.domain.tld) : creating this domain prior installation is a prerequisite
 
-#### Use
+#### Adding in domoticz
 
 To use mosquitto, you need to customize the communication between domoticz and the broker by following the [domoticz documentation](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto), part *Add hardware "MQTT Client Gateway"*.
 User and password are automatically generated during installation, you may retrieve them with
@@ -54,14 +54,31 @@ User and password are automatically generated during installation, you may retri
 sudo yunohost app setting domoticz mqtt_user
 sudo yunohost app setting domoticz mqtt_pwd
 ````
-You can then publish on a device on domoticz with following syntax:
+
+#### Publish/Subscribe
+
+By default, mosquitto will listen on 2 ports:
+- 1883 on localhost using mqtt protocol
+- 8883 using websocket protocol. Nginx redirect external port 443 to this internal port.
+
+Hence, To publish/subscribe on a topic from the outside, you have to use a software supporting websocket protocol (ex : paho python library).
+
+#### Mosquitto_pub et mosquitto_sub
+
+These 2 tools do not support websocket protocol, only direct mqtt: base settings will not allow communication from an outside device.
+If you're using them directly from your server, this kind of syntax should work:
 ````
-mosquitto_pub -u *user* -P *password* -h mqtt.your.domain.tld -p 443 -t 'domoticz/in' -m '{ "idx" : 1, "nvalue" : 0, "svalue" : "25.0" }'
+mosquitto_pub -u *user* -P *password* -h mqtt.your.domain.tld -p 1883 -t 'domoticz/in' -m '{ "idx" : 1, "nvalue" : 0, "svalue" : "25.0" }'
 ````
-In the same way, you may subscribe to a topic with
+In the same way:
 ````
-mosquitto_sub -u *user* -P *password* -h mqtt.your.domain.tld -p 443 -t 'domoticz/out'
+mosquitto_sub -u *user* -P *password* -h mqtt.your.domain.tld -p 1883 -t 'domoticz/out'
 ````
+
+If you wish to open direct mqtt protocol from an outside device, you'll need to:
+- open port 1883 on Yunohost firewall (**Attention, security risk**)
+- Allows IP addresses in mosquitto configuration for this listener
+- Set the tls setting in mosquitto configuration by giving access to crt.pem and key.pem from your mqtt domain by setting respective certfile et keyfile variables. **This is mandatory to ensure a secure connection.**
 
 #### Upgrade from version without mosquitto
 If you have package ynh3 or below, mosquitto is not installed by default.
