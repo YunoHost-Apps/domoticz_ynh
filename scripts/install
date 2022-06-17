@@ -169,12 +169,17 @@ if [ ! -z "$mqtt_domain" ]; then
 	ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
 fi
 
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
 [[ ! -z "$mqtt_domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
+
+#Set Hook for nginx domain
+cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
+yunohost tools regen-conf nginx
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config

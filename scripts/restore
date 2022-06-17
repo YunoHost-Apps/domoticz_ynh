@@ -152,6 +152,15 @@ ynh_restore_file --origin_path="/etc/logrotate.d/$app"
 [[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto/"
 
 #=================================================
+# RESTORE VARIOUS FILES
+#=================================================
+ynh_script_progression --message="Restoring various files..."
+
+ynh_restore_file --origin_path="/usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz"
+yunohost tools regen-conf postfix
+
+
+#=================================================
 # GENERIC FINALIZATION
 #=================================================
 # RELOAD NGINX AND PHP-FPM

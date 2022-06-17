@@ -76,6 +76,11 @@ ynh_secure_remove --file="$final_path"
 #=================================================
 ynh_script_progression --message="Removing NGINX web server configuration..."
 
+#remove hook for mqtt nginx
+ynh_secure_remove --file="/usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz"
+yunohost tools regen-conf postfix
+
+
 # Remove the dedicated NGINX config
 [[ ! -z "$mqtt_domain" ]] && ynh_secure_remove --file="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
 

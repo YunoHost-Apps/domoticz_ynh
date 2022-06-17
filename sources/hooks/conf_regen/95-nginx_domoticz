@@ -1,0 +1,22 @@
+#!/bin/bash
+
+action=$1
+pending_dir=$4
+nginx_conf=$pending_dir/../nginx/etc/nginx
+
+[[ $action == "pre" ]] || exit 0
+
+#Il ne peut y avoir qu'une seule instance de l'apps sur un système, donc pas à besoin de regarder quelle id utiliser
+mqtt_port=$(yunohost app setting domoticz mqtt_websocket_port)
+mqtt_domain=$(yunohost app setting domoticz mqtt_domain)
+domain=$(yunohost app setting domoticz domain)
+nginx_mqtt="$nginx_conf"/conf.d/"$mqtt_domain".conf
+
+[[ ! -z $mqtt_domain ]] || exit 0
+[[ -e $nginx_mqtt ]] || exit 0
+
+
+if [[ "$mqtt_domain" != "domain" ]]; then
+#single quote pour ne pas étendre les variables du fichier de config nginx et doubles quote pour les variables à étendre
+        sed -i '/map $http_upgrade $connection_upgrade {/i upstream '"${mqtt_domain}"' {\n  server localhost:'"${mqtt_port}"';\n}\n' $nginx_mqtt
+fi

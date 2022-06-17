@@ -224,6 +224,9 @@ ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
 [[ ! -z "$mqtt_domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
 
+#Set Hook for nginx domain
+cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
+yunohost tools regen-conf nginx
 
 # Create a dedicated NGINX config
 ynh_add_nginx_config
