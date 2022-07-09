@@ -1,42 +1,86 @@
-Domoticz est un systËme de domotique permettant de controler diffÈrents objets et de recevoir des donnÈes de divers senseurs
-Il peut par exemple Ítre utilisÈ avec :
+Domoticz est un syst√®me de domotique permettant de controler diff√©rents objets et de recevoir des donn√©es de divers senseurs
+Il peut par exemple √™tre utilis√© avec :
 
--des interrupteurs
+* des interrupteurs
+* des senseurs de portes
+* des sonnettes d'entr√©es
+* des syst√®mes de s√©curit√©
+* des stations m√©t√©o pour les UV, la pluie, le vent...
+* des sondes de temp√©ratures
+* des sondes d'impulsions
+* des voltm√®tres
+* Et bien d'autres
 
--des senseurs de portes
+**Version incluse :** Toujours la derni√®re version stable. La derni√®re version compil√©e est r√©cup√©r√©e dans [ce r√©pertoire](https://releases.domoticz.com/releases/?dir=./beta) lors de l'installation.
+Une fois install√©e, **les mises √† jour de l'application sont g√©r√©es depuis les menus de l'application elle m√™me**. Le script de mise √† jour Yunohost mettra uniquement √† jour de nouvelles version du package.
 
--des sonnettes d'entrÈes
-
--des systËmes de sÈcuritÈ
-
--des stations mÈtÈo pour les UV, la pluie, le vent...
-
--des sondes de tempÈratures
-
--des sondes d'impulsions
-
--des voltmËtres
-
--Et bien d'autres
-
-**Version incluse :** Toujours la derniËre version stable. La derniËre version compilÈe est rÈcupÈrÈe dans [ce rÈpertoire](https://releases.domoticz.com/releases/?dir=./beta)
-Une fois installÈe, **les mises ‡ jour de l'application sont gÈrÈes depuis les menus de l'application elle mÍme.**. Le script de mise ‡ jour Yunohost mettra uniquement ‡ jour de nouvelles version du package.
+Le broker MQTT mosquitto est int√©gr√© au package et n√©cessite un sous-domaine ou un domaine distinct. Il est optionnel et si vous indiquez lors de l'installation le m√™me domaine que le domaine principal, il ne sera pas install√©.
 
 ## Configuration
 
+### Broker MQTT Mosquitto
+
+A l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT), [Mosquitto](https://mosquitto.org/), est install√© en m√™me temps que Domoticz. La version install√©e est celle du d√©pot officiel du projet, et non des d√©pots Debian.
+Ce broker n√©cessite un domaine ou un sous-domaine particulier pour fonctionner (ex : mqtt.your.domain.tld) : il est n√©cessaire de cr√©er ce domaine auparavant.
+
+#### Ajout dans domoticz
+
+Pour pouvoir l'utiliser, vous devez param√©trer la communication avec entre domoticz et le broker en suivant la [documentation de domoticz](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto) dans la partie *Add hardware "MQTT Client Gateway"*
+Les users et mot de passe du broker sont automatiquement g√©n√©r√©s lors de l'installation. Vous pouvez les r√©cup√©rer avec
+````
+sudo yunohost app setting domoticz mqtt_user
+sudo yunohost app setting domoticz mqtt_pwd
+````
+
+#### Publier/souscrire
+
+Par d√©faut, mosquitto va √©couter sur 2 ports:
+- Le 1883 sur localhost en protocole mqtt
+- Le 8883 en protocole websocket. Nginx redirige le port 443 externe vers ce port en interne.e
+Pour publier/souscrire sur un topic depuis l'exterieur, vous devez donc utiliser un programme supportant le protocole websocket (ex : la biblioth√®que python paho).:
+
+#### Mosquitto_pub et mosquitto_sub
+
+Ces deux programmes ne supportent pas le protocole websocket mais uniquement le mqtt : le param√©trage de base ne vous autorise donc pas √† les utiliser pour communiquer depuis un client externe.
+Si vous les utilisez directement depuis votre serveur, ce genre de syntaxe devrait marcher:
+````
+mosquitto_pub -u *user* -P *password* -h mqtt.your.domain.tld -p 1883 -t 'domoticz/in' -m '{ "idx" : 1, "nvalue" : 0, "svalue" : "25.0" }'
+````
+De la m√™me mani√®re:c
+````
+mosquitto_sub -u *user* -P *password* -h mqtt.your.domain.tld -p 1883 -t 'domoticz/out'
+````
+Si vous souhaitez ouvrir le protocole mqtt depuis l'ext√©rieur afin de pouvoir les utiliser depuis un autre serveur, il vous faudra:
+- ouvrir le port 1883 sur le firewall Yunohost (**Attention, risque de s√©curit√©**)
+- autoriser les adresses IP souhait√©es dans la configuration de mosquitto pour ce listener
+- param√©trer le tls dans la configuration de mosquitto en donnant acc√®s au crt.pem et key.pem de votre domaine mqtt en les param√©trant respectivement avec les variables certfile et keyfile. **Ceci est obligatoire pour s√©curiser la connexion.**
+
+
+
+
+#### Mise √† jour depuis les versions n'ayant pas mosquittoo
+Si vous √™tes sur le package ynh3 ou inf√©rieur, mosquitto n'est pas install√© par d√©faut.
+De m√™me si vous avez choisi de ne pas indiquer de domaine pour mosquitto lors de l'installation initiale.
+Pour pouvoir l'installer apr√®s coup, faites les actions suivantes:
+1. cr√©ez un domaine ou sous-domaine pour recevoir les informations (par exemple : 'mqtt.your.domain.tld')
+2. connecter vous en ligne de commande √† votre serveur
+3. taper la commande suivante : `yunohost app setting domoticz mqtt_domain -v mqtt.your.domain.tld`
+4. Proc√©dez √† la mise √† jour.
+Si vous √™tes d√©j√† sur la derni√®re version, utiliser la commmande suivante : `yunohost app upgrade domoticz --force`
+
+
 ### Senseurs, langue et ce genre de choses
-Toute la configuration de l'application a lieu dans l'application elle mÍme
-Main configuration of the app take place inside the app itself.
+Toute la configuration de l'application a lieu dans l'application elle m√™me
 
-### AccËs et API
-Par dÈfaut, l'accËs aux [API JSON](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) est autorisÈ sur cette URL `/votredomaine.tld/api_/chemindedomoticz`.
-Donc, si vous accÈdez ‡ domoticz par https://votredomaine.tld/domoticz, utilisez le chemin suivant pour l'api: `/votredomaine.tld/api_/domoticz/json.htm?votrecommandeapi`
+### Acc√®s et API
+Par d√©faut, l'acc√®s aux [API JSON](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) est autoris√© sur cette URL `/votredomaine.tld/api_/chemindedomoticz`.
+Donc, si vous acc√©dez √† domoticz par https://votredomaine.tld/domoticz, utilisez le chemin suivant pour l'api: `/votredomaine.tld/api_/domoticz/json.htm?votrecommandeapi`
 
-Par dÈfaut, seuls la mise ‡ jour de senseur et les interrupteurs sont autorisÈs. Pour autoriser une nouvelle commande, vous devez (pour l'instant) manuellement Èditer le fichier de configuration nginx :
+Par d√©faut, seuls la mise √† jour de senseur et les interrupteurs sont autoris√©s. Pour autoriser une nouvelle commande, vous devez (pour l'instant) manuellement √©diter le fichier de configuration nginx :
 ````
 sudo nano /etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf
 ````
-Puis Èditer le bloc suivant en y ajoutant le regex de la commmande ‡ autoriser :
+Puis √©diter le bloc suivant en y ajoutant le regex de la commmande √† autoriser :
 ````
   #set the list of authorized json command here in regex format
   #you may retrieve the command from https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's
@@ -45,7 +89,7 @@ Puis Èditer le bloc suivant en y ajoutant le regex de la commmande ‡ autoriser :
     set $api "1";
     }
 ````
-Par exemple, pour ajouter la commmande json pour retrouver le statut d'un Èquipement (/json.htm?type=devices&rid=IDX),il faut modifier la ligne comme ceci:
+Par exemple, pour ajouter la commmande json pour retrouver le statut d'un √©quipement (/json.htm?type=devices&rid=IDX),il faut modifier la ligne comme ceci:
 ````
   #set the list of authorized json command here in regex format
   #you may retrieve the command from https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's
@@ -55,15 +99,15 @@ Par exemple, pour ajouter la commmande json pour retrouver le statut d'un Èquipe
     }
 ````
 
-Toutes les adresses IPv4 du rÈseau local (192.168.0.0/24) et toutes les adresses IPv6 sont autorisÈes pour l'API.
-A ma connaissance, il n'y a pas moyen d'effectuer un filtre pour les adresses IPv6 sur le rÈseau local, vous pouvez donc retirer leur autorisation en enlevant ou en commentant la ligne suivante dans `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
+Toutes les adresses IPv4 du r√©seau local (192.168.0.0/24) et toutes les adresses IPv6 sont autoris√©es pour l'API.
+A ma connaissance, il n'y a pas moyen d'effectuer un filtre pour les adresses IPv6 sur le r√©seau local, vous pouvez donc retirer leur autorisation en enlevant ou en commentant la ligne suivante dans `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
 ````
 allow ::/1;
 ````
-Ceci autorisera seulement les adresses IPv4 local a accÈder aux API de domoticz.
-Vous pouvez ajouter des adresses IPv6 de la mÍme faÁon.
+Ceci autorisera seulement les adresses IPv4 local a acc√©der aux API de domoticz.
+Vous pouvez ajouter des adresses IPv6 de la m√™me fa√ßon.
 
 ## Limitations
 
-* Pas de gestion d'utilisateurs ni d'intÈgration LDAP. L'application ne [prÈvoit pas de gÈrer les utilisateurs par LDAP](https://github.com/domoticz/domoticz/issues/838), donc le package non plus.
-* Un backup ne peut pas Ítre restaurÈ sur un type de machine diffÈrente de celle d'origine (x86, arm...) car les sources compilÈes doivent Ítre diffÈrente
+* Pas de gestion d'utilisateurs ni d'int√©gration LDAP. L'application ne [pr√©voit pas de g√©rer les utilisateurs par LDAP](https://github.com/domoticz/domoticz/issues/838), donc le package non plus.
+* Un backup ne peut pas √™tre restaur√© sur un type de machine diff√©rente de celle d'origine (x86, arm...) car les sources compil√©es doivent √™tre diff√©rentes
