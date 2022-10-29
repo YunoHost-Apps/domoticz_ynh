@@ -17,8 +17,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 Logiciel open sources et gratuit de domotique qui vous permet de configurer un grand nombre d'appareils
 
-**Version incluse :** 2020.2~ynh4
-
+**Version incluse :** 2020.2~ynh4
 ## Avertissements / informations importantes
 
 Domoticz est un système de domotique permettant de controler différents objets et de recevoir des données de divers senseurs
