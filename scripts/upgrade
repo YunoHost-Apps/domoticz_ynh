@@ -134,7 +134,8 @@ fi
 if ! ynh_permission_exists --permission="domoticz_API"
 then
 	# API Authorization with dedicated URL
-	ynh_permission_create --permission="domoticz_API" --url="$domain$api_path" --allowed="visitors"
+	ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
+
 fi
 
 # Create the permission "domoticz_MQTT" only if it doesn't exist.
@@ -142,7 +143,7 @@ if [ ! -z "$mqtt_domain" ]; then
 	if ! ynh_permission_exists --permission="domoticz_MQTT"
 	then
 		# API Authorization with dedicated URL
-		ynh_permission_create --permission="domoticz_MQTT" --url="$mqtt_domain" --allowed="visitors"
+		ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
 	fi
 fi
 
@@ -259,7 +260,7 @@ mkdir -p /var/log/"$app"
 chown -R domoticz: /var/log/"$app"
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --non-append
+ynh_use_logrotate --logfile="/var/log/$app/$app" --non-append
 [[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto/" --non-append
 
 

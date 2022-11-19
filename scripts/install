@@ -206,7 +206,7 @@ mkdir -p /var/log/"$app"
 chown -R domoticz: /var/log/"$app"
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate
+ynh_use_logrotate --logfile="/var/log/$app/$app"
 [[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto/"
 
 #=================================================
@@ -243,9 +243,9 @@ then
 	ynh_permission_update --permission="main" --add="visitors"
 fi
 
-#API & MQTT should stay publicly accessible.
-ynh_permission_create --permission="domoticz_API" --url="$domain$api_path" --allowed="visitors"
-[[ ! -z "$mqtt_domain" ]] && ynh_permission_create --permission="domoticz_MQTT" --url="$mqtt_domain" --allowed="visitors"
+#API & MQTT should stay publicly accessible.  
+ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
+[[ ! -z "$mqtt_domain" ]] && ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
 
 
 #=================================================
