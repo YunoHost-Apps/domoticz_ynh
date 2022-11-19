@@ -17,7 +17,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 Very light weight open sources home automation system that lets you monitor and configure miscellaneous devices
 
-**Shipped version:** 2022.2~ynh5
+**Shipped version:** 2020.2~ynh5
 ## Disclaimers / important information
 
 Domoticz is a Home Automation system design to control various devices and receive input from various sensors.
