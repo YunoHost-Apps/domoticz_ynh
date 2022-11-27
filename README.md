@@ -15,11 +15,6 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-Very light weight open sources home automation system that lets you monitor and configure miscellaneous devices
-
-**Shipped version:** 2020.2~ynh5
-## Disclaimers / important information
-
 Domoticz is a Home Automation system design to control various devices and receive input from various sensors.
 For example this system can be used with: 
 
@@ -34,7 +29,7 @@ For example this system can be used with:
 * And more ...
 
 
-**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./beta) during install.
+**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./release) during install.
 Once installed, **updates from the uptream app are managed from within the app**. Yunohost upgrade script will only upgrade the Yunohost package. 
 
 The MQTT broker mosquitto is integrated into the package. It requires its own domain or subdomain. It's an optional setting: during install if you set the same domaine as your main app domain, it won't be installed.
@@ -95,6 +90,10 @@ If you're already on the last package version, use the following command : `yuno
 ### Sensors, language and this kind of stuff
 Main configuration of the app take place inside the app itself.
 
+### Zwave management
+If you're using zwave devices, install mosquitto along domoticz and give a try to [zwave-JS-UI package](https://github.com/YunoHost-Apps/zwave-js-ui_ynh).
+Once installed, just follow instructions from the [wiki](https://www.domoticz.com/wiki/Zwave-JS-UI)
+
 ### Access and API
 By default, access for the [JSON API](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) is allowed on following path `/yourdomain.tld/api_/domoticzpath`.
 So if you access domoticz via https://mydomainname.tld/domoticz, use the following webpath for the api : `/mydomainname.tld/api_/domoticz/json.htm?yourapicommand`
@@ -129,6 +128,10 @@ allow ::/1;
 ````
 This will authorized only IPv4 within local network to access your domoticz API.
 You may add individual IPv6 address in the same way.
+
+**Shipped version:** 2020.2~ynh5
+## Disclaimers / important information
+
 
 ## Limitations
 

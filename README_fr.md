@@ -15,11 +15,6 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 ## Vue d'ensemble
 
-Logiciel open sources et gratuit de domotique qui vous permet de configurer un grand nombre d'appareils
-
-**Version incluse :** 2020.2~ynh5
-## Avertissements / informations importantes
-
 Domoticz est un système de domotique permettant de controler différents objets et de recevoir des données de divers senseurs
 Il peut par exemple être utilisé avec :
 
@@ -33,7 +28,7 @@ Il peut par exemple être utilisé avec :
 * des voltmètres
 * Et bien d'autres
 
-**Version incluse :** Toujours la dernière version stable. La dernière version compilée est récupérée dans [ce répertoire](https://releases.domoticz.com/releases/?dir=./beta) lors de l'installation.
+**Version incluse :** Toujours la dernière version stable. La dernière version compilée est récupérée dans [ce répertoire](https://releases.domoticz.com/releases/?dir=./release) lors de l'installation.
 Une fois installée, **les mises à jour de l'application sont gérées depuis les menus de l'application elle même**. Le script de mise à jour Yunohost mettra uniquement à jour de nouvelles version du package.
 
 Le broker MQTT mosquitto est intégré au package et nécessite un sous-domaine ou un domaine distinct. Il est optionnel et si vous indiquez lors de l'installation le même domaine que le domaine principal, il ne sera pas installé.
@@ -58,7 +53,7 @@ sudo yunohost app setting domoticz mqtt_pwd
 
 Par défaut, mosquitto va écouter sur 2 ports:
 - Le 1883 sur localhost en protocole mqtt
-- Le 8883 en protocole websocket. Nginx redirige le port 443 externe vers ce port en interne.e
+- Le 8883 en protocole websocket. Nginx redirige le port 443 externe vers ce port en interne.
 Pour publier/souscrire sur un topic depuis l'exterieur, vous devez donc utiliser un programme supportant le protocole websocket (ex : la bibliothèque python paho).:
 
 #### Mosquitto_pub et mosquitto_sub
@@ -94,11 +89,15 @@ Si vous êtes déjà sur la dernière version, utiliser la commmande suivante : 
 ### Senseurs, langue et ce genre de choses
 Toute la configuration de l'application a lieu dans l'application elle même
 
+### Gestion du Zwave
+Si vous utilisez des équipements zwave, installez mosquitto en plus de domoticz et essayez le [package zwave-JS-UI](https://github.com/YunoHost-Apps/zwave-js-ui_ynh).
+Une fois installé, suivez simplement les indications du [wiki](https://www.domoticz.com/wiki/Zwave-JS-UI)
+
 ### Accès et API
 Par défaut, l'accès aux [API JSON](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) est autorisé sur cette URL `/votredomaine.tld/api_/chemindedomoticz`.
 Donc, si vous accédez à domoticz par https://votredomaine.tld/domoticz, utilisez le chemin suivant pour l'api: `/votredomaine.tld/api_/domoticz/json.htm?votrecommandeapi`
 
-Par défaut, seuls la mise à jour de senseur et les interrupteurs sont autorisés. Pour autoriser une nouvelle commande, vous devez (pour l'instant) manuellement éditer le fichier de configuration nginx :
+Par défaut, seule la mise à jour de senseur et les interrupteurs sont autorisés. Pour autoriser une nouvelle commande, vous devez (pour l'instant) manuellement éditer le fichier de configuration nginx :
 ````
 sudo nano /etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf
 ````
@@ -128,6 +127,11 @@ allow ::/1;
 ````
 Ceci autorisera seulement les adresses IPv4 local a accéder aux API de domoticz.
 Vous pouvez ajouter des adresses IPv6 de la même façon.
+
+
+**Version incluse :** 2020.2~ynh5
+## Avertissements / informations importantes
+
 
 ## Limitations
 
