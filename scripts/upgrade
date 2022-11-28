@@ -267,6 +267,20 @@ chown -R domoticz: /var/log/"$app"
 ynh_use_logrotate --logfile="/var/log/$app/$app.log" --non-append
 [[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto/" --non-append
 
+#=================================================
+# SETUP FAIL2BAN
+#=================================================
+ynh_script_progression --message="Configuring Fail2Ban..." --weight=8
+
+# Make sure a log file exists (mostly for CI tests)
+log_file=/var/log/$app/$app.log
+if [ ! -f "$log_file" ]; then
+	touch "$log_file"
+	chown $app: "$log_file"
+fi
+
+# Create a dedicated Fail2Ban config
+ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$" --max_retry=5
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
