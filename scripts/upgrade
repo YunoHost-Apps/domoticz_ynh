@@ -149,7 +149,7 @@ fi
 
 #remove unwanted log folder
 if [-d "/var/log/$app/$app" ]; then
-	rm -r "/var/log/$app/$app"
+	ynh_secure_remove "/var/log/$app/$app"
 fi
 
 #=================================================
