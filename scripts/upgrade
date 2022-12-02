@@ -281,7 +281,7 @@ fi
 
 # Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$" --max_retry=5
-
+ynh_print_info --message="If you wish for Fail2ban to work, set up your local address in Setup/Settings/System/Local Networks as per documentation"
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
