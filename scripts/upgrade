@@ -148,7 +148,7 @@ if [ ! -z "$mqtt_domain" ]; then
 fi
 
 #remove unwanted log folder
-if [-d "/var/log/$app/$app" ]; then
+if [ -d "/var/log/$app/$app" ]; then
 	ynh_secure_remove "/var/log/$app/$app"
 fi
 
