@@ -264,8 +264,8 @@ mkdir -p /var/log/"$app"
 chown -R domoticz: /var/log/"$app"
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --logfile="/var/log/$app/$app.log" --non-append
-[[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto/" --non-append
+ynh_use_logrotate --logfile="/var/log/$app" --non-append
+[[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto/"
 
 #=================================================
 # SETUP FAIL2BAN
