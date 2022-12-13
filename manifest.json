@@ -6,7 +6,7 @@
         "en": "Very light weight open sources home automation system that lets you monitor and configure miscellaneous devices",
         "fr": "Logiciel open sources et gratuit de domotique qui vous permet de configurer un grand nombre d'appareils"
     },
-    "version": "2020.2~ynh6",
+    "version": "2020.2~ynh7",
     "url": "https://www.domoticz.com",
     "upstream": {
         "license": "GPL-3.0-or-later",

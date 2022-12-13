@@ -16,7 +16,7 @@ nginx_mqtt="$nginx_conf"/conf.d/"$mqtt_domain".conf
 [[ -e $nginx_mqtt ]] || exit 0
 
 
-if [[ "$mqtt_domain" != "domain" ]]; then
+if [[ "$mqtt_domain" != "$domain" ]]; then
 #single quote pour ne pas étendre les variables du fichier de config nginx et doubles quote pour les variables à étendre
         sed -i '/map $http_upgrade $connection_upgrade {/i upstream '"${mqtt_domain}"' {\n  server localhost:'"${mqtt_port}"';\n}\n' $nginx_mqtt
 fi

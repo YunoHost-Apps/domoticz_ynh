@@ -56,6 +56,7 @@ test "$backup_mach" = "$mach" \
 ynh_script_progression --message="Restoring the NGINX web server configuration..."
 
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore_file --origin_path="/etc/nginx/conf.d/"$domain".d/api_"$app".conf"
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_$app.conf" --not_mandatory
 
 #=================================================

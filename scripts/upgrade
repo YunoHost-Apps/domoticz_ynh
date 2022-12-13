@@ -234,6 +234,12 @@ cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/co
 yunohost tools regen-conf nginx
 
 # Create a dedicated NGINX config
+if [[ ! -f "/etc/nginx/conf.d/"$domain".d/api_"$app".conf" ]] 
+then 
+	ynh_print_warn --message="The nginx conf file will now be splitted between standard and api related path"
+	ynh_print_warn --message="Report any manual changes on the new /etc/nginx/conf.d/$domain.d/api_$app.conf file for json command to keep working"
+fi
+ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/"$domain".d/api_"$app".conf"
 ynh_add_nginx_config
 
 #=================================================
