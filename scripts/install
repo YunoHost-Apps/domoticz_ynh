@@ -182,6 +182,7 @@ cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/co
 yunohost tools regen-conf nginx
 
 # Create a dedicated NGINX config
+ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/"$domain".d/api_"$app".conf"
 ynh_add_nginx_config
 
 

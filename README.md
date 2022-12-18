@@ -129,7 +129,7 @@ allow ::/1;
 This will authorized only IPv4 within local network to access your domoticz API.
 You may add individual IPv6 address in the same way.
 
-**Shipped version:** 2020.2~ynh6
+**Shipped version:** 2020.2~ynh7
 ## Disclaimers / important information
 
 
