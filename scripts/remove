@@ -84,6 +84,7 @@ yunohost tools regen-conf postfix
 # Remove the dedicated NGINX config
 [[ ! -z "$mqtt_domain" ]] && ynh_secure_remove --file="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
 
+ynh_secure_remove --file="/etc/nginx/conf.d/"$domain".d/api_"$app".conf"
 ynh_remove_nginx_config
 
 #=================================================
