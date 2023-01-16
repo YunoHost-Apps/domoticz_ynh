@@ -3,8 +3,8 @@
     "id": "domoticz",
     "packaging_format": 1,
     "description": {
-        "en": "Very light weight open sources home automation system that lets you monitor and configure miscellaneous devices",
-        "fr": "Logiciel open sources et gratuit de domotique qui vous permet de configurer un grand nombre d'appareils"
+        "en": "Home automation system that lets you monitor and configure miscellaneous devices",
+        "fr": "Logiciel de domotique qui vous permet de configurer un grand nombre d'appareils"
     },
     "version": "2020.2~ynh7",
     "url": "https://www.domoticz.com",
