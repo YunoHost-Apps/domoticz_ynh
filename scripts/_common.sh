@@ -8,8 +8,8 @@
 #python3-dev required as per https://www.domoticz.com/forum/viewtopic.php?f=65&t=16116&p=119747
 #mosquitto and mosquitto-clients are required for mqtt
 #other dependencies are from standard install script... seems quite useles...
-pkg_dependencies="libudev-dev python3-dev"
-extra_pkg_dependencies="mosquitto mosquitto-clients"
+#REMOVEME? pkg_dependencies="libudev-dev python3-dev"
+#REMOVEME? extra_pkg_dependencies="mosquitto mosquitto-clients"
 
 default_mqtt_port=1883
 default_mqtt_websocket_port=8883
@@ -23,7 +23,7 @@ then
 else
 	add_dep="libcurl4 libusb-0.1-4"
 fi;
-pkg_dependencies="$pkg_dependencies $add_dep"
+#REMOVEME? pkg_dependencies="$pkg_dependencies $add_dep"
 
 lowercase(){
     echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
