@@ -21,7 +21,7 @@ NoNewPrivileges=yes
 PrivateTmp=yes
 #Private device restrict access to device in /dev/, so to any devices like razberry, zigate, etc.
 #PrivateDevices=yes
-RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_BLUETOOTH
 RestrictNamespaces=yes
 RestrictRealtime=yes
 #Same : restrict access to devices
