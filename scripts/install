@@ -10,25 +10,8 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-#REMOVEME? ynh_clean_setup () {
-	ynh_clean_check_starting
-#}
-# Exit if an error occurs during the execution of the script
-#REMOVEME? ynh_abort_if_errors
-
-#=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
-
-#REMOVEME? domain="$YNH_APP_ARG_DOMAIN"
-#REMOVEME? path="$YNH_APP_ARG_PATH"
-#REMOVEME? is_public="$YNH_APP_ARG_IS_PUBLIC"
-#REMOVEME? mqtt_domain="$YNH_APP_ARG_MQTT_DOMAIN"
-
-#REMOVEME? app="$YNH_APP_INSTANCE_NAME"
 
 #Set dedicated variables
 if [ "$path" == "/" ]; then
@@ -36,20 +19,6 @@ if [ "$path" == "/" ]; then
 else
 	api_path=/api_"$path"
 fi
-#=================================================
-# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-#=================================================
-#REMOVEME? ynh_script_progression --message="Validating installation parameters..."
-
-#REMOVEME? install_dir=/opt/yunohost/"$app"
-#REMOVEME? test ! -e "$install_dir" || ynh_die --message="This path already contains a folder"
-
-# Register (book) web path
-#REMOVEME? ynh_webpath_register --app="$app" --domain="$domain" --path="$path"
-#impossible de booker plusieurs webpath
-#if [ ! -z $mqtt_domain ]; then
-#REMOVEME? #	ynh_webpath_register --app=mqtt_$app --domain=$mqtt_domain --path="/"
-#fi
 
 if [ "$domain" == "$mqtt_domain" ]; then 
 	mqtt_domain=""
@@ -58,18 +27,15 @@ fi
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-#REMOVEME? ynh_script_progression --message="Storing installation settings..."
-
-#REMOVEME? ynh_app_setting_set --app="$app" --key=domain --value="$domain"
-#REMOVEME? ynh_app_setting_set --app="$app" --key=path --value="$path"
+ynh_script_progression --message="Storing installation settings..."
 
 #Will be used in restore script to check that we're restoring on the same OS/Board type
 ynh_app_setting_set --app="$app" --key=OS --value="$os"
 ynh_app_setting_set --app="$app" --key=mach --value="$mach"
 
 #path used by api & mqtt to read/update domoticz
-#REMOVEME? ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
-#REMOVEME? [[ ! -z "$mqtt_domain" ]] && ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
+ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
+[[ ! -z "$mqtt_domain" ]] && ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
 
 
 #=================================================
@@ -77,35 +43,19 @@ ynh_app_setting_set --app="$app" --key=mach --value="$mach"
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_script_progression --message="Finding available port..."
-
-# Find an available port
-#REMOVEME? port=$(ynh_find_port --port=8080)
-#REMOVEME? ynh_app_setting_set --app="$app" --key=port --value="$port"
-
 if [ ! -z "$mqtt_domain" ]; then
 	ynh_script_progression --message="Finding available ports for Mosquitto..."
-#REMOVEME? 	mqtt_port=$(ynh_find_port --port="$default_mqtt_port")
-#REMOVEME? 	ynh_app_setting_set --app="$app" --key=mqtt_port --value="$mqtt_port"
+ 	mqtt_port=$(ynh_find_port --port="$default_mqtt_port")
+ 	ynh_app_setting_set --app="$app" --key=mqtt_port --value="$mqtt_port"
 
-#REMOVEME? 	mqtt_websocket_port=$(ynh_find_port --port="$default_mqtt_websocket_port")
-#REMOVEME? 	ynh_app_setting_set --app="$app" --key=mqtt_websocket_port --value="$mqtt_websocket_port"
+ 	mqtt_websocket_port=$(ynh_find_port --port="$default_mqtt_websocket_port")
+ 	ynh_app_setting_set --app="$app" --key=mqtt_websocket_port --value="$mqtt_websocket_port"
 fi
-
-#=================================================
-# INSTALL DEPENDENCIES
-#=================================================
-#REMOVEME? ynh_script_progression --message="Installing dependencies..." --weight=15
-
-#REMOVEME? ynh_install_app_dependencies "$pkg_dependencies"
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-#REMOVEME? ynh_script_progression --message="Configuring system user..."
-
-# Create a system user
-#REMOVEME? ynh_system_user_create --username="$app" --home_dir="$install_dir"
+ynh_script_progression --message="Configuring system user..."
 
 #allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
 if grep dialout -q < /etc/group; then
@@ -118,16 +68,11 @@ if grep gpio -q < /etc/group; then
 	usermod -a -G gpio "$app"
 fi
 
-#allow app user to restart service on startup
-ynh_add_config --template="../conf/sudoer" --destination="/etc/sudoers.d/$app"
-chmod 440 /etc/sudoers.d/"$app"
-
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=5
 
-#REMOVEME? ynh_app_setting_set --app="$app" --key=install_dir --value="$install_dir"
 # Download, check integrity, uncompress and patch the source from app.src
 # Create an app.src for the correct version of domoticz
 # match string are fulfilled in _common.sh via the upstream bash installation script
@@ -154,7 +99,7 @@ if [ ! -z "$mqtt_domain" ]; then
 	ynh_script_progression --message="Setting up mosquitto..." --weight=5
 
 	#Installing packages
-#REMOVEME? 	ynh_install_extra_app_dependencies --repo="deb https://repo.mosquitto.org/debian buster main" --package="$extra_pkg_dependencies" --key="http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
+ 	ynh_install_extra_app_dependencies --repo="deb https://repo.mosquitto.org/debian buster main" --package="$extra_pkg_dependencies" --key="http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
 
 	#Setting up conf file for access
 	ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/"$app"_mosquitto.conf"
@@ -163,7 +108,7 @@ if [ ! -z "$mqtt_domain" ]; then
 	#Setting up user&pwd for mqtt access
 	ynh_app_setting_set --app="$app" --key=mqtt_user --value=$(ynh_string_random --length=8)
 	ynh_app_setting_set --app="$app" --key=mqtt_pwd --value=$(ynh_string_random)
-#REMOVEME? 	echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/"$app"_credentials"
+ 	echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/"$app"_credentials"
 	mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
 
 	ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
@@ -179,7 +124,6 @@ ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
 #Set Hook for nginx domain
 cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
-yunohost tools regen-conf nginx
 
 # Create a dedicated NGINX config
 ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/"$domain".d/api_"$app".conf"
@@ -242,6 +186,7 @@ if [ ! -f "$log_file" ]; then
 	chown $app: "$log_file"
 fi
 
+
 # Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$" --max_retry=5
 ynh_print_info --message="If you wish for Fail2ban to work, set up your local address in Setup/Settings/System/Local Networks as per documentation"
@@ -251,25 +196,11 @@ ynh_print_info --message="If you wish for Fail2ban to work, set up your local ad
 #=================================================
 #REMOVEME? ynh_script_progression --message="Configuring permissions..."
 
-# Make app public if necessary
-#REMOVEME? if [ "$is_public" -eq 1 ]
-then
-	# Everyone can access the app.
-	# The "main" permission is automatically created before the install script.
-#REMOVEME? 	ynh_permission_update --permission="main" --add="visitors"
-fi
 
 #API & MQTT should stay publicly accessible.  
-#REMOVEME? ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
-#REMOVEME? [[ ! -z "$mqtt_domain" ]] && ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
+ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
+[[ ! -z "$mqtt_domain" ]] && ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
 
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-#REMOVEME? ynh_script_progression --message="Reloading NGINX web server..."
-
-#REMOVEME? ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT

@@ -7,31 +7,29 @@ User=__APP__
 Group=__APP__
 ExecStart=__INSTALL_DIR__/domoticz -www __PORT__ -sslwww 0 -log /var/log/__APP__/__APP__.log -loglevel normal,status,error
 WorkingDirectory=__INSTALL_DIR__/
-PermissionsStartOnly=true
-ExecStartPre=setcap 'cap_net_bind_service=+ep cap_net_raw=+eip' __INSTALL_DIR__/domoticz
+ExecStartPre=+setcap 'cap_net_bind_service=+ep cap_net_raw=+eip' __INSTALL_DIR__/domoticz
 Restart=on-failure
 RestartSec=1m
 #StandardOutput=null
 
 # Sandboxing options to harden security
 # Details for these options: https://www.freedesktop.org/software/systemd/man/systemd.exec.html
-# Most of the options are disabled as they prevent domoticz to correctly update
-#NoNewPrivileges=yes
+NoNewPrivileges=yes
 PrivateTmp=yes
 #Private device restrict access to device in /dev/, so to any devices like razberry, zigate, etc.
 #PrivateDevices=yes
-#RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-#RestrictNamespaces=yes
-#RestrictRealtime=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
 #Same : restrict access to devices
 #DevicePolicy=closed
 ProtectSystem=full
 ProtectControlGroups=yes
-#ProtectKernelModules=yes
-#ProtectKernelTunables=yes
-#LockPersonality=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+LockPersonality=yes
 #@setuid prevent system call such as ping or other command lines
-#SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @swap
+SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @swap
 #SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap
 
 # Denying access to capabilities that should not be relevant for webapps
