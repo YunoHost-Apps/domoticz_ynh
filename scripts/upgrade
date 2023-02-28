@@ -13,8 +13,8 @@ version_gt() {
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#REMOVEME? current_OS=$(ynh_app_setting_get --app="$app" --key=OS)
-#REMOVEME? current_mach=$(ynh_app_setting_get --app="$app" --key=mach)
+current_OS=$(ynh_app_setting_get --app="$app" --key=OS)
+current_mach=$(ynh_app_setting_get --app="$app" --key=mach)
 
 #=================================================
 # CHECK VERSION
