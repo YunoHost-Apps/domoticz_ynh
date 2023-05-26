@@ -66,7 +66,7 @@ chown -R "$app":"$app" "$install_dir"
 #=================================================
 # SET MOSQUITTO SETTINGS
 #=================================================
-if [ ! -z "$mqtt_domain" ]; then
+if [ "$mqtt_domain" != "$domain" ]; then
 	ynh_script_progression --message="Reinstalling up mosquitto..." --weight=5
 
 	#Installing packages
@@ -89,7 +89,7 @@ systemctl enable "$app".service --quiet
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add "$app" --description="Domotique open sources" --log="/var/log/$app/$app.log"
-[[ ! -z "$mqtt_domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
+[[ "$mqtt_domain" != "$domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
 
 
 #=================================================
@@ -100,7 +100,7 @@ ynh_script_progression --message="Starting a systemd service..."
 ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
 #Restarting mosquitto to take changes into account
-[[ ! -z "$mqtt_domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
+[[ "$mqtt_domain" != "$domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # RESTORE THE LOGROTATE CONFIGURATION

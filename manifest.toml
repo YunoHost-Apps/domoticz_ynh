@@ -5,7 +5,7 @@ name = "Domoticz"
 description.en = "Home automation system that lets you monitor and configure miscellaneous devices"
 description.fr = "Logiciel de domotique qui vous permet de configurer un grand nombre d'appareils"
 
-version = "2023.1~ynh1"
+version = "2023.1~ynh2"
 
 maintainers = ["Krakinou"]
 
@@ -19,8 +19,8 @@ cpe = "cpe:2.3:a:domoticz:domoticz"
 fund = "https://www.paypal.com/donate?token=rF_gUybGmQGia_jzLfu3vkeXRqYLRV-v-BxCTylrTsEN4mB-nDdSVQhg3a-I9LkiqORq70Gtxbo6rq3r&locale.x=US"
 
 [integration]
-yunohost = ">= 11.1.11"
-architectures = "all"
+yunohost = ">= 11.1.18"
+architectures = [ "amd64", "armhf", "arm64" ]
 multi_instance = false
 ldap = false 
 sso = false 
@@ -51,25 +51,41 @@ ram.runtime = "50M"
     optional = true
 
 [resources]
-    [resources.system_user]
+        [resources.sources.main]
+        arm64.url = "https://github.com/Krakinou/domoticz_build_on_arch/releases/download/2023.1/domoticz_linux_2023.1_aarch64.tgz"
+        arm64.sha256 = "e268e298fdd3d165840e0174b22b6c6b6ef06f4c7d4ab596f3bd6e984cda1b15"
+        armhf.url = "https://github.com/Krakinou/domoticz_build_on_arch/releases/download/2023.1/domoticz_linux_2023.1_armhf.tgz"
+        armhf.sha256 = "a51f2a2b6238a36ecc4f41d676fc2448313373ab181dd215630260b8230449db"
+        amd64.url = "https://github.com/Krakinou/domoticz_build_on_arch/releases/download/2023.1/domoticz_linux_2023.1_x86_64.tgz"
+        amd64.sha256 = "b88e82af38385d33d78d3dbb034f57ac429855e8dcb2da6c7ee17c7c71ba235f"
+        format="tar.gz"
+        in_subdir=false
+        extract=true
 
-    [resources.install_dir]
-	
-    [resources.permissions]
-    main.url = "/"
-    
-    api.url = "/_api/__APP_"
-    api.show_title = false
-    
+        autoupdate.strategy = "latest_github_release"
 
-    [resources.ports]
-    main.default = 8080
-    #to be checked if it can become conditionnal
-    #mqtt.default = 1883
-    #mqtt_websocket.default = 8883
+        autoupdate.asset.arm64 = "*_aarch64.tgz"
+        autoupdate.asset.amd64 = "*_x86_64.tgz"
+        autoupdate.asset.armhf = "*_armhf.tgz"
+        
+        [resources.system_user]
 
-    [resources.apt]
-    packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4"
+        [resources.install_dir]
+
+        [resources.permissions]
+        main.url = "/"
+
+        api.url = "/_api/__APP_"
+        api.show_title = false
+
+        [resources.ports]
+        main.default = 8080
+        #to be checked if it can become conditionnal
+        #mqtt.default = 1883
+        #mqtt_websocket.default = 8883
+
+        [resources.apt]
+        packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4"
 
         #[[resources.apt.extras]]
         #repo = "deb https://repo.mosquitto.org/debian buster main"

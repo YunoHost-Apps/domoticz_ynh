@@ -89,3 +89,7 @@ allow ::/1;
 ````
 Ceci autorisera seulement les adresses IPv4 local a accéder aux API de domoticz.
 Vous pouvez ajouter des adresses IPv6 de la même façon.
+
+## Limitations
+
+* Un backup ne peut pas être restauré sur un type de machine différente de celle d'origine (x86, arm...) car les sources compilées sont différentes

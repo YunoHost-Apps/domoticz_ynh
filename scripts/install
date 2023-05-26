@@ -20,9 +20,6 @@ else
 	api_path=/api_"$path"
 fi
 
-if [ "$domain" == "$mqtt_domain" ]; then 
-	mqtt_domain=""
-fi
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -35,7 +32,7 @@ ynh_app_setting_set --app="$app" --key=mach --value="$mach"
 
 #path used by api & mqtt to read/update domoticz
 ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
-[[ ! -z "$mqtt_domain" ]] && ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
+[[ "$mqtt_domain" != "$domain" ]] && ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
 
 
 #=================================================
@@ -43,7 +40,7 @@ ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-if [ ! -z "$mqtt_domain" ]; then
+if [ "$mqtt_domain" != "$domain" ]; then
 	ynh_script_progression --message="Finding available ports for Mosquitto..."
  	mqtt_port=$(ynh_find_port --port="$default_mqtt_port")
  	ynh_app_setting_set --app="$app" --key=mqtt_port --value="$mqtt_port"
@@ -74,10 +71,6 @@ fi
 ynh_script_progression --message="Setting up source files..." --weight=5
 
 # Download, check integrity, uncompress and patch the source from app.src
-# Create an app.src for the correct version of domoticz
-# match string are fulfilled in _common.sh via the upstream bash installation script
-ynh_add_config --template="../conf/app.src.default" --destination="../conf/app.src"
-
 ynh_setup_source --dest_dir="$install_dir"
 
 #Create the database file
@@ -94,7 +87,7 @@ chown -R "$app":"$app" "$install_dir"
 #=================================================
 # SET MOSQUITTO SETTINGS
 #=================================================
-if [ ! -z "$mqtt_domain" ]; then
+if [ "$mqtt_domain" != "$domain" ]; then
 
 	ynh_script_progression --message="Setting up mosquitto..." --weight=5
 
@@ -120,7 +113,7 @@ fi
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
-[[ ! -z "$mqtt_domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
+[[ "$mqtt_domain" != "$domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
 
 #Set Hook for nginx domain
 cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
@@ -152,7 +145,7 @@ chown -R domoticz: /var/log/"$app"
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate
-[[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto"
+[[ "$mqtt_domain" != "$domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -160,7 +153,7 @@ ynh_use_logrotate
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add "$app" --description="Domotique open sources" --log="/var/log/$app/$app.log"
-[[ ! -z "$mqtt_domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
+[[ "$mqtt_domain" != "$domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
 
 
 #=================================================
@@ -172,7 +165,7 @@ ynh_script_progression --message="Starting a systemd service..."
 ynh_systemd_action --service_name="$app" --action="start"
 
 #Restarting mosquitto to take changes into account
-[[ ! -z "$mqtt_domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
+[[ "$mqtt_domain" != "$domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # SETUP FAIL2BAN
@@ -199,7 +192,7 @@ ynh_print_info --message="If you wish for Fail2ban to work, set up your local ad
 
 #API & MQTT should stay publicly accessible.  
 ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
-[[ ! -z "$mqtt_domain" ]] && ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
+[[ "$mqtt_domain" != "$domain" ]] && ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
 
 
 #=================================================

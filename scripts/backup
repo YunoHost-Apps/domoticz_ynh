@@ -27,7 +27,7 @@ ynh_backup --src_path="$install_dir"
 
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/api_"$app".conf"
-[[ ! -z "$mqtt_domain" ]] && ynh_backup --src_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_$app.conf"  --not_mandatory
+[[ "$mqtt_domain" != "$domain" ]] && ynh_backup --src_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_$app.conf"  --not_mandatory
 
 #=================================================
 # SPECIFIC BACKUP
@@ -54,7 +54,7 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 # BACKUP VARIOUS FILES
 #=================================================
 
-[[ ! -z "$mqtt_domain" ]] && ynh_backup --src_path="/etc/mosquitto/conf.d" --not_mandatory
+[[ "$mqtt_domain" != "$domain" ]] && ynh_backup --src_path="/etc/mosquitto/conf.d" --not_mandatory
 
 ynh_backup --src_path="/usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz"
 
