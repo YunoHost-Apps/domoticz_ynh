@@ -11,8 +11,8 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #Have to reload them as otherwise they are all the same
-backup_OS=$(ynh_app_setting_get --app="$app" --key=OS)
-backup_mach=$(ynh_app_setting_get --app="$app" --key=mach)
+#backup_OS=$(ynh_app_setting_get --app="$app" --key=OS)
+#backup_mach=$(ynh_app_setting_get --app="$app" --key=mach)
 current_os=`lowercase \`uname -s\``
 current_mach=`uname -m`
 
@@ -22,10 +22,13 @@ current_mach=`uname -m`
 #As we are downloading compiled binaries for each system, we have to check if the restore occurs
 #on the same system type. If we are restoring on another system type it won't work and in that
 #case we must go through a reinstall process.
-test "$backup_OS" = "$current_os" \
+test "$OS" = "$current_os" \
 	|| ynh_die --message="Cannot restore : previous OS is $backup_OS, current OS is $current_os, please reinstall"
-test "$backup_mach" = "$current_mach" \
+test "$mach" = "$current_mach" \
 	|| ynh_die --message="Cannot restore : previous machine type is $backup_mach, current machine type is $current_mach, please reinstall"
+
+ynh_app_setting_set --app="$app" --key=OS --value="$OS"
+ynh_app_setting_set --app="$app" --key=mach --value="$mach"
 
 #=================================================
 # STANDARD RESTORATION STEPS

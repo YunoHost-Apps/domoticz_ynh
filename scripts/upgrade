@@ -13,12 +13,6 @@ version_gt() {
 source _common.sh
 source /usr/share/yunohost/helpers
 
-current_OS=$(ynh_app_setting_get --app="$app" --key=OS)
-current_mach=$(ynh_app_setting_get --app="$app" --key=mach)
-mqtt_domain=$(ynh_app_setting_get --app="$app" --key=mqtt_domain)
-mqtt_port=$(ynh_app_setting_get --app="$app" --key=mqtt_port)
-mqtt_websocket_port=$(ynh_app_setting_get --app="$app" --key=mqtt_websocket_port)
-
 #=================================================
 # CHECK VERSION
 #=================================================
@@ -41,10 +35,10 @@ ynh_systemd_action --service_name="$app" --action="stop" --log_path="/var/log/$a
 ynh_script_progression --message="Ensuring downward compatibility..."
 
 #Store OS and machine (to be used in restore script)
-if [ -z "$current_OS" ]; then
+if [ -z "$OS" ]; then
 	ynh_app_setting_set --app="$app" --key=OS --value="$OS"
 fi
-if [ -z "$current_mach" ]; then
+if [ -z "$mach" ]; then
 	ynh_app_setting_set --app="$app" --key=mach --value="$MACH"
 fi
 
@@ -63,24 +57,41 @@ if [ -z "$api_path" ]; then
 	ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
 fi
 
+#Need to be kept for backward compatibility : previous version did not have settings stored and
+#variable may not be bound.
+mqtt_domain=$(ynh_app_setting_get --app="$app" --key=mqtt_domain)
+if [[ -z "$mqtt_domain" ]]; then
+	ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
+fi
+
 #Port to listen for MQTT internal
+#first we read from manifest to ensure variable is bound
+mqtt_port=$(ynh_app_setting_get --app="$app" --key=mqtt_port)
+#then we store the setting in the manifest so it is automatically loaded for other scritps
+ynh_app_setting_set --app="$app" --key=mqtt_port --value="$mqtt_port"
+#then if a domain has been provided (manually for example to install mosquitto afterward), we assign a port in case it is empty.
 if [[ -z "$mqtt_port" && ! -z "$mqtt_domain" ]]; then
  	mqtt_port=$(ynh_find_port --port="$default_mqtt_port")
  	ynh_app_setting_set --app="$app" --key=mqtt_port --value="$mqtt_port"
 fi
 
 #Port to listen for MQTT websocket
+#first we read from manifest to ensure variable is bound
+mqtt_websocket_port=$(ynh_app_setting_get --app="$app" --key=mqtt_websocket_port)
+#then we store the setting in the manifest so it is automatically loaded for other scritps
+ynh_app_setting_set --app="$app" --key=mqtt_websocket_port --value="$mqtt_websocket_port"
+#then if a domain has been provided (manually for example to install mosquitto afterward), we assign a port in case it is empty.
 if [[ -z "$mqtt_websocket_port" && ! -z "$mqtt_domain" ]]; then
  	mqtt_websocket_port=$(ynh_find_port --port="$default_mqtt_websocket_port")
  	ynh_app_setting_set --app="$app" --key=mqtt_websocket_port --value="$mqtt_websocket_port"
 fi
 
 # Create the permission "domoticz_API" only if it doesn't exist.
-if ! ynh_permission_exists --permission="domoticz_API"
-then
+#if ! ynh_permission_exists --permission="domoticz_API"
+#then
 	# API Authorization with dedicated URL
-	ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
-fi
+#	ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
+#fi
 
 # Create the permission "domoticz_MQTT" only if it doesn't exist.
 if [ ! -z "$mqtt_domain" ]; then

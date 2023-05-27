@@ -15,7 +15,7 @@ lowercase(){
     echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
 }
 
-os=`lowercase \`uname -s\``
+OS=`lowercase \`uname -s\``
 mach=`uname -m`
 if [ ${mach} = "armv6l" ]
 then

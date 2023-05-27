@@ -10,32 +10,30 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# RETRIEVE ARGUMENTS FROM THE MANIFEST
+# STORE SETTINGS
 #=================================================
+ynh_script_progression --message="Storing installation settings..."
 
+#Will be used in restore script to check that we're restoring on the same OS/Board type
+ynh_app_setting_set --app="$app" --key=OS --value="$OS"
+ynh_app_setting_set --app="$app" --key=mach --value="$mach"
+
+#Settings for mosquitto. We store empty values so that they may be automatically retrieved and bound in other scripts.
+if [ "$domain" == "$mqtt_domain" ]; then 
+	mqtt_domain=""
+	#packaging v2 : settings are automatically stored. We overide the values
+	ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
+	ynh_app_setting_set --app="$app" --key=mqtt_port --value=""
+	ynh_app_setting_set --app="$app" --key=mqtt_websocket_port --value=""
+fi
+
+#path used by api to read/update domoticz
 #Set dedicated variables
 if [ "$path" == "/" ]; then
 	api_path=/api_/"$app"
 else
 	api_path=/api_"$path"
 fi
-
-if [ "$domain" == "$mqtt_domain" ]; then 
-	mqtt_domain=""
-	#pacakging v2 : settings are automatically stored. We don't want mqtt_domain in this case
-	ynh_app_setting_delete --app="$app" --key=mqtt_domain
-fi
-
-#=================================================
-# STORE SETTINGS FROM MANIFEST
-#=================================================
-ynh_script_progression --message="Storing installation settings..."
-
-#Will be used in restore script to check that we're restoring on the same OS/Board type
-ynh_app_setting_set --app="$app" --key=OS --value="$os"
-ynh_app_setting_set --app="$app" --key=mach --value="$mach"
-
-#path used by api to read/update domoticz
 ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
 
 #=================================================
