@@ -81,13 +81,11 @@ ram.runtime = "50M"
         [resources.ports]
         main.default = 8080
         #to be checked if it can become conditionnal
-        #mqtt.default = 1883
-        #mqtt_websocket.default = 8883
+        #ports will always be provisionned... don't know if it's an issue...
+        mqtt.default = 1883
+        mqtt_websocket.default = 8883
 
         [resources.apt]
         packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4"
+        packages_from_raw_bash = '''if [ "$mqtt_domain" != "$domain" ]; then echo mosquitto mosquitto-clients; fi'''
 
-        #[[resources.apt.extras]]
-        #repo = "deb https://repo.mosquitto.org/debian buster main"
-        #key = "http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
-        #packages = "#FIXME#$extra_pkg_dependencies

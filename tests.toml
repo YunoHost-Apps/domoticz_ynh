@@ -7,37 +7,37 @@ test_format = 1.0
     test_upgrade_from.27311ad.args.mqtt_domain="sub.domain.tld"
 
 
-#[With_Mosquitto_upgrade_with_mosquitto]
-#    preinstall = """
-#    set -euxo pipefail
-#    yunohost domain add mqtt.domain.tld
-#    """
-#    preupgrade = """
-#    set -euxo pipefail
-#    yunohost app setting domoticz mqtt_domain -v mqtt.domain.tld
-#    """
-#    
-#    args.mqtt_domain="mqtt.domain.tld"
-#    
-#    exclude = ["package_linter"]
-#    
-#    test_upgrade_from.27311ad.name = "2022.2 with mosquitto"
-#    test_upgrade_from.27311ad.args.mqtt_domain="mqtt.domain.tld"
-#    
-#
-#[With_Mosquitto_upgrade_without_mosquitto]
-#    preinstall = """
-#    set -euxo pipefail
-#    yunohost domain add mqtt.domain.tld
-#    """
-#
-#    preupgrade = """
-#    set -euxo pipefail
-#    yunohost app setting domoticz mqtt_domain -v mqtt.domain.tld
-#    """
-#    args.mqtt_domain="mqtt.domain.tld"
-#
-#    exclude = ["package_linter", "install.private", "install.multi", "backup_restore", "change_url"]
-#    
-#    test_upgrade_from.27311ad.name = "2022.2 without mosquitto"
-#    test_upgrade_from.27311ad.args.mqtt_domain="sub.domain.tld"
+[With_Mosquitto_upgrade_with_mosquitto]
+    preinstall = """
+    set -euxo pipefail
+    yunohost domain add mqtt.domain.tld
+    """
+    preupgrade = """
+    set -euxo pipefail
+    yunohost app setting domoticz mqtt_domain -v mqtt.domain.tld
+    """
+    
+    args.mqtt_domain="mqtt.domain.tld"
+    
+    exclude = ["package_linter"]
+    
+    test_upgrade_from.27311ad.name = "2022.2 with mosquitto"
+    test_upgrade_from.27311ad.args.mqtt_domain="mqtt.domain.tld"
+    
+
+[With_Mosquitto_upgrade_without_mosquitto]
+    preinstall = """
+    set -euxo pipefail
+    yunohost domain add mqtt.domain.tld
+    """
+
+    preupgrade = """
+    set -euxo pipefail
+    yunohost app setting domoticz mqtt_domain -v mqtt.domain.tld
+    """
+    args.mqtt_domain="mqtt.domain.tld"
+
+    exclude = ["package_linter", "install.private", "install.multi", "backup_restore", "change_url"]
+    
+    test_upgrade_from.27311ad.name = "2022.2 without mosquitto"
+    test_upgrade_from.27311ad.args.mqtt_domain="sub.domain.tld"
