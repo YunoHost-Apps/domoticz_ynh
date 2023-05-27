@@ -54,7 +54,7 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 # BACKUP VARIOUS FILES
 #=================================================
 
-[[ "$mqtt_domain" != "$domain" ]] && ynh_backup --src_path="/etc/mosquitto/conf.d" --not_mandatory
+[[ ! -z "$mqtt_domain" ]] && ynh_backup --src_path="/etc/mosquitto/conf.d" --not_mandatory
 
 ynh_backup --src_path="/usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz"
 

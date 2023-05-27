@@ -99,7 +99,7 @@ fi
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-#REMOVEME? ynh_script_progression --message="Making sure dedicated system user exists..."
+ynh_script_progression --message="Checking dedicated user permissions..."
 
 #allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
 if grep dialout -q < /etc/group; then
@@ -134,7 +134,7 @@ chown -R "$app":"$app" "$install_dir"
 #=================================================
 # SET MOSQUITTO SETTINGS
 #=================================================
-if [ "$mqtt_domain" != "$domain" ]; then
+if [ ! -z "$mqtt_domain" ]; then
 	ynh_script_progression --message="Setting up mosquitto..." --weight=5
 
 	#Installing packages
@@ -161,7 +161,7 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
-[[ "$mqtt_domain" != "$domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
+[[ ! -z "$mqtt_domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
 
 #Set Hook for nginx domain
 cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
@@ -213,7 +213,8 @@ fi
 
 # Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$" --max_retry=5
-ynh_print_info --message="If you wish for Fail2ban to work, set up your local address in Setup/Settings/System/Local Networks as per documentation"
+#not required in 2023.1 anymore
+#ynh_print_info --message="If you wish for Fail2ban to work, set up your local address in Setup/Settings/System/Local Networks as per documentation"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -221,7 +222,7 @@ ynh_print_info --message="If you wish for Fail2ban to work, set up your local ad
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add "$app" --description="Domotique open sources" --log="/var/log/$app/$app.log"
-[[ "$mqtt_domain" != "$domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
+[[ ! -z "$mqtt_domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
 
 
 #=================================================
@@ -232,7 +233,7 @@ ynh_script_progression --message="Starting a systemd service..." --weight=3
 ynh_systemd_action --service_name="$app" --action="start"
 
 #Restarting mosquitto to take changes from /etc/mosquitto/conf.d/*.conf into account
-[[ "$mqtt_domain" != "$domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
+[[ ! -z "$mqtt_domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # END OF SCRIPT

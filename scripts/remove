@@ -15,7 +15,7 @@ source /usr/share/yunohost/helpers
 # REMOVE SERVICE INTEGRATION IN YUNOHOST
 #=================================================
 
-if [ "$mqtt_domain" != "$domain" ]; then
+if [ ! -z "$mqtt_domain" ]; then
 	ynh_script_progression --message="Removing system configurations related to Mosquitto..." --weight=1
 	yunohost service remove mosquitto
 	ynh_secure_remove --file="/etc/mosquitto/conf.d"
