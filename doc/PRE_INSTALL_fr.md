@@ -7,4 +7,4 @@ Ce broker nécessite un domaine ou un sous-domaine particulier pour fonctionner 
 
 ## Version installée
 
-Actuellement, le projet domoticz ne fourni pas (encore) ces sources compilées par version. La version installée est donc une version compilée sur un [fork du projet](https://github.com/Krakinou/domoticz_build_on_arch). Le code source est celui de la version correspondante de domoticz.
+Actuellement, le projet domoticz ne fournit pas (encore) ses sources compilées par version. La version installée est donc une version compilée sur un [fork du projet](https://github.com/Krakinou/domoticz_build_on_arch). Le code source est celui de la version correspondante de domoticz.
