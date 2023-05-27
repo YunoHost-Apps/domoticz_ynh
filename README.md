@@ -30,12 +30,9 @@ For example this system can be used with:
 * And more ...
 
 
-**Shipped version:** Always the last stable one. The last compiled version is retrieved from [this directory](https://releases.domoticz.com/releases/?dir=./release) during install.
-Once installed, **updates from the uptream app are managed from within the app**. Yunohost upgrade script will only upgrade the Yunohost package. 
-
 The MQTT broker mosquitto is integrated into the package. It requires its own domain or subdomain. It's an optional setting: during install if you set the same domaine as your main app domain, it won't be installed.
 
-**Shipped version:** 2023.1~ynh1
+**Shipped version:** 2023.1~ynh2
 ## Documentation and resources
 
 * Official app website: <https://domoticz.com/>
