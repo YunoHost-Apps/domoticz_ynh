@@ -15,13 +15,9 @@ source /usr/share/yunohost/helpers
 ynh_script_progression --message="Storing installation settings..."
 
 #Will be used in restore script to check that we're restoring on the same OS/Board type
-lowercase(){
-    echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
-}
-
 OS=`lowercase \`uname -s\``
 mach=`uname -m`
-if [ ${mach} = "armv6l" ]
+if [ "${mach}" = "armv6l" ]
 then
  mach="armv7l"
 fi
@@ -165,7 +161,6 @@ if [ ! -f "$log_file" ]; then
 	touch "$log_file"
 	chown $app: "$log_file"
 fi
-
 
 # Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$" --max_retry=5

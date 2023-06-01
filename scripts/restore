@@ -10,9 +10,13 @@
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
-#Have to reload them as otherwise they are all the same
 current_os=`lowercase \`uname -s\``
 current_mach=`uname -m`
+if [ ${current_mach} = "armv6l" ]
+then
+ current_mach="armv7l"
+fi
+
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -25,8 +29,8 @@ test "$OS" = "$current_os" \
 test "$mach" = "$current_mach" \
 	|| ynh_die --message="Cannot restore : previous machine type is $mach, current machine type is $current_mach, please reinstall"
 
-ynh_app_setting_set --app="$app" --key=OS --value="$OS"
-ynh_app_setting_set --app="$app" --key=mach --value="$mach"
+ynh_app_setting_set --app="$app" --key=OS --value="$current_os"
+ynh_app_setting_set --app="$app" --key=mach --value="$current_mach"
 
 #=================================================
 # STANDARD RESTORATION STEPS
@@ -69,10 +73,6 @@ chown -R "$app":"$app" "$install_dir"
 #=================================================
 if [ "$domain" != "$mqtt_domain" ]; then
 	ynh_script_progression --message="Reinstalling up mosquitto..." --weight=5
-
-	#Installing packages
-	ynh_install_extra_app_dependencies --repo="deb https://repo.mosquitto.org/debian buster main" --package="$extra_pkg_dependencies" --key="http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
-	#reinstalling settings
 	ynh_restore_file --origin_path="/etc/mosquitto/conf.d" --not_mandatory
 fi
 
