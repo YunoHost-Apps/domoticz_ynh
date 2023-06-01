@@ -2,7 +2,7 @@
 
 ### Broker Mosquitto
 
-During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker, [Mosquitto](https://mosquitto.org/), is installed at the same time as Domoticz. The installed version is the one from the official project repo and not from Debian ones.
+During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker, [Mosquitto](https://mosquitto.org/), is installed at the same time as Domoticz.
 This broker requires a dedicated domain or subdomain to work (ex : mqtt.your.domain.tld) : creating this domain prior installation is a prerequisite
 
 #### Adding in domoticz
@@ -40,7 +40,7 @@ If you wish to open direct mqtt protocol from an outside device, you'll need to:
 - Set the tls setting in mosquitto configuration by giving access to crt.pem and key.pem from your mqtt domain by setting respective certfile et keyfile variables. **This is mandatory to ensure a secure connection.**
 
 #### Upgrade from version without mosquitto
-If you have package ynh3 or below or if you have chosen to not set a domain during initial installation, mosquitto is not installed by default.
+If you have package 2020.2~ynh3 or below or if you have chosen to not set a domain during initial installation, mosquitto is not installed by default.
 If you need to activate mosquitto in retrospect, do following actions:
 1. Create a domain or a subdomain (for example : 'mqtt.your.domain.tld')
 2. Connect to your server in command line 

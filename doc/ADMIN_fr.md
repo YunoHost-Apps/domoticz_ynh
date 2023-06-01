@@ -2,7 +2,7 @@
 
 ### Broker MQTT Mosquitto
 
-A l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT), [Mosquitto](https://mosquitto.org/), est installé en même temps que Domoticz. La version installée est celle du dépot officiel du projet, et non des dépots Debian.
+A l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT), [Mosquitto](https://mosquitto.org/), est installé en même temps que Domoticz.
 Ce broker nécessite un domaine ou un sous-domaine particulier pour fonctionner (ex : mqtt.your.domain.tld) : il est nécessaire de créer ce domaine auparavant.
 
 #### Ajout dans domoticz
@@ -41,7 +41,7 @@ Si vous souhaitez ouvrir le protocole mqtt depuis l'extérieur afin de pouvoir l
 
 
 #### Mise à jour depuis les versions n'ayant pas mosquittoo
-Si vous êtes sur le package ynh3 ou inférieur, mosquitto n'est pas installé par défaut.
+Si vous êtes sur le package 2020.2~ynh3 ou inférieur, mosquitto n'est pas installé par défaut.
 De même si vous avez choisi de ne pas indiquer de domaine pour mosquitto lors de l'installation initiale.
 Pour pouvoir l'installer après coup, faites les actions suivantes:
 1. créez un domaine ou sous-domaine pour recevoir les informations (par exemple : 'mqtt.your.domain.tld')
