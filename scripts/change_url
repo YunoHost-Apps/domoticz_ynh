@@ -125,7 +125,7 @@ ynh_script_progression --message="Upgrading SSOwat configuration..."
 # If the app is private, API should stays publicly accessible.
 ynh_app_setting_delete --app=$app --key="api_path"
 ynh_app_setting_set --app=$app --key="api_path" --value=$new_api
-ynh_permission_url --permission domoticz_API --url "$new_domain$new_api"
+ynh_permission_url --permission api --url "$new_domain$new_api"
 
 #=================================================
 # GENERIC FINALISATION
