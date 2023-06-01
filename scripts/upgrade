@@ -1,9 +1,5 @@
 #!/bin/bash
 
-version_gt() { 
-	test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
-}
-
 #=================================================
 # GENERIC START
 #=================================================
@@ -35,11 +31,16 @@ ynh_systemd_action --service_name="$app" --action="stop" --log_path="/var/log/$a
 ynh_script_progression --message="Ensuring downward compatibility..."
 
 #Store OS and machine (to be used in restore script)
-if [ -z "$OS" ]; then
-	ynh_app_setting_set --app="$app" --key=OS --value="$OS"
+if [ -z "${OS:+x}" ]; then
+	ynh_app_setting_-set --app="$app" --key=OS --value=`lowercase \`uname -s\``
 fi
-if [ -z "$mach" ]; then
-	ynh_app_setting_set --app="$app" --key=mach --value="$MACH"
+if [ -z "${mach:+x}" ]; then
+	mach=`uname -m`
+	if [ "${mach}" = "armv6l" ]
+	then
+ 		mach="armv7l"
+	fi
+	ynh_app_setting_set --app="$app" --key=mach --value="$mach"
 fi
 
 #sudoer file for restarting is not required anymore (from 2023.1~ynh1) as upgrade is managed by the Yunohost Package
@@ -59,39 +60,10 @@ fi
 
 #Previous version did not have settings stored and
 #variable may not be bound.
-mqtt_domain=$(ynh_app_setting_get --app="$app" --key=mqtt_domain)
-if [[ -z "$mqtt_domain" ]]; then
-	ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$domain"
+if [[ -z "${mqtt_domain+x}" ]]; then
+	mqtt_domain="$domain"
+	ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
 fi
-
-#Port to listen for MQTT internal
-#first we read from manifest to ensure variable is bound
-#mqtt_port=$(ynh_app_setting_get --app="$app" --key=mqtt_port)
-#then we store the setting in the manifest so it is automatically loaded for other scritps
-#ynh_app_setting_set --app="$app" --key=mqtt_port --value="$mqtt_port"
-#then if a domain has been provided (manually for example to install mosquitto afterward), we assign a port in case it is empty.
-#if [[ -z "$mqtt_port" && ! -z "$mqtt_domain" ]]; then
-# 	mqtt_port=$(ynh_find_port --port="$default_mqtt_port")
-# 	ynh_app_setting_set --app="$app" --key=mqtt_port --value="$mqtt_port"
-#fi
-
-#Port to listen for MQTT websocket
-#first we read from manifest to ensure variable is bound
-#mqtt_websocket_port=$(ynh_app_setting_get --app="$app" --key=mqtt_websocket_port)
-#then we store the setting in the manifest so it is automatically loaded for other scritps
-#ynh_app_setting_set --app="$app" --key=mqtt_websocket_port --value="$mqtt_websocket_port"
-#then if a domain has been provided (manually for example to install mosquitto afterward), we assign a port in case it is empty.
-#if [[ -z "$mqtt_websocket_port" && ! -z "$mqtt_domain" ]]; then
-# 	mqtt_websocket_port=$(ynh_find_port --port="$default_mqtt_websocket_port")
-# 	ynh_app_setting_set --app="$app" --key=mqtt_websocket_port --value="$mqtt_websocket_port"
-#fi
-
-# Create the permission "domoticz_API" only if it doesn't exist.
-#if ! ynh_permission_exists --permission="domoticz_API"
-#then
-	# API Authorization with dedicated URL
-#	ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
-#fi
 
 # Create the permission "domoticz_MQTT" only if it doesn't exist.
 if [ "$domain" != "$mqtt_domain"  ]; then
@@ -147,9 +119,6 @@ chown -R "$app":"$app" "$install_dir"
 #=================================================
 if [ "$domain" != "$mqtt_domain"  ]; then
 	ynh_script_progression --message="Setting up mosquitto..." --weight=5
-
-	#Installing packages
-	ynh_install_extra_app_dependencies --repo="deb https://repo.mosquitto.org/debian buster main" --package="$extra_pkg_dependencies" --key="http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key"
 
 	#Setting up conf file for access
 	if [ ! -f "/etc/mosquitto/conf.d/"$app"_mosquitto.conf" ]
