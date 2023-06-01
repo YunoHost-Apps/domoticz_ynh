@@ -23,8 +23,7 @@ if [ "$domain" != "$mqtt_domain" ]; then
 	ynh_secure_remove --file="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
 	yunohost tools regen-conf postfix
 	ynh_secure_remove --file="/var/log/mosquitto"
-	#not required as handled by the core?
-	#ynh_remove_app_dependencies
+
 
 fi
 
