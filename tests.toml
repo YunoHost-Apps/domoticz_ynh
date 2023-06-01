@@ -1,22 +1,20 @@
 test_format = 1.0
 
+#without Mosquitto
 [default]
 
     args.mqtt_domain="sub.domain.tld"
     test_upgrade_from.27311ad.name = "2022.2"
     test_upgrade_from.27311ad.args.mqtt_domain="sub.domain.tld"
 
-
+#	exclude = ["package_linter", "install.root", "install.subdir", "install.private", "install.multi", "backup_restore", "upgrade", "upgrade.27311ad", "change_url"]
+#
 [With_Mosquitto_upgrade_with_mosquitto]
     preinstall = """
     set -euxo pipefail
     yunohost domain add mqtt.domain.tld
     """
-    preupgrade = """
-    set -euxo pipefail
-    yunohost app setting domoticz mqtt_domain -v mqtt.domain.tld
-    """
-    
+
     args.mqtt_domain="mqtt.domain.tld"
     
     exclude = ["package_linter"]
@@ -25,7 +23,7 @@ test_format = 1.0
     test_upgrade_from.27311ad.args.mqtt_domain="mqtt.domain.tld"
     
 
-[With_Mosquitto_upgrade_without_mosquitto]
+[Without_Mosquitto_upgrade_with_mosquitto]
     preinstall = """
     set -euxo pipefail
     yunohost domain add mqtt.domain.tld
@@ -35,9 +33,11 @@ test_format = 1.0
     set -euxo pipefail
     yunohost app setting domoticz mqtt_domain -v mqtt.domain.tld
     """
-    args.mqtt_domain="mqtt.domain.tld"
 
-    exclude = ["package_linter", "install.private", "install.multi", "backup_restore", "change_url"]
+    args.mqtt_domain="sub.domain.tld"
+    only = ["upgrade","upgrade.27311ad", "change_url"]
+
+#    exclude = ["package_linter", "install.root", "install.subdir", "install.private", "install.multi", "backup_restore", "change_url"]
     
     test_upgrade_from.27311ad.name = "2022.2 without mosquitto"
     test_upgrade_from.27311ad.args.mqtt_domain="sub.domain.tld"
