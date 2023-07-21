@@ -10,6 +10,18 @@
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
+#from 2023.1~ynh1
+#End of support for mosquitto. However, we still keep trace of if it was installed in order to be able to back it up and remove it correctly
+mosquitto=$(ynh_app_setting_get --app=$app --key=mosquitto)
+if [[ -z "${mosquitto+x}" ]]; then
+	if [[ "$mqtt_domain"="$domain" ]]; then
+		ynh_app_setting_set --app="$app" --key=mosquitto --value=0
+	else
+		ynh_print_warn --message="If you didn't already do it, you should migrate to mosquitto package outside of the app as it will soon not be maintained anymore"
+		ynh_app_setting_set --app="$app" --key=mosquitto --value=1
+	fi
+fi
+
 #=================================================
 # DECLARE DATA AND CONF FILES TO BACKUP
 #=================================================
@@ -27,7 +39,8 @@ ynh_backup --src_path="$install_dir"
 
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/api_"$app".conf"
-[[ "$domain" != "$mqtt_domain" ]] && ynh_backup --src_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_$app.conf"  --not_mandatory
+[[ "$mosquitto" = 1 ]] && ynh_print_warn --message="If you didn't already do it, you should migrate to mosquitto package outside of the app as it will soon not be maintained anymore"
+[[ "$mosquitto" = 1 ]] && ynh_backup --src_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_$app.conf"  --not_mandatory
 
 #=================================================
 # SPECIFIC BACKUP
@@ -54,7 +67,7 @@ ynh_backup --src_path="/etc/systemd/system/$app.service"
 # BACKUP VARIOUS FILES
 #=================================================
 
-[[ "$domain" != "$mqtt_domain" ]] && ynh_backup --src_path="/etc/mosquitto/conf.d" --not_mandatory
+[[ "$mosquitto" = 1 ]] && ynh_backup --src_path="/etc/mosquitto/conf.d" --not_mandatory
 
 ynh_backup --src_path="/usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz"
 

@@ -34,6 +34,7 @@ else
 fi
 ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
 
+
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
@@ -70,33 +71,10 @@ chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
 chown -R "$app":"$app" "$install_dir"
 
-
-#=================================================
-# SET MOSQUITTO SETTINGS
-#=================================================
-if [ "$domain" != "$mqtt_domain" ]; then
-
-	ynh_script_progression --message="Setting up mosquitto..." --weight=5
-	#Setting up conf file for access
-	ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/"$app"_mosquitto.conf"
-	chmod 644 /etc/mosquitto/conf.d/"$app"_mosquitto.conf
-
-	#Setting up user&pwd for mqtt access
-	ynh_app_setting_set --app="$app" --key=mqtt_user --value=$(ynh_string_random --length=8)
-	ynh_app_setting_set --app="$app" --key=mqtt_pwd --value=$(ynh_string_random)
- 	echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/"$app"_credentials"
-	mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
-
-	ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
-fi
-
-
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
-
-[[ "$domain" != "$mqtt_domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
 
 #Set Hook for nginx domain
 cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
@@ -128,7 +106,6 @@ chown -R domoticz: /var/log/"$app"
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate
-[[ "$domain" != "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -136,8 +113,6 @@ ynh_use_logrotate
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add "$app" --description="Domotique open sources" --log="/var/log/$app/$app.log"
-[[ "$domain" != "$mqtt_domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
-
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -146,9 +121,6 @@ ynh_script_progression --message="Starting a systemd service..."
 
 # Start a systemd service
 ynh_systemd_action --service_name="$app" --action="start"
-
-#Restarting mosquitto to take changes into account
-[[ "$domain" != "$mqtt_domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # SETUP FAIL2BAN
@@ -171,12 +143,6 @@ ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed logi
 # SETUP SSOWAT
 #=================================================
 ynh_script_progression --message="Configuring permissions..."
-
-
-#API & MQTT should stay publicly accessible.  
-#ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
-[[ "$domain" != "$mqtt_domain" ]] && ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
-
 
 #=================================================
 # END OF SCRIPT

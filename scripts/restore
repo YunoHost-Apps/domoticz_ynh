@@ -17,6 +17,17 @@ then
  current_mach="armv7l"
 fi
 
+#from 2023.1~ynh1
+#End of support for mosquitto. However, we still keep trace of if it was installed in order to be able to back it up and remove it correctly
+mosquitto=$(ynh_app_setting_get --app=$app --key=mosquitto)
+if [[ -z "${mosquitto+x}" ]]; then
+	if [[ "$mqtt_domain"="$domain" ]]; then
+		ynh_app_setting_set --app="$app" --key=mosquitto --value=0
+	else
+		ynh_print_warn --message="If you didn't already do it, you should migrate to mosquitto package outside of the app as it will soon not be maintained anymore"
+		ynh_app_setting_set --app="$app" --key=mosquitto --value=1
+	fi
+fi
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -71,8 +82,9 @@ chown -R "$app":"$app" "$install_dir"
 #=================================================
 # SET MOSQUITTO SETTINGS
 #=================================================
-if [ "$domain" != "$mqtt_domain" ]; then
+if [ "$mosquitto" = 1 ]; then
 	ynh_script_progression --message="Reinstalling up mosquitto..." --weight=5
+	ynh_print_warn --message="If you didn't already do it, you should migrate to mosquitto package outside of the app as it will soon not be maintained anymore"
 	ynh_restore_file --origin_path="/etc/mosquitto/conf.d" --not_mandatory
 fi
 
@@ -90,7 +102,7 @@ systemctl enable "$app".service --quiet
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add "$app" --description="Domotique open sources" --log="/var/log/$app/$app.log"
-[[ "$domain" != "$mqtt_domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
+[[ "$mosquitto" = 1 ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
 
 
 #=================================================
@@ -101,7 +113,7 @@ ynh_script_progression --message="Starting a systemd service..."
 ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
 #Restarting mosquitto to take changes into account
-[[ "$domain" != "$mqtt_domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
+[[ "$mosquitto" = 1 ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # RESTORE THE LOGROTATE CONFIGURATION

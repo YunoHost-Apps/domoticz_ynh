@@ -9,6 +9,18 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+#from 2023.1~ynh1
+#End of support for mosquitto. However, we still keep trace of if it was installed in order to be able to back it up and remove it correctly
+mosquitto=$(ynh_app_setting_get --app=$app --key=mosquitto)
+if [[ -z "${mosquitto+x}" ]]; then
+	if [[ "$mqtt_domain"="$domain" ]]; then
+		ynh_app_setting_set --app="$app" --key=mosquitto --value=0
+	else
+		ynh_print_warn --message="If you didn't already do it, you should migrate to mosquitto package outside of the app as it will soon not be maintained anymore"
+		ynh_app_setting_set --app="$app" --key=mosquitto --value=1
+	fi
+fi
+
 #=================================================
 # CHECK VERSION
 #=================================================
@@ -58,22 +70,6 @@ if [ -z "$api_path" ]; then
 	ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
 fi
 
-#Previous version did not have settings stored and
-#variable may not be bound.
-if [[ -z "${mqtt_domain+x}" ]]; then
-	mqtt_domain="$domain"
-	ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
-fi
-
-# Create the permission "domoticz_MQTT" only if it doesn't exist.
-if [ "$domain" != "$mqtt_domain"  ]; then
-	if ! ynh_permission_exists --permission="domoticz_MQTT"
-	then
-		# API Authorization with dedicated URL
-		ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
-	fi
-fi
-
 #remove unwanted log folder
 if [ -d "/var/log/$app/$app" ]; then
 	ynh_secure_remove "/var/log/$app/$app"
@@ -115,33 +111,11 @@ chmod -R o-rwx "$install_dir"
 chown -R "$app":"$app" "$install_dir"
 
 #=================================================
-# SET MOSQUITTO SETTINGS
-#=================================================
-if [ "$domain" != "$mqtt_domain"  ]; then
-	ynh_script_progression --message="Setting up mosquitto..." --weight=5
-
-	#Setting up conf file for access
-	if [ ! -f "/etc/mosquitto/conf.d/"$app"_mosquitto.conf" ]
-	then
-		ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/"$app"_mosquitto.conf"
-		chmod 644 /etc/mosquitto/conf.d/"$app"_mosquitto.conf
-
-		#Setting up user&pwd for mqtt access
-		ynh_app_setting_set --app="$app" --key=mqtt_user --value=$(ynh_string_random --length=8)
-		ynh_app_setting_set --app="$app" --key=mqtt_pwd --value=$(ynh_string_random)
-		echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/"$app"_credentials"
-		mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
-
-		ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
-	fi
-fi
-
-#=================================================
 # NGINX CONFIGURATION
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
-[[ "$domain" != "$mqtt_domain"  ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
+[[ "$mosquitto" = 1 ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
 
 #Set Hook for nginx domain
 cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
@@ -177,7 +151,6 @@ chown -R domoticz: /var/log/"$app"
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --logfile="/var/log/$app" --non-append
-[[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto"
 
 #=================================================
 # SETUP FAIL2BAN
@@ -202,8 +175,6 @@ ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed logi
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 yunohost service add "$app" --description="Domotique open sources" --log="/var/log/$app/$app.log"
-[[ "$domain" != "$mqtt_domain"  ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
-
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -211,9 +182,6 @@ yunohost service add "$app" --description="Domotique open sources" --log="/var/l
 ynh_script_progression --message="Starting a systemd service..." --weight=3
 
 ynh_systemd_action --service_name="$app" --action="start"
-
-#Restarting mosquitto to take changes from /etc/mosquitto/conf.d/*.conf into account
-[[ "$domain" != "$mqtt_domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
 
 #=================================================
 # END OF SCRIPT

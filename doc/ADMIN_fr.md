@@ -2,54 +2,16 @@
 
 ### Broker MQTT Mosquitto
 
-A l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT), [Mosquitto](https://mosquitto.org/), est installé en même temps que Domoticz.
-Ce broker nécessite un domaine ou un sous-domaine particulier pour fonctionner (ex : mqtt.your.domain.tld) : il est nécessaire de créer ce domaine auparavant.
+Vous pouvez install le broker [MQTT](https://fr.wikipedia.org/wiki/MQTT) [Mosquitto](https://github.com/YunoHost-Apps/mosquitto_ynh) simultanément à domoticz.
 
 #### Ajout dans domoticz
 
 Pour pouvoir l'utiliser, vous devez paramétrer la communication avec entre domoticz et le broker en suivant la [documentation de domoticz](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto) dans la partie *Add hardware "MQTT Client Gateway"*
-Les users et mot de passe du broker sont automatiquement générés lors de l'installation. Vous pouvez les récupérer avec
-````
-sudo yunohost app setting domoticz mqtt_user
-sudo yunohost app setting domoticz mqtt_pwd
-````
 
-#### Publier/souscrire
+#### Migration depuis la version 2020.2~ynh7
 
-Par défaut, mosquitto va écouter sur 2 ports:
-- Le 1883 sur localhost en protocole mqtt
-- Le 8883 en protocole websocket. Nginx redirige le port 443 externe vers ce port en interne.
-Pour publier/souscrire sur un topic depuis l'exterieur, vous devez donc utiliser un programme supportant le protocole websocket (ex : la bibliothèque python paho).:
-
-#### Mosquitto_pub et mosquitto_sub
-
-Ces deux programmes ne supportent pas le protocole websocket mais uniquement le mqtt : le paramétrage de base ne vous autorise donc pas à les utiliser pour communiquer depuis un client externe.
-Si vous les utilisez directement depuis votre serveur, ce genre de syntaxe devrait marcher:
-````
-mosquitto_pub -u *user* -P *password* -h mqtt.your.domain.tld -p 1883 -t 'domoticz/in' -m '{ "idx" : 1, "nvalue" : 0, "svalue" : "25.0" }'
-````
-De la même manière:c
-````
-mosquitto_sub -u *user* -P *password* -h mqtt.your.domain.tld -p 1883 -t 'domoticz/out'
-````
-Si vous souhaitez ouvrir le protocole mqtt depuis l'extérieur afin de pouvoir les utiliser depuis un autre serveur, il vous faudra:
-- ouvrir le port 1883 sur le firewall Yunohost (**Attention, risque de sécurité**)
-- autoriser les adresses IP souhaitées dans la configuration de mosquitto pour ce listener
-- paramétrer le tls dans la configuration de mosquitto en donnant accès au crt.pem et key.pem de votre domaine mqtt en les paramétrant respectivement avec les variables certfile et keyfile. **Ceci est obligatoire pour sécuriser la connexion.**
-
-
-
-
-#### Mise à jour depuis les versions n'ayant pas mosquittoo
-Si vous êtes sur le package 2020.2~ynh3 ou inférieur, mosquitto n'est pas installé par défaut.
-De même si vous avez choisi de ne pas indiquer de domaine pour mosquitto lors de l'installation initiale.
-Pour pouvoir l'installer après coup, faites les actions suivantes:
-1. créez un domaine ou sous-domaine pour recevoir les informations (par exemple : 'mqtt.your.domain.tld')
-2. connecter vous en ligne de commande à votre serveur
-3. taper la commande suivante : `yunohost app setting domoticz mqtt_domain -v mqtt.your.domain.tld`
-4. Procédez à la mise à jour.
-Si vous êtes déjà sur la dernière version, utiliser la commmande suivante : `yunohost app upgrade domoticz --force`
-
+Avant la version 2023.2~ynh1, domoticz_ynh pouvait intégrer directement le broker mosquitto lors de son installation. Cette option n'est plus maintenu car trop complexe.
+Pour migrer vers depuis une installation de mosquitto "intradomoticz" vers le package officiel de mosquitto pour domoticz, merci de consulter cette [documentation]
 
 ### Senseurs, langue et ce genre de choses
 Toute la configuration de l'application a lieu dans l'application elle même
