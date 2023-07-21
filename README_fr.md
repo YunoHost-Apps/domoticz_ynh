@@ -35,7 +35,7 @@ Vous pouvez également installer le package pour mosquitto sans utiliser celui d
 
 
 
-**Version incluse :** 2023.1~ynh2
+**Version incluse :** 2023.2~ynh1
 ## Documentations et ressources
 
 * Site officiel de l’app : <https://domoticz.com/>

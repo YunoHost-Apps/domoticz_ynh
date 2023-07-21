@@ -33,7 +33,7 @@ For example this system can be used with:
 The MQTT broker mosquitto is integrated into the package. It requires its own domain or subdomain. It's an optional setting: during install if you set the same domaine as your main app domain, it won't be installed.
 You may also install the mosquitto package without using the one provided by domoticz_ynh.
 
-**Shipped version:** 2023.1~ynh2
+**Shipped version:** 2023.2~ynh1
 ## Documentation and resources
 
 * Official app website: <https://domoticz.com/>
