@@ -127,7 +127,7 @@ Ceci autorisera seulement les adresses IPv4 local a accéder aux API de domoticz
 Vous pouvez ajouter des adresses IPv6 de la même façon.
 
 
-**Version incluse :** 2020.2~ynh7
+**Version incluse :** 2020.2~ynh8
 ## Avertissements / informations importantes
 
 

@@ -257,7 +257,11 @@ then
 	# Everyone can access the app.
 	# The "main" permission is automatically created before the install script.
 	ynh_permission_update --permission="main" --add="visitors"
+
 fi
+
+#remove the authentication header preventing login from 2023.2 and 11.2.3 onward
+ynh_permission_url --permission="main" --auth_header=false
 
 #API & MQTT should stay publicly accessible.  
 ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"

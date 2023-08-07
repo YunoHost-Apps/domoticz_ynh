@@ -6,7 +6,7 @@
         "en": "Home automation system that lets you monitor and configure miscellaneous devices",
         "fr": "Logiciel de domotique qui vous permet de configurer un grand nombre d'appareils"
     },
-    "version": "2020.2~ynh7",
+    "version": "2020.2~ynh8",
     "url": "https://www.domoticz.com",
     "upstream": {
         "license": "GPL-3.0-or-later",
