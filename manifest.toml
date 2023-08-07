@@ -42,12 +42,12 @@ ram.runtime = "50M"
 
 [resources]
         [resources.sources.main]
-        arm64.url = "https://github.com/domoticz/domoticz/releases/download/2023.2/domoticz_linux_2023.2_aarch64.tgz"
-        arm64.sha256 = "b8a475e02ba42a9d7fd4d941b66c6f023cbda910193d471b0a50339152c15969"
-        armhf.url = "https://github.com/domoticz/domoticz/releases/download/2023.2/domoticz_linux_2023.2_armhf.tgz"
-        armhf.sha256 = "90cf6192caaac73471449fa096bde6f02c43e80d349ae149874e4cdbb6e033a2"
-        amd64.url = "https://github.com/domoticz/domoticz/releases/download/2023.2/domoticz_linux_2023.2_x86_64.tgz"
-        amd64.sha256 = "936b25ca9791b595914bc67993205ce7fb8375c11ac7b03e7efc8682a93461cc"
+        arm64.url = "https://github.com/Krakinou/domoticz_build_on_arch/releases/download/2023.2/domoticz_linux_2023.2_aarch64.tgz"
+        arm64.sha256 = "b05919713e13873092addedb603d8eed29bd7761e4a73cbada9b887b212723f3"
+        armhf.url = "https://github.com/Krakinou/domoticz_build_on_arch/releases/download/2023.2/domoticz_linux_2023.2_armhf.tgz"
+        armhf.sha256 = "73e5c06a9a059195ff2f9c6a82baf589003eb14bcb9642d1979a0e722d0aafb6"
+        amd64.url = "https://github.com/Krakinou/domoticz_build_on_arch/releases/download/2023.2/domoticz_linux_2023.2_x86_64.tgz"
+        amd64.sha256 = "2f8f83facbe019569080f6c60d19ab9c13bf64e72b771d269ee019d54e20e1bc"
         format="tar.gz"
         in_subdir=false
         extract=true
