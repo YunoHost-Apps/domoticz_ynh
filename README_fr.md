@@ -5,15 +5,16 @@ It shall NOT be edited by hand.
 
 # Domoticz pour YunoHost
 
-[![Niveau d'intégration](https://dash.yunohost.org/integration/domoticz.svg)](https://dash.yunohost.org/appci/app/domoticz) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)  
+[![Niveau d’intégration](https://dash.yunohost.org/integration/domoticz.svg)](https://dash.yunohost.org/appci/app/domoticz) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)
+
 [![Installer Domoticz avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=domoticz)
 
 *[Read this readme in english.](./README.md)*
 
-> *Ce package vous permet d'installer Domoticz rapidement et simplement sur un serveur YunoHost.
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+> *Ce package vous permet d’installer Domoticz rapidement et simplement sur un serveur YunoHost.
+Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l’installer et en profiter.*
 
-## Vue d'ensemble
+## Vue d’ensemble
 
 Domoticz est un système de domotique permettant de controler différents objets et de recevoir des données de divers senseurs
 Il peut par exemple être utilisé avec :
@@ -97,9 +98,9 @@ Une fois installé, suivez simplement les indications du [wiki](https://www.domo
 Par défaut, l'accès aux [API JSON](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) est autorisé sur cette URL `/votredomaine.tld/api_/chemindedomoticz`.
 Donc, si vous accédez à domoticz par https://votredomaine.tld/domoticz, utilisez le chemin suivant pour l'api: `/votredomaine.tld/api_/domoticz/json.htm?votrecommandeapi`
 
-Par défaut, seule la mise à jour de senseur et les interrupteurs sont autorisés. Pour autoriser une nouvelle commande, vous devez (pour l'instant) manuellement éditer le fichier de configuration nginx :
+Par défaut, seule la mise à jour de senseur et les interrupteurs sont autorisés. Pour autoriser une nouvelle commande, vous devez manuellement éditer le fichier de configuration nginx :
 ````
-sudo nano /etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf
+sudo nano /etc/nginx/conf.d/yourdomain.tld.d/api_domoticz.conf
 ````
 Puis éditer le bloc suivant en y ajoutant le regex de la commmande à autoriser :
 ````
@@ -112,9 +113,6 @@ Puis éditer le bloc suivant en y ajoutant le regex de la commmande à autoriser
 ````
 Par exemple, pour ajouter la commmande json pour retrouver le statut d'un équipement (/json.htm?type=devices&rid=IDX),il faut modifier la ligne comme ceci:
 ````
-  #set the list of authorized json command here in regex format
-  #you may retrieve the command from https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's
-  #By default, sensors updates and toggle switch are authorized
   if ( $args ~* type=command&param=udevice&idx=[0-9]*&nvalue=[0-9]*&svalue=.*$|type=command&param=switchlight&idx=[0-9]*&switchcmd=Toggle$|type=devices&rid=[0-9]* ) {
     set $api "1";
     }
@@ -129,30 +127,30 @@ Ceci autorisera seulement les adresses IPv4 local a accéder aux API de domoticz
 Vous pouvez ajouter des adresses IPv6 de la même façon.
 
 
-**Version incluse :** 2020.2~ynh7
+**Version incluse :** 2020.2~ynh8
 ## Avertissements / informations importantes
 
 
 ## Limitations
 
 * Pas de gestion d'utilisateurs ni d'intégration LDAP. L'application ne [prévoit pas de gérer les utilisateurs par LDAP](https://github.com/domoticz/domoticz/issues/838), donc le package non plus.
-* Un backup ne peut pas être restauré sur un type de machine différente de celle d'origine (x86, arm...) car les sources compilées doivent être différentes
+* Un backup ne peut pas être restauré sur un type de machine différente de celle d'origine (x86, arm...) car les sources compilées sont différentes
 
 ## A propos de la sécurité
 
-Bien que vous pouviez activer une page de connexion dans l'application (soit depuis le menu *Configuration/Paramètres/Système/Sécurité* ou depuis *Configuration/Plus d'options/Gérer les utilisateurs*), les fonctionnalités ne semblent pas très avancées et safe pour l'instant (version 2022.2 au moment d'écrire). Un travail a été entrepris pour renforcer la sécurité ([voir ici](https://www.domoticz.com/wiki/Security)) dans les versions futures mais n'a pas encore été released.
+Bien que vous pouviez activer une page de connexion dans l'application (soit depuis le menu *Configuration/Paramètres/Système/Sécurité* ou depuis *Configuration/Plus d'options/Gérer les utilisateurs*), les fonctionnalités ne semblent pas très avancées ni safe pour l'instant (version 2022.2 au moment d'écrire). Un travail a été entrepris pour renforcer la sécurité ([voir ici](https://www.domoticz.com/wiki/Security)) dans les versions futures mais n'a pas encore été released.
 
 ### recommandations
 
-Il semble conseillé de ne pas rendre l'application publique en dehors du sso yunohost (public = oui à l'installaiton ou mettre la permission domoticz à 'Visiteurs' dans le panel d'administration Yunohost). Si pour quelques raisons que ce soit, vous deviez le faire, je vous recommande:
+Il semble conseillé de ne pas rendre l'application publique en dehors du sso yunohost (public = oui à l'installation ou mettre la permission domoticz à 'Visiteurs' dans le panel d'administration Yunohost). Si pour quelques raisons que ce soit, vous deviez le faire, je vous recommande:
  - d'activer la sécurité de connexion à domoticz (plutot avec la login page qu'avec la basic-auth)
  - Dans *Configuration/Système/Réseaux Locaux (pas d'authentification)* d'entrer les adresses du proxy nginx (cela devrait être "::1;127.0.0.1" dans une installation Yunohost Standard) afin que Fail2ban puisse bloquer les tentatives de connexions (voir les dernières lignes de [ce wiki](https://www.domoticz.com/wiki/WebServer_Proxy)
 ## Documentations et ressources
 
-* Site officiel de l'app : <https://domoticz.com/>
+* Site officiel de l’app : <https://domoticz.com/>
 * Documentation officielle utilisateur : <https://www.domoticz.com/DomoticzManual.pdf>
-* Documentation officielle de l'admin : <https://www.domoticz.com/wiki/Main_Page>
-* Dépôt de code officiel de l'app : <https://github.com/domoticz/domoticz>
+* Documentation officielle de l’admin : <https://www.domoticz.com/wiki/Main_Page>
+* Dépôt de code officiel de l’app : <https://github.com/domoticz/domoticz>
 * Documentation YunoHost pour cette app : <https://yunohost.org/app_domoticz>
 * Signaler un bug : <https://github.com/YunoHost-Apps/domoticz_ynh/issues>
 
@@ -168,4 +166,4 @@ ou
 sudo yunohost app upgrade domoticz -u https://github.com/YunoHost-Apps/domoticz_ynh/tree/testing --debug
 ```
 
-**Plus d'infos sur le packaging d'applications :** <https://yunohost.org/packaging_apps>
+**Plus d’infos sur le packaging d’applications :** <https://yunohost.org/packaging_apps>
