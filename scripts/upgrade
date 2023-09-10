@@ -79,6 +79,9 @@ if [ -d "/var/log/$app/$app" ]; then
 	ynh_secure_remove "/var/log/$app/$app"
 fi
 
+#remove the authentication header preventing login from 2023.2 and 11.2.3 onward
+ynh_permission_url --permission="main" --auth_header=false
+
 #=================================================
 # CREATE DEDICATED USER
 #=================================================

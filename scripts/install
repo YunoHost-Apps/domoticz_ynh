@@ -172,6 +172,8 @@ ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed logi
 #=================================================
 ynh_script_progression --message="Configuring permissions..."
 
+#remove the authentication header preventing login from 2023.2 and 11.2.3 onward
+ynh_permission_url --permission="main" --auth_header=false
 
 #API & MQTT should stay publicly accessible.  
 #ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
