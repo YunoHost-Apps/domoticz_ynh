@@ -151,7 +151,7 @@ Il semble conseillé de ne pas rendre l'application publique en dehors du sso yu
 * Documentation officielle utilisateur : <https://www.domoticz.com/DomoticzManual.pdf>
 * Documentation officielle de l’admin : <https://www.domoticz.com/wiki/Main_Page>
 * Dépôt de code officiel de l’app : <https://github.com/domoticz/domoticz>
-* Documentation YunoHost pour cette app : <https://yunohost.org/app_domoticz>
+* YunoHost Store: <https://apps.yunohost.org/app/domoticz>
 * Signaler un bug : <https://github.com/YunoHost-Apps/domoticz_ynh/issues>
 
 ## Informations pour les développeurs

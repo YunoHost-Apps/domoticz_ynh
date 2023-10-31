@@ -152,7 +152,7 @@ It seems advisable to not make the app publicly available outside of the yunohos
 * Official user documentation: <https://www.domoticz.com/DomoticzManual.pdf>
 * Official admin documentation: <https://www.domoticz.com/wiki/Main_Page>
 * Upstream app code repository: <https://github.com/domoticz/domoticz>
-* YunoHost documentation for this app: <https://yunohost.org/app_domoticz>
+* YunoHost Store: <https://apps.yunohost.org/app/domoticz>
 * Report a bug: <https://github.com/YunoHost-Apps/domoticz_ynh/issues>
 
 ## Developer info
