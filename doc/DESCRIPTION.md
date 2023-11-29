@@ -9,8 +9,8 @@ For example this system can be used with:
 * Temperature Sensors
 * Pulse Meters
 * Voltage / AD Meters
-* And more ...
+* And more...
 
 
-The MQTT broker mosquitto is integrated into the package. It requires its own domain or subdomain. It's an optional setting: during install if you set the same domaine as your main app domain, it won't be installed.
-You may also install the mosquitto package without using the one provided by domoticz_ynh.
+The MQTT broker Mosquitto is integrated into the package. It requires its own domain or subdomain. It's an optional setting: during install if you set the same domaine as your main app domain, it won't be installed.
+You may also install the Mosquitto package without using the one provided by domoticz_ynh.

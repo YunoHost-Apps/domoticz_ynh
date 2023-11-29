@@ -3,11 +3,11 @@
 ### Broker Mosquitto
 
 During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker, [Mosquitto](https://mosquitto.org/), is installed at the same time as Domoticz.
-This broker requires a dedicated domain or subdomain to work (ex : mqtt.your.domain.tld) : creating this domain prior installation is a prerequisite
+This broker requires a dedicated domain or subdomain to work (ex : mqtt.your.domain.tld): creating this domain prior installation is a prerequisite
 
-#### Adding in domoticz
+#### Adding in Domoticz
 
-To use mosquitto, you need to customize the communication between domoticz and the broker by following the [domoticz documentation](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto), part *Add hardware "MQTT Client Gateway"*.
+To use Mosquitto, you need to customize the communication between Domoticz and the broker by following the [domoticz documentation](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto), part *Add hardware "MQTT Client Gateway"*.
 User and password are automatically generated during installation, you may retrieve them with
 ````
 sudo yunohost app setting domoticz mqtt_user
@@ -17,10 +17,10 @@ sudo yunohost app setting domoticz mqtt_pwd
 #### Publish/Subscribe
 
 By default, mosquitto will listen on 2 ports:
-- 1883 on localhost using mqtt protocol
-- 8883 using websocket protocol. Nginx redirect external port 443 to this internal port.
+- 1883 on localhost using MQTT protocol
+- 8883 using websocket protocol. NGINX redirect external port 443 to this internal port.
 
-Hence, To publish/subscribe on a topic from the outside, you have to use a software supporting websocket protocol (ex : paho python library).
+Hence, To publish/subscribe on a topic from the outside, you have to use a software supporting websocket protocol (ex : paho Python library).
 
 #### Mosquitto_pub et mosquitto_sub
 
@@ -35,18 +35,18 @@ mosquitto_sub -u *user* -P *password* -h mqtt.your.domain.tld -p 1883 -t 'domoti
 ````
 
 If you wish to open direct mqtt protocol from an outside device, you'll need to:
-- open port 1883 on Yunohost firewall (**Attention, security risk**)
-- Allows IP addresses in mosquitto configuration for this listener
-- Set the tls setting in mosquitto configuration by giving access to crt.pem and key.pem from your mqtt domain by setting respective certfile et keyfile variables. **This is mandatory to ensure a secure connection.**
+- open port 1883 on YunoHost firewall (**Attention, security risk**)
+- Allows IP addresses in Mosquitto configuration for this listener
+- Set the tls setting in Mosquitto configuration by giving access to crt.pem and key.pem from your mqtt domain by setting respective certfile et keyfile variables. **This is mandatory to ensure a secure connection.**
 
-#### Upgrade from version without mosquitto
-If you have package 2020.2~ynh3 or below or if you have chosen to not set a domain during initial installation, mosquitto is not installed by default.
+#### Upgrade from version without Mosquitto
+If you have package 2020.2~ynh3 or below or if you have chosen to not set a domain during initial installation, Mosquitto is not installed by default.
 If you need to activate mosquitto in retrospect, do following actions:
-1. Create a domain or a subdomain (for example : 'mqtt.your.domain.tld')
+1. Create a domain or a subdomain (for example: 'mqtt.your.domain.tld')
 2. Connect to your server in command line 
 3. Type following command : `yunohost app setting domoticz mqtt_domain -v mqtt.your.domain.tld`
-4. Upgrade domoticz to last package.
-If you're already on the last package version, use the following command : `yunohost app upgrade domoticz --force`
+4. Upgrade Domoticz to last package.
+If you're already on the last package version, use the following command: `yunohost app upgrade domoticz --force`
 
 ## Configuration
 
@@ -54,14 +54,14 @@ If you're already on the last package version, use the following command : `yuno
 Main configuration of the app take place inside the app itself.
 
 ### Zwave management
-If you're using zwave devices, install mosquitto along domoticz and give a try to [zwave-JS-UI package](https://github.com/YunoHost-Apps/zwave-js-ui_ynh).
+If you're using Zwave devices, install Mosquitto along Domoticz and give a try to [zwave-JS-UI package](https://github.com/YunoHost-Apps/zwave-js-ui_ynh).
 Once installed, just follow instructions from the [wiki](https://www.domoticz.com/wiki/Zwave-JS-UI)
 
 ### Access and API
 By default, access for the [JSON API](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) is allowed on following path `/yourdomain.tld/api_/domoticzpath`.
-So if you access domoticz via https://mydomainname.tld/domoticz, use the following webpath for the api : `/mydomainname.tld/api_/domoticz/json.htm?yourapicommand`
+So if you access Domoticz via https://mydomainname.tld/domoticz, use the following webpath for the API: `/mydomainname.tld/api_/domoticz/json.htm?yourapicommand`
 
-By default, only sensor updates and switch toogle are authorized. To authorized a new command, you have to manually update the nginx config file :
+By default, only sensor updates and switch toogle are authorized. To authorized a new command, you have to manually update the NGINX config file:
 ````
 sudo nano /etc/nginx/conf.d/yourdomain.tld.d/api_domoticz.conf
 ````
@@ -74,7 +74,7 @@ Then edit the following block by adding the regex of the command you want to all
     set $api "1";
     }
 ````
-For example, to add the json command to retrieve the status of a device (/json.htm?type=devices&rid=IDX),modify the line as this:
+For example, to add the JSON command to retrieve the status of a device (/json.htm?type=devices&rid=IDX),modify the line as this:
 ````
   if ( $args ~* type=command&param=udevice&idx=[0-9]*&nvalue=[0-9]*&svalue=.*$|type=command&param=switchlight&idx=[0-9]*&switchcmd=Toggle$|type=devices&rid=[0-9]* ) {
     set $api "1";
@@ -82,11 +82,11 @@ For example, to add the json command to retrieve the status of a device (/json.h
 ````
 
 All IPv4 addresses within the local network (192.168.0.0/24) and *all IPv6* addresses are authorized as API.
-As far as I know, there is no way to filter for IPv6 address on local network : You may remove the authorization by removing or commenting this line in `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
+As far as I know, there is no way to filter for IPv6 address on local network: You may remove the authorization by removing or commenting this line in `/etc/nginx/conf.d/yourdomain.tld.d/domoticz.conf`:
 ````
 allow ::/1;
 ````
-This will authorized only IPv4 within local network to access your domoticz API.
+This will authorized only IPv4 within local network to access your Domoticz API.
 You may add individual IPv6 address in the same way.
 
 ## Limitations

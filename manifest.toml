@@ -2,8 +2,8 @@ packaging_format = 2
 
 id = "domoticz"
 name = "Domoticz"
-description.en = "Home automation system that lets you monitor and configure miscellaneous devices"
-description.fr = "Logiciel de domotique qui vous permet de configurer un grand nombre d'appareils"
+description.en = "Lightweight Home Automation System"
+description.fr = "Système domotique léger"
 
 version = "2023.1~ynh2"
 
@@ -22,8 +22,11 @@ fund = "https://www.paypal.com/donate?token=rF_gUybGmQGia_jzLfu3vkeXRqYLRV-v-BxC
 yunohost = ">= 11.2"
 architectures = [ "amd64", "armhf", "arm64" ]
 multi_instance = false
+
 ldap = false
+
 sso = false
+
 disk = "100M"
 ram.build = "150M"
 ram.runtime = "50M"
