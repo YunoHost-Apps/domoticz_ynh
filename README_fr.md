@@ -29,8 +29,8 @@ Il peut par exemple être utilisé avec :
 * des voltmètres
 * Et bien d'autres
 
-Le broker MQTT mosquitto est intégré au package et nécessite un sous-domaine ou un domaine distinct. Il est optionnel et si vous indiquez lors de l'installation le même domaine que le domaine principal, il ne sera pas installé.
-Vous pouvez également installer le package pour mosquitto sans utiliser celui de domoticz_ynh.
+Le broker MQTT Mosquitto est intégré au package et nécessite un sous-domaine ou un domaine distinct. Il est optionnel et si vous indiquez lors de l'installation le même domaine que le domaine principal, il ne sera pas installé.
+Vous pouvez également installer le package pour Mosquitto sans utiliser celui de domoticz_ynh.
 
 
 
@@ -42,7 +42,7 @@ Vous pouvez également installer le package pour mosquitto sans utiliser celui d
 * Documentation officielle utilisateur : <https://www.domoticz.com/DomoticzManual.pdf>
 * Documentation officielle de l’admin : <https://www.domoticz.com/wiki/Main_Page>
 * Dépôt de code officiel de l’app : <https://github.com/domoticz/domoticz>
-* Documentation YunoHost pour cette app : <https://yunohost.org/app_domoticz>
+* YunoHost Store: <https://apps.yunohost.org/app/domoticz>
 * Signaler un bug : <https://github.com/YunoHost-Apps/domoticz_ynh/issues>
 
 ## Informations pour les développeurs
