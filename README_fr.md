@@ -36,6 +36,12 @@ Vous pouvez également installer le package pour Mosquitto sans utiliser celui d
 
 
 **Version incluse :** 2024.2~ynh1
+
+## Captures d’écran
+
+![Capture d’écran de Domoticz](./doc/screenshots/domoticz_Switches_screen.png)
+![Capture d’écran de Domoticz](./doc/screenshots/domoticz_floorplan_machineon.png)
+
 ## Documentations et ressources
 
 * Site officiel de l’app : <https://domoticz.com/>

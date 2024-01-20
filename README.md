@@ -34,6 +34,12 @@ The MQTT broker Mosquitto is integrated into the package. It requires its own do
 You may also install the Mosquitto package without using the one provided by domoticz_ynh.
 
 **Shipped version:** 2024.2~ynh1
+
+## Screenshots
+
+![Screenshot of Domoticz](./doc/screenshots/domoticz_Switches_screen.png)
+![Screenshot of Domoticz](./doc/screenshots/domoticz_floorplan_machineon.png)
+
 ## Documentation and resources
 
 * Official app website: <https://domoticz.com/>
