@@ -17,10 +17,6 @@ ynh_script_progression --message="Storing installation settings..."
 #Will be used in restore script to check that we're restoring on the same OS/Board type
 OS=`lowercase \`uname -s\``
 mach=`uname -m`
-if [ "${mach}" = "armv6l" ]
-then
- mach="armv7l"
-fi
 
 ynh_app_setting_set --app="$app" --key=OS --value="$OS"
 ynh_app_setting_set --app="$app" --key=mach --value="$mach"
@@ -172,8 +168,6 @@ ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed logi
 #=================================================
 ynh_script_progression --message="Configuring permissions..."
 
-#remove the authentication header preventing login from 2023.2 and 11.2.3 onward
-ynh_permission_url --permission="main" --auth_header=false
 
 #API & MQTT should stay publicly accessible.  
 #ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"

@@ -36,10 +36,6 @@ if [ -z "${OS:+x}" ]; then
 fi
 if [ -z "${mach:+x}" ]; then
 	mach=`uname -m`
-	if [ "${mach}" = "armv6l" ]
-	then
- 		mach="armv7l"
-	fi
 	ynh_app_setting_set --app="$app" --key=mach --value="$mach"
 fi
 
@@ -79,8 +75,6 @@ if [ -d "/var/log/$app/$app" ]; then
 	ynh_secure_remove "/var/log/$app/$app"
 fi
 
-#remove the authentication header preventing login from 2023.2 and 11.2.3 onward
-ynh_permission_url --permission="main" --auth_header=false
 
 #=================================================
 # CREATE DEDICATED USER
