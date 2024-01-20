@@ -7,7 +7,7 @@ Ce broker nécessite un domaine ou un sous-domaine particulier pour fonctionner 
 
 #### Ajout dans Domoticz
 
-Pour pouvoir l'utiliser, vous devez paramétrer la communication avec entre domoticz et le broker en suivant la [documentation de Domoticz](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto) dans la partie *Add hardware "MQTT Client Gateway"*
+Pour pouvoir l'utiliser, vous devez paramétrer la communication avec entre Domoticz et le broker en suivant la [documentation de Domoticz](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto) dans la partie *Add hardware "MQTT Client Gateway"*
 Les users et mot de passe du broker sont automatiquement générés lors de l'installation. Vous pouvez les récupérer avec
 ````
 sudo yunohost app setting domoticz mqtt_user
@@ -40,7 +40,7 @@ Si vous souhaitez ouvrir le protocole MQTT depuis l'extérieur afin de pouvoir l
 
 
 
-#### Mise à jour depuis les versions n'ayant pas Mosquittoo
+#### Mise à jour depuis les versions n'ayant pas Mosquitto
 Si vous êtes sur le package 2020.2~ynh3 ou inférieur, Mosquitto n'est pas installé par défaut.
 De même si vous avez choisi de ne pas indiquer de domaine pour Mosquitto lors de l'installation initiale.
 Pour pouvoir l'installer après coup, faites les actions suivantes :
