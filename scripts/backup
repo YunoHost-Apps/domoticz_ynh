@@ -10,7 +10,7 @@
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
-#from 2023.1~ynh1
+#from 2024.2~ynh1
 #End of support for mosquitto. However, we still keep trace of if it was installed in order to be able to back it up and remove it correctly
 mosquitto=$(ynh_app_setting_get --app=$app --key=mosquitto)
 if [[ -z "${mosquitto+x}" ]]; then

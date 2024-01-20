@@ -5,7 +5,7 @@ name = "Domoticz"
 description.en = "Home automation system that lets you monitor and configure miscellaneous devices"
 description.fr = "Logiciel de domotique qui vous permet de configurer un grand nombre d'appareils"
 
-version = "2023.2~ynh1"
+version = "2024.2~ynh1"
 
 maintainers = ["Krakinou"]
 
@@ -42,12 +42,12 @@ ram.runtime = "50M"
 
 [resources]
         [resources.sources.main]
-        arm64.url = "https://github.com/Krakinou/domoticz_build_on_arch/releases/download/2023.2/domoticz_linux_2023.2_aarch64.tgz"
-        arm64.sha256 = "b05919713e13873092addedb603d8eed29bd7761e4a73cbada9b887b212723f3"
-        armhf.url = "https://github.com/Krakinou/domoticz_build_on_arch/releases/download/2023.2/domoticz_linux_2023.2_armhf.tgz"
-        armhf.sha256 = "73e5c06a9a059195ff2f9c6a82baf589003eb14bcb9642d1979a0e722d0aafb6"
-        amd64.url = "https://github.com/Krakinou/domoticz_build_on_arch/releases/download/2023.2/domoticz_linux_2023.2_x86_64.tgz"
-        amd64.sha256 = "2f8f83facbe019569080f6c60d19ab9c13bf64e72b771d269ee019d54e20e1bc"
+        arm64.url = "https://github.com/domoticz/domoticz/releases/download/2024.2/domoticz_linux_2024.2_aarch64.tgz"
+        arm64.sha256 = "d0ee6660c1c05c2949bfbe669de0029795f5974a5f00b6818c0aefba944b3fd6"
+        armhf.url = "https://github.com/domoticz/domoticz/releases/download/2024.2/domoticz_linux_2024.2_armv7l.tgz"
+        armhf.sha256 = "23eb3f4d2c818761773a45282b054f2707808005643ceba10a386cb1cf93db0a"
+        amd64.url = "https://github.com/domoticz/domoticz/releases/download/2024.2/domoticz_linux_2024.2_x86_64.tgz"
+        amd64.sha256 = "0f973af6dcadef17d75ac7372dfc2f0a87bd0fabca8db04348fe34bd1d0180e2"
         format="tar.gz"
         in_subdir=false
         extract=true
@@ -56,7 +56,7 @@ ram.runtime = "50M"
 
         autoupdate.asset.arm64 = ".*_aarch64.tgz"
         autoupdate.asset.amd64 = ".*_x86_64.tgz"
-        autoupdate.asset.armhf = ".*_armhf.tgz"
+        autoupdate.asset.armhf = ".*_armv7l.tgz"
         
         [resources.system_user]
 

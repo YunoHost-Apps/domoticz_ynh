@@ -9,7 +9,7 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#from 2023.1~ynh1
+#from 2024.2~ynh1
 #End of support for mosquitto. However, we still keep trace of if it was installed in order to be able to back it up and remove it correctly
 mosquitto=$(ynh_app_setting_get --app=$app --key=mosquitto)
 if [[ -z "${mosquitto+x}" ]]; then
@@ -48,14 +48,10 @@ if [ -z "${OS:+x}" ]; then
 fi
 if [ -z "${mach:+x}" ]; then
 	mach=`uname -m`
-	if [ "${mach}" = "armv6l" ]
-	then
- 		mach="armv7l"
-	fi
 	ynh_app_setting_set --app="$app" --key=mach --value="$mach"
 fi
 
-#sudoer file for restarting is not required anymore (from 2023.1~ynh1) as upgrade is managed by the Yunohost Package
+#sudoer file for restarting is not required anymore (from 2024.2~ynh1) as upgrade is managed by the Yunohost Package
 if [ -f /etc/sudoers.d/domoticz ]; then
 	rm /etc/sudoers.d/domoticz
 fi

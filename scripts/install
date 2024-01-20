@@ -17,10 +17,6 @@ ynh_script_progression --message="Storing installation settings..."
 #Will be used in restore script to check that we're restoring on the same OS/Board type
 OS=`lowercase \`uname -s\``
 mach=`uname -m`
-if [ "${mach}" = "armv6l" ]
-then
- mach="armv7l"
-fi
 
 ynh_app_setting_set --app="$app" --key=OS --value="$OS"
 ynh_app_setting_set --app="$app" --key=mach --value="$mach"
