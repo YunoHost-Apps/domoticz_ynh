@@ -140,6 +140,33 @@ ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed logi
 #=================================================
 ynh_script_progression --message="Configuring permissions..."
 
+<<<<<<< HEAD
+=======
+# Make app public if necessary
+if [ "$is_public" -eq 1 ]
+then
+	# Everyone can access the app.
+	# The "main" permission is automatically created before the install script.
+	ynh_permission_update --permission="main" --add="visitors"
+
+fi
+
+#remove the authentication header preventing login from 2023.2 and 11.2.3 onward
+ynh_permission_url --permission="main" --auth_header=false
+
+#API & MQTT should stay publicly accessible.  
+ynh_permission_create --permission="domoticz_API" --label="api" --url="$domain$api_path" --allowed="visitors" --show_tile="false" --protected="true"
+[[ ! -z "$mqtt_domain" ]] && ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
+
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reloading NGINX web server..."
+
+ynh_systemd_action --service_name=nginx --action=reload
+
+>>>>>>> refs/heads/testing
 #=================================================
 # END OF SCRIPT
 #=================================================
