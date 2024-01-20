@@ -35,14 +35,14 @@ Vous pouvez également installer le package pour mosquitto sans utiliser celui d
 
 
 
-**Version incluse :** 2023.2~ynh1
+**Version incluse :** 2024.2~ynh1
 ## Documentations et ressources
 
 * Site officiel de l’app : <https://domoticz.com/>
 * Documentation officielle utilisateur : <https://www.domoticz.com/DomoticzManual.pdf>
 * Documentation officielle de l’admin : <https://www.domoticz.com/wiki/Main_Page>
 * Dépôt de code officiel de l’app : <https://github.com/domoticz/domoticz>
-* Documentation YunoHost pour cette app : <https://yunohost.org/app_domoticz>
+* YunoHost Store: <https://apps.yunohost.org/app/domoticz>
 * Signaler un bug : <https://github.com/YunoHost-Apps/domoticz_ynh/issues>
 
 ## Informations pour les développeurs
