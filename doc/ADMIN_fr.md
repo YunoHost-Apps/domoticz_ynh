@@ -2,29 +2,29 @@
 
 ### Broker MQTT Mosquitto
 
-Vous pouvez install le broker [MQTT](https://fr.wikipedia.org/wiki/MQTT) [Mosquitto](https://github.com/YunoHost-Apps/mosquitto_ynh) simultanément à domoticz.
+Vous pouvez install le broker [MQTT](https://fr.wikipedia.org/wiki/MQTT) [Mosquitto](https://github.com/YunoHost-Apps/mosquitto_ynh) simultanément à Domoticz.
 
-#### Ajout dans domoticz
+#### Ajout dans Domoticz
 
-Pour pouvoir l'utiliser, vous devez paramétrer la communication avec entre domoticz et le broker en suivant la [documentation de domoticz](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto) dans la partie *Add hardware "MQTT Client Gateway"*
+Pour pouvoir l'utiliser, vous devez paramétrer la communication avec entre Domoticz et le broker en suivant la [documentation de Domoticz](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto) dans la partie *Add hardware "MQTT Client Gateway"*
 
 #### Migration depuis la version 2020.2~ynh7
 
-Avant la version 2023.2~ynh1, domoticz_ynh pouvait intégrer directement le broker mosquitto lors de son installation. Cette option n'est plus maintenu car trop complexe.
-Pour migrer vers depuis une installation de mosquitto "intradomoticz" vers le package officiel de mosquitto pour domoticz, merci de consulter cette [documentation]
+Avant la version 2023.2~ynh1, domoticz_ynh pouvait intégrer directement le broker Mosquitto lors de son installation. Cette option n'est plus maintenu car trop complexe.
+Pour migrer vers depuis une installation de Mosquitto "intradomoticz" vers le package officiel de Mosquitto pour Domoticz, merci de consulter cette [documentation]
 
 ### Senseurs, langue et ce genre de choses
 Toute la configuration de l'application a lieu dans l'application elle même
 
 ### Gestion du Zwave
-Si vous utilisez des équipements zwave, installez mosquitto en plus de domoticz et essayez le [package zwave-JS-UI](https://github.com/YunoHost-Apps/zwave-js-ui_ynh).
+Si vous utilisez des équipements zwave, installez Mosquitto en plus de Domoticz et essayez le [package zwave-JS-UI](https://github.com/YunoHost-Apps/zwave-js-ui_ynh).
 Une fois installé, suivez simplement les indications du [wiki](https://www.domoticz.com/wiki/Zwave-JS-UI)
 
 ### Accès et API
 Par défaut, l'accès aux [API JSON](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's) est autorisé sur cette URL `/votredomaine.tld/api_/chemindedomoticz`.
-Donc, si vous accédez à domoticz par https://votredomaine.tld/domoticz, utilisez le chemin suivant pour l'api: `/votredomaine.tld/api_/domoticz/json.htm?votrecommandeapi`
+Donc, si vous accédez à Domoticz par https://votredomaine.tld/domoticz, utilisez le chemin suivant pour l'api: `/votredomaine.tld/api_/domoticz/json.htm?votrecommandeapi`
 
-Par défaut, seule la mise à jour de senseur et les interrupteurs sont autorisés. Pour autoriser une nouvelle commande, vous devez manuellement éditer le fichier de configuration nginx :
+Par défaut, seule la mise à jour de senseur et les interrupteurs sont autorisés. Pour autoriser une nouvelle commande, vous devez manuellement éditer le fichier de configuration NGINX :
 ````
 sudo nano /etc/nginx/conf.d/yourdomain.tld.d/api_domoticz.conf
 ````
@@ -49,7 +49,7 @@ A ma connaissance, il n'y a pas moyen d'effectuer un filtre pour les adresses IP
 ````
 allow ::/1;
 ````
-Ceci autorisera seulement les adresses IPv4 local a accéder aux API de domoticz.
+Ceci autorisera seulement les adresses IPv4 local a accéder aux API de Domoticz.
 Vous pouvez ajouter des adresses IPv6 de la même façon.
 
 ## Limitations
