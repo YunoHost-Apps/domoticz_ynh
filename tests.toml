@@ -6,7 +6,8 @@ test_format = 1.0
     args.mqtt_domain="sub.domain.tld"
     test_upgrade_from.a96510c.name = "2024.2"
     test_upgrade_from.a96510c.args.mqtt_domain="sub.domain.tld"
-
+    test_upgrade_from.a96510c.args.domain="sub.domain.tld"
+    test_upgrade_from.a96510c.args.path="/domoticz"
 #    exclude = ["package_linter", "install.root", "install.subdir", "install.private", "install.multi", "backup_restore", "upgrade", "upgrade.a96510c", "change_url"]
 
 [With_Mosquitto_upgrade_with_mosquitto]
@@ -21,12 +22,17 @@ test_format = 1.0
 
     test_upgrade_from.a96510c.name = "2024.2 with mosquitto"
     test_upgrade_from.a96510c.args.mqtt_domain="mqtt.domain.tld"
-    
+    test_upgrade_from.a96510c.args.domain="sub.domain.tld"
+    test_upgrade_from.a96510c.args.path="/domoticz"
 
 [Without_Mosquitto_upgrade_with_mosquitto]
-    preupgrade = """
+    preinstall = """
     set -euxo pipefail
     yunohost domain add mqtt.domain.tld
+    """
+
+    preupgrade = """
+    set -euxo pipefail
     yunohost app setting domoticz mqtt_domain -v mqtt.domain.tld
     """
 
@@ -37,3 +43,5 @@ test_format = 1.0
     
     test_upgrade_from.a96510c.name = "2024.2 without mosquitto"
     test_upgrade_from.a96510c.args.mqtt_domain="sub.domain.tld"
+    test_upgrade_from.a96510c.args.domain="sub.domain.tld"
+    test_upgrade_from.a96510c.args.path="/domoticz"
