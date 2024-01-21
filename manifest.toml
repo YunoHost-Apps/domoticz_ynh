@@ -43,10 +43,6 @@ ram.runtime = "50M"
     type = "group"
     default = "all_users"
 
-#    [install.init_mqtt_domain_permission]
-#    type="group"
-#    default="visitor"
-	
     [install.mqtt_domain]
     ask.fr = "Domaine MQTT"
     ask.en = "MQTT domain"
