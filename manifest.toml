@@ -43,11 +43,15 @@ ram.runtime = "50M"
     type = "group"
     default = "all_users"
 
+#    [install.init_mqtt_domain_permission]
+#    type="group"
+#    default="visitor"
+	
     [install.mqtt_domain]
     ask.fr = "Domaine MQTT"
     ask.en = "MQTT domain"
-    help.fr = "Domaine pour le serveur MQTT. Remettez le domaine principal si vous ne souhaitez pas l'utiliser. Lire la documentation pour plus d'informations"
-    help.en = "MQTT server domain. Set the main domain if you don't wish to use it. See the doc for more info"
+    help.fr = "Domaine pour le serveur MQTT. Remettez le domaine principal ou à vide si vous ne souhaitez pas l'utiliser. Lire la documentation pour plus d'informations"
+    help.en = "MQTT server domain. Set blank or the main domain if you don't wish to use it. See the doc for more info"
     type = "domain"
     optional = true
 
@@ -75,11 +79,16 @@ ram.runtime = "50M"
 
         [resources.permissions]
         main.url = "/"
-        main.auth_header=false
+        main.auth_header = false
 
-        api.url = "/_api/__APP_"
+        api.url = "__DOMAIN__/api_/__APP__"
         api.show_tile = false
         api.allowed = "visitors"
+
+        #Permission will be removed by the install script if not needed
+        mqtt.url = "__MQTT_DOMAIN__/"
+        mqtt.show_tile = false
+        mqtt.allowed = "visitors"
 
         [resources.ports]
         main.default = 8080

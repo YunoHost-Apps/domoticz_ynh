@@ -61,15 +61,6 @@ if [[ -z "${mqtt_domain+x}" ]]; then
 	ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
 fi
 
-# Create the permission "domoticz_MQTT" only if it doesn't exist.
-if [ "$domain" != "$mqtt_domain"  ]; then
-	if ! ynh_permission_exists --permission="domoticz_MQTT"
-	then
-		# API Authorization with dedicated URL
-		ynh_permission_create --permission="domoticz_MQTT" --label="MQTT" --url="$mqtt_domain" --allowed="visitors" --show_tile="false" --protected="true"
-	fi
-fi
-
 #remove unwanted log folder
 if [ -d "/var/log/$app/$app" ]; then
 	ynh_secure_remove "/var/log/$app/$app"
@@ -131,6 +122,9 @@ if [ "$domain" != "$mqtt_domain"  ]; then
 
 		ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
 	fi
+else
+	#If no MQTT have been set, we delete the mqtt permission.
+	[[ "$domain" == "$mqtt_domain" ]] && ynh_permission_delete --permission="mqtt"
 fi
 
 #=================================================
@@ -190,8 +184,6 @@ fi
 
 # Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$" --max_retry=5
-#not required in 2023.1 anymore
-#ynh_print_info --message="If you wish for Fail2ban to work, set up your local address in Setup/Settings/System/Local Networks as per documentation"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
