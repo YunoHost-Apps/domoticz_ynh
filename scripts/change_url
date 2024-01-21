@@ -14,11 +14,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression --message="Loading installation settings..."
 
-# Needed for helper "ynh_add_nginx_config"
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-port=$(ynh_app_setting_get --app=$app --key=port)
 old_api=$(ynh_app_setting_get --app=$app --key=api_path)
-
 if [ "$new_path" == "/" ]; then
 	new_api=/api_/$app
 else
