@@ -84,6 +84,9 @@ if [ "$domain" != "$mqtt_domain" ]; then
 	mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
 
 	ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
+else
+	#If no MQTT have been set, we delete the mqtt permission.
+	ynh_permission_delete --permission="mqtt"
 fi
 
 
@@ -160,15 +163,6 @@ fi
 
 # Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$" --max_retry=5
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Configuring permissions..."
-
-
-#If no MQTT have been set, we delete the mqtt permission.
-[[ "$domain" == "$mqtt_domain" ]] && ynh_permission_delete --permission="mqtt"
 
 #=================================================
 # END OF SCRIPT

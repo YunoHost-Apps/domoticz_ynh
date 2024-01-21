@@ -124,7 +124,7 @@ if [ "$domain" != "$mqtt_domain"  ]; then
 	fi
 else
 	#If no MQTT have been set, we delete the mqtt permission.
-	[[ "$domain" == "$mqtt_domain" ]] && ynh_permission_delete --permission="mqtt"
+	ynh_permission_delete --permission="mqtt"
 fi
 
 #=================================================
