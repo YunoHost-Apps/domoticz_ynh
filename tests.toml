@@ -2,6 +2,11 @@ test_format = 1.0
 
 #without Mosquitto
 [default]
+#Adding domain even if not used : snapshot are reused and may require domain to work
+    preinstall = """
+    set -euxo pipefail
+    yunohost domain add mqtt.domain.tld
+    """
 
     args.mqtt_domain="sub.domain.tld"
     test_upgrade_from.a96510c.name = "2024.2"
