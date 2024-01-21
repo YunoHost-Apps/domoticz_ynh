@@ -70,6 +70,9 @@ chown -R "$app":"$app" "$install_dir"
 if [ "$domain" != "$mqtt_domain" ]; then
 	ynh_script_progression --message="Reinstalling up mosquitto..." --weight=5
 	ynh_restore_file --origin_path="/etc/mosquitto/conf.d" --not_mandatory
+else
+	#If no MQTT have been set, we delete the mqtt permission.
+	ynh_permission_delete --permission="mqtt"
 fi
 
 #=================================================

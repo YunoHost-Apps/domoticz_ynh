@@ -4,6 +4,7 @@
 
 À l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT), [Mosquitto](https://mosquitto.org/), est installé en même temps que Domoticz.
 Ce broker nécessite un domaine ou un sous-domaine particulier pour fonctionner (ex : mqtt.your.domain.tld) : il est nécessaire de créer ce domaine auparavant.
+Vous pouvez également installer le [package pour Mosquitto](https://github.com/YunoHost-Apps/mosquitto_ynh) sans utiliser celui de domoticz_ynh.
 
 #### Ajout dans Domoticz
 
