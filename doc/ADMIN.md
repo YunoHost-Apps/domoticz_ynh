@@ -9,8 +9,8 @@ You may also install the [Mosquitto package](https://github.com/YunoHost-Apps/mo
 To use Mosquitto, you need to customize the communication between Domoticz and the broker by following the [domoticz documentation](https://www.domoticz.com/wiki/MQTT#Installing_Mosquitto), part *Add hardware "MQTT Client Gateway"*.
 User and password are automatically generated during installation, you may retrieve them with
 ````
-sudo yunohost app setting domoticz mqtt_user
-sudo yunohost app setting domoticz mqtt_pwd
+sudo yunohost app setting __APP__ mqtt_user
+sudo yunohost app setting __APP__ mqtt_pwd
 ````
 
 #### Publish/Subscribe
@@ -43,9 +43,9 @@ If you have package 2020.2~ynh3 or below or if you have chosen to not set a doma
 If you need to activate mosquitto in retrospect, do following actions:
 1. Create a domain or a subdomain (for example: 'mqtt.your.domain.tld')
 2. Connect to your server in command line 
-3. Type following command : `yunohost app setting domoticz mqtt_domain -v mqtt.your.domain.tld`
+3. Type following command : `yunohost app setting __APP__ mqtt_domain -v mqtt.your.domain.tld`
 4. Upgrade Domoticz to last package.
-If you're already on the last package version, use the following command: `yunohost app upgrade domoticz --force`
+If you're already on the last package version, use the following command: `yunohost app upgrade __APP__ --force`
 
 ## Configuration
 
@@ -62,7 +62,7 @@ So if you access Domoticz via https://mydomainname.tld/domoticz, use the followi
 
 By default, only sensor updates and switch toogle are authorized. To authorized a new command, you have to manually update the NGINX config file:
 ````
-sudo nano /etc/nginx/conf.d/yourdomain.tld.d/api_domoticz.conf
+sudo nano /etc/nginx/conf.d/yourdomain.tld.d/api___APP__.conf
 ````
 Then edit the following block by adding the regex of the command you want to allow:
 ````
