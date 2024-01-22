@@ -1,6 +1,4 @@
-## Configuration
-
-### Broker MQTT Mosquitto
+## Broker MQTT Mosquitto
 
 À l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT), [Mosquitto](https://mosquitto.org/), est installé en même temps que Domoticz.
 Ce broker nécessite un domaine ou un sous-domaine particulier pour fonctionner (ex : mqtt.your.domain.tld) : il est nécessaire de créer ce domaine auparavant.
@@ -91,6 +89,12 @@ allow ::/1;
 Ceci autorisera seulement les adresses IPv4 local a accéder aux API de Domoticz.
 Vous pouvez ajouter des adresses IPv6 de la même façon.
 
+## Mise à jours
+
+Les mises à jours depuis l'application ont été désactivées. Bon, en vrai, c'est juste le lien qui est caché, vous pouvez donc en fait toujours faire la mise à jour depuis la ligne de commande si vous savez comment faire. Ceci permet d'éviter certaines mises à jour qui peuvent casser l'intégration avec YunoHost, tel que l'obligation de créer des users depuis la 2023.1.
+
+
 ## Limitations
 
 * Un backup ne peut pas être restauré sur un type de machine différente de celle d'origine (x86, arm...) car les sources compilées sont différentes
+* Pas de gestion du LDAP dans l'application
