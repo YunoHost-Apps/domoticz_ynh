@@ -1,0 +1,99 @@
+packaging_format = 2
+
+id = "domoticz"
+name = "Domoticz"
+description.en = "Lightweight Home Automation System"
+description.fr = "Système domotique léger"
+
+version = "2024.2~ynh1"
+
+maintainers = ["Krakinou"]
+
+[upstream]
+license = "GPL-3.0-or-later"
+website = "https://domoticz.com/"
+admindoc = "https://www.domoticz.com/wiki/Main_Page"
+userdoc = "https://www.domoticz.com/DomoticzManual.pdf"
+code = "https://github.com/domoticz/domoticz"
+cpe = "cpe:2.3:a:domoticz:domoticz"
+fund = "https://www.paypal.com/donate?token=rF_gUybGmQGia_jzLfu3vkeXRqYLRV-v-BxCTylrTsEN4mB-nDdSVQhg3a-I9LkiqORq70Gtxbo6rq3r&locale.x=US"
+
+[integration]
+yunohost = ">= 11.2"
+architectures = [ "amd64", "armhf", "arm64" ]
+multi_instance = false
+
+ldap = false
+
+sso = false
+
+disk = "100M"
+ram.build = "150M"
+ram.runtime = "50M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.path]
+    type = "path"
+    default = "/domoticz"
+
+    [install.init_main_permission]
+    type = "group"
+    default = "all_users"
+
+    [install.mqtt_domain]
+    ask.fr = "Domaine MQTT"
+    ask.en = "MQTT domain"
+    help.fr = "Domaine pour le serveur MQTT. Remettez le domaine principal ou à vide si vous ne souhaitez pas l'utiliser. Lire la documentation pour plus d'informations"
+    help.en = "MQTT server domain. Set blank or the main domain if you don't wish to use it. See the doc for more info"
+    type = "domain"
+    optional = true
+
+[resources]
+        [resources.sources.main]
+        arm64.url = "https://github.com/domoticz/domoticz/releases/download/2024.2/domoticz_linux_2024.2_aarch64.tgz"
+        arm64.sha256 = "d0ee6660c1c05c2949bfbe669de0029795f5974a5f00b6818c0aefba944b3fd6"
+        armhf.url = "https://github.com/domoticz/domoticz/releases/download/2024.2/domoticz_linux_2024.2_armv7l.tgz"
+        armhf.sha256 = "23eb3f4d2c818761773a45282b054f2707808005643ceba10a386cb1cf93db0a"
+        amd64.url = "https://github.com/domoticz/domoticz/releases/download/2024.2/domoticz_linux_2024.2_x86_64.tgz"
+        amd64.sha256 = "0f973af6dcadef17d75ac7372dfc2f0a87bd0fabca8db04348fe34bd1d0180e2"
+        format="tar.gz"
+        in_subdir=false
+        extract=true
+
+        autoupdate.strategy = "latest_github_release"
+
+        autoupdate.asset.arm64 = "*_aarch64.tgz"
+        autoupdate.asset.amd64 = "*_x86_64.tgz"
+        autoupdate.asset.armhf = "*_armhf.tgz"
+        
+        [resources.system_user]
+
+        [resources.install_dir]
+
+        [resources.permissions]
+        main.url = "/"
+        main.auth_header = false
+
+        api.url = "__DOMAIN__/api_/__APP__"
+        api.show_tile = false
+        api.allowed = "visitors"
+
+        #Permission will be removed by the install script if not needed
+        mqtt.url = "__MQTT_DOMAIN__/"
+        mqtt.show_tile = false
+        mqtt.allowed = "visitors"
+
+        [resources.ports]
+        main.default = 8080
+        #to be checked if it can become conditionnal
+        #ports will always be provisionned... don't know if it's an issue...
+        mqtt.default = 1883
+        mqtt_websocket.default = 8883
+
+        [resources.apt]
+        packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4"
+        packages_from_raw_bash = '''if [ "$mqtt_domain" != "$domain" ]; then echo mosquitto mosquitto-clients; fi'''
+
