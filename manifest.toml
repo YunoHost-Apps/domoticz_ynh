@@ -63,12 +63,7 @@ ram.runtime = "50M"
         in_subdir=false
         extract=true
 
-        autoupdate.strategy = "latest_github_release"
 
-        autoupdate.asset.arm64 = "*_aarch64.tgz"
-        autoupdate.asset.amd64 = "*_x86_64.tgz"
-        autoupdate.asset.armhf = "*_armhf.tgz"
-        
         [resources.system_user]
 
         [resources.install_dir]
