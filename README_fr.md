@@ -35,7 +35,7 @@ Vous pouvez également installer le [package pour Mosquitto](https://github.com/
 
 
 
-**Version incluse :** 2024.3~ynh1
+**Version incluse :** 2024.4~ynh1
 
 ## Captures d’écran
 
