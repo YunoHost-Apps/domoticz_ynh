@@ -26,8 +26,8 @@ ynh_backup --src_path="$install_dir"
 #=================================================
 
 ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/api_"$app".conf"
-[[ "$domain" != "$mqtt_domain" ]] && ynh_backup --src_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_$app.conf"  --not_mandatory
+ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/api_${app}.conf"
+[[ "$domain" != "$mqtt_domain" ]] && ynh_backup --src_path="/etc/nginx/conf.d/$mqtt_domain.d/mqtt_${app}.conf"  --not_mandatory
 
 #=================================================
 # SPECIFIC BACKUP

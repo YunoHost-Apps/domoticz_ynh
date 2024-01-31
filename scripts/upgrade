@@ -109,16 +109,16 @@ if [ "$domain" != "$mqtt_domain"  ]; then
 	ynh_script_progression --message="Setting up mosquitto..." --weight=5
 
 	#Setting up conf file for access
-	if [ ! -f "/etc/mosquitto/conf.d/"$app"_mosquitto.conf" ]
+	if [ ! -f "/etc/mosquitto/conf.d/${app}_mosquitto.conf" ]
 	then
-		ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/"$app"_mosquitto.conf"
+		ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/${app}_mosquitto.conf"
 		chmod 644 /etc/mosquitto/conf.d/"$app"_mosquitto.conf
 
 		#Setting up user&pwd for mqtt access
 		ynh_app_setting_set --app="$app" --key=mqtt_user --value=$(ynh_string_random --length=8)
 		ynh_app_setting_set --app="$app" --key=mqtt_pwd --value=$(ynh_string_random)
-		echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/"$app"_credentials"
-		mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
+		echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/${app}_credentials"
+		mosquitto_passwd -U "/etc/mosquitto/conf.d/${app}_credentials"
 
 		ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
 	fi
@@ -132,17 +132,17 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
-[[ "$domain" != "$mqtt_domain"  ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
+[[ "$domain" != "$mqtt_domain"  ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
 
 #Set Hook for nginx domain
 cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
 
 # Create a dedicated NGINX config
-if [[ ! -f "/etc/nginx/conf.d/"$domain".d/api_"$app".conf" ]] 
+if [[ ! -f "/etc/nginx/conf.d/${domain}.d/api_${app}.conf" ]] 
 then 
 	ynh_print_warn --message="The nginx conf file will now be splitted between standard and api related path"
 	ynh_print_warn --message="Report any manual changes on the new /etc/nginx/conf.d/$domain.d/api_$app.conf file for json command to keep working"
-	ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/"$domain".d/api_"$app".conf"
+	ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
 fi
 ynh_add_nginx_config
 
