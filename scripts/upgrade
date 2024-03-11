@@ -90,7 +90,7 @@ fi
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Upgrading source files..." --weight=15
-	ynh_setup_source --dest_dir="$install_dir"
+	ynh_setup_source --dest_dir="$install_dir" --full_replace=1
 	#Create the database file
 	if [ ! -f "$install_dir"/domoticz.db ]; then
 		touch "$install_dir"/domoticz.db
