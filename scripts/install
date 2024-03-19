@@ -74,14 +74,14 @@ if [ "$domain" != "$mqtt_domain" ]; then
 
 	ynh_script_progression --message="Setting up mosquitto..." --weight=5
 	#Setting up conf file for access
-	ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/"$app"_mosquitto.conf"
+	ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/${app}_mosquitto.conf"
 	chmod 644 /etc/mosquitto/conf.d/"$app"_mosquitto.conf
 
 	#Setting up user&pwd for mqtt access
 	ynh_app_setting_set --app="$app" --key=mqtt_user --value=$(ynh_string_random --length=8)
 	ynh_app_setting_set --app="$app" --key=mqtt_pwd --value=$(ynh_string_random)
- 	echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/"$app"_credentials"
-	mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
+ 	echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/${app}_credentials"
+	mosquitto_passwd -U "/etc/mosquitto/conf.d/${app}_credentials"
 
 	ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
 else
@@ -95,13 +95,13 @@ fi
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
-[[ "$domain" != "$mqtt_domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
+[[ "$domain" != "$mqtt_domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
 
 #Set Hook for nginx domain
 cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
 
 # Create a dedicated NGINX config
-ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/"$domain".d/api_"$app".conf"
+ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
 ynh_add_nginx_config
 
 

@@ -20,7 +20,7 @@ if [ "$domain" != "$mqtt_domain" ]; then
 	yunohost service remove mosquitto
 	ynh_secure_remove --file="/etc/mosquitto/conf.d"
 	ynh_secure_remove --file="/usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz"
-	ynh_secure_remove --file="/etc/nginx/conf.d/"$mqtt_domain".d/mqtt_"$app".conf"
+	ynh_secure_remove --file="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
 	yunohost tools regen-conf postfix
 	ynh_secure_remove --file="/var/log/mosquitto"
 fi
@@ -35,7 +35,7 @@ fi
 # Remove the dedicated systemd config
 ynh_remove_systemd_config
 
-ynh_secure_remove --file="/etc/nginx/conf.d/"$domain".d/api_"$app".conf"
+ynh_secure_remove --file="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
 ynh_remove_nginx_config
 
 ynh_remove_logrotate
