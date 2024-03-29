@@ -37,8 +37,8 @@ You may also install the [Mosquitto package](https://github.com/YunoHost-Apps/mo
 
 ## Screenshots
 
-![Screenshot of Domoticz](./doc/screenshots/domoticz_floorplan_machineon.png)
 ![Screenshot of Domoticz](./doc/screenshots/domoticz_Switches_screen.png)
+![Screenshot of Domoticz](./doc/screenshots/domoticz_floorplan_machineon.png)
 
 ## Documentation and resources
 

@@ -39,8 +39,8 @@ Vous pouvez également installer le [package pour Mosquitto](https://github.com/
 
 ## Captures d’écran
 
-![Capture d’écran de Domoticz](./doc/screenshots/domoticz_floorplan_machineon.png)
 ![Capture d’écran de Domoticz](./doc/screenshots/domoticz_Switches_screen.png)
+![Capture d’écran de Domoticz](./doc/screenshots/domoticz_floorplan_machineon.png)
 
 ## Documentations et ressources
 
