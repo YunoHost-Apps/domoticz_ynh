@@ -9,7 +9,7 @@ It shall NOT be edited by hand.
 
 [![Install Domoticz with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=domoticz)
 
-*[Read this README is other languages.](./ALL_README.md)*
+*[Read this README in other languages.](./ALL_README.md)*
 
 > *This package allows you to install Domoticz quickly and simply on a YunoHost server.*  
 > *If you don't have YunoHost, please consult [the guide](https://yunohost.org/install) to learn how to install it.*
@@ -32,6 +32,7 @@ For example this system can be used with:
 
 The MQTT broker Mosquitto is integrated into the package and requires its own domain or subdomain. It's an optional setting.
 You may also install the [Mosquitto package](https://github.com/YunoHost-Apps/mosquitto_ynh) without using the one provided by domoticz_ynh.
+
 **Shipped version:** 2024.4~ynh1
 
 ## Screenshots

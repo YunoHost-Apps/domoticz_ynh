@@ -32,6 +32,9 @@ Il peut par exemple être utilisé avec :
 Le broker MQTT Mosquitto est intégré au package et nécessite un sous-domaine ou un domaine distinct. Il est optionnel.
 Vous pouvez également installer le [package pour Mosquitto](https://github.com/YunoHost-Apps/mosquitto_ynh) sans utiliser celui de domoticz_ynh.
 
+
+
+
 **Version incluse :** 2024.4~ynh1
 
 ## Captures d’écran
