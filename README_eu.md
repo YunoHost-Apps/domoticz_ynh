@@ -5,7 +5,7 @@ EZ editatu eskuz.
 
 # Domoticz YunoHost-erako
 
-[![Integrazio maila](https://dash.yunohost.org/integration/domoticz.svg)](https://dash.yunohost.org/appci/app/domoticz) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)
+[![Integrazio maila](https://dash.yunohost.org/integration/domoticz.svg)](https://ci-apps.yunohost.org/ci/apps/domoticz/) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)
 
 [![Instalatu Domoticz YunoHost-ekin](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=domoticz)
 
@@ -33,7 +33,7 @@ For example this system can be used with:
 The MQTT broker Mosquitto is integrated into the package and requires its own domain or subdomain. It's an optional setting.
 You may also install the [Mosquitto package](https://github.com/YunoHost-Apps/mosquitto_ynh) without using the one provided by domoticz_ynh.
 
-**Paketatutako bertsioa:** 2024.4~ynh1
+**Paketatutako bertsioa:** 2024.6~ynh1
 
 ## Pantaila-argazkiak
 

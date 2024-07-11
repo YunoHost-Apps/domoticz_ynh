@@ -5,7 +5,7 @@
 
 # YunoHost 上的 Domoticz
 
-[![集成程度](https://dash.yunohost.org/integration/domoticz.svg)](https://dash.yunohost.org/appci/app/domoticz) ![工作状态](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)
+[![集成程度](https://dash.yunohost.org/integration/domoticz.svg)](https://ci-apps.yunohost.org/ci/apps/domoticz/) ![工作状态](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)
 
 [![使用 YunoHost 安装 Domoticz](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=domoticz)
 
@@ -33,7 +33,7 @@ For example this system can be used with:
 The MQTT broker Mosquitto is integrated into the package and requires its own domain or subdomain. It's an optional setting.
 You may also install the [Mosquitto package](https://github.com/YunoHost-Apps/mosquitto_ynh) without using the one provided by domoticz_ynh.
 
-**分发版本：** 2024.4~ynh1
+**分发版本：** 2024.6~ynh1
 
 ## 截图
 
