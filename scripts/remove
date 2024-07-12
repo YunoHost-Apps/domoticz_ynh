@@ -22,7 +22,6 @@ if [ "$domain" != "$mqtt_domain" ]; then
 	ynh_secure_remove --file="/usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz"
 	ynh_secure_remove --file="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
 	yunohost tools regen-conf postfix
-	ynh_secure_remove --file="/var/log/mosquitto"
 fi
 
 ynh_script_progression --message="Removing system configurations related to $app..." --weight=1
@@ -42,7 +41,6 @@ ynh_remove_logrotate
 
 ynh_remove_fail2ban_config
 
-ynh_secure_remove --file="/var/log/$app"
 
 #=================================================
 # END OF SCRIPT
