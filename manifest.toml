@@ -63,11 +63,12 @@ ram.runtime = "50M"
         in_subdir=false
         extract=true
 
-        autoupdate.strategy = "latest_github_release"
+        #autoupdate.strategy = "latest_github_release"
 
-        autoupdate.asset.arm64 = ".*domoticz_linux_aarch64.tgz"
-        autoupdate.asset.amd64 = ".*domoticz_linux_x86_64.tgz"
-        autoupdate.asset.armhf = ".*domoticz_linux_armv7l.tgz"
+        # Temporarily disable autoupdate because 2024.7 doesn't have the right assets available contrarily to 2024.6 T_T
+        #autoupdate.asset.arm64 = ".*domoticz_linux_aarch64.tgz"
+        #autoupdate.asset.amd64 = ".*domoticz_linux_x86_64.tgz"
+        #autoupdate.asset.armhf = ".*domoticz_linux_armv7l.tgz"
 
         [resources.system_user]
 
