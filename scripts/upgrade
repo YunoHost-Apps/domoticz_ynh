@@ -1,42 +1,29 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# CHECK VERSION
-#=================================================
-ynh_script_progression --message="Checking version..."
+ynh_script_progression "Checking version..."
 
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# STANDARD UPGRADE STEPS
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=2
+ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemd_action --service_name="$app" --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..."
+ynh_script_progression "Ensuring downward compatibility..."
 
 #Store OS and machine (to be used in restore script)
 if [ -z "${OS:+x}" ]; then
-	ynh_app_setting_-set --app="$app" --key=OS --value=`lowercase \`uname -s\``
+	ynh_app_setting_-set --key=OS --value=`lowercase \`uname -s\``
 fi
 if [ -z "${mach:+x}" ]; then
 	mach=`uname -m`
-	ynh_app_setting_set --app="$app" --key=mach --value="$mach"
+	ynh_app_setting_set --key=mach --value="$mach"
 fi
 
 #sudoer file for restarting is not required anymore (from 2023.1~ynh1) as upgrade is managed by the Yunohost Package
@@ -51,26 +38,25 @@ if [ -z "$api_path" ]; then
 	else
 		api_path=/api_"$path"
 	fi
-	ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
+	ynh_app_setting_set --key=api_path --value="$api_path"
 fi
 
 #Previous version did not have settings stored and
 #variable may not be bound.
 if [[ -z "${mqtt_domain+x}" ]]; then
 	mqtt_domain="$domain"
-	ynh_app_setting_set --app="$app" --key=mqtt_domain --value="$mqtt_domain"
+	ynh_app_setting_set --key=mqtt_domain --value="$mqtt_domain"
 fi
 
 #remove unwanted log folder
 if [ -d "/var/log/$app/$app" ]; then
-	ynh_secure_remove "/var/log/$app/$app"
+	ynh_safe_rm "/var/log/$app/$app"
 fi
-
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Checking dedicated user permissions..."
+ynh_script_progression "Checking dedicated user permissions..."
 
 #allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
 if grep dialout -q < /etc/group; then
@@ -87,9 +73,10 @@ fi
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
+# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
+if ynh_app_upstream_version_changed
 then
-	ynh_script_progression --message="Upgrading source files..." --weight=15
+	ynh_script_progression "Upgrading source files..."
 	ynh_setup_source --dest_dir="$install_dir"
 	#Create the database file
 	if [ ! -f "$install_dir"/domoticz.db ]; then
@@ -98,29 +85,28 @@ then
 	fi
 fi
 
-chmod 750 "$install_dir"
-chmod -R o-rwx "$install_dir"
-chown -R "$app":"$app" "$install_dir"
-
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
+#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app":"$app" "$install_dir"
 #=================================================
 # SET MOSQUITTO SETTINGS
 #=================================================
 if [ "$domain" != "$mqtt_domain"  ]; then
-	ynh_script_progression --message="Setting up mosquitto..." --weight=5
+	ynh_script_progression "Setting up mosquitto..."
 
 	#Setting up conf file for access
 	if [ ! -f "/etc/mosquitto/conf.d/${app}_mosquitto.conf" ]
 	then
-		ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/${app}_mosquitto.conf"
+		ynh_config_add --template="domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/${app}_mosquitto.conf"
 		chmod 644 /etc/mosquitto/conf.d/"$app"_mosquitto.conf
 
 		#Setting up user&pwd for mqtt access
-		ynh_app_setting_set --app="$app" --key=mqtt_user --value=$(ynh_string_random --length=8)
-		ynh_app_setting_set --app="$app" --key=mqtt_pwd --value=$(ynh_string_random)
-		echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/${app}_credentials"
+		ynh_app_setting_set --key=mqtt_user --value=$(ynh_string_random --length=8)
+		ynh_app_setting_set --key=mqtt_pwd --value=$(ynh_string_random)
+		echo $(ynh_app_setting_get --key=mqtt_user):$(ynh_app_setting_get --key=mqtt_pwd) > "/etc/mosquitto/conf.d/${app}_credentials"
 		mosquitto_passwd -U "/etc/mosquitto/conf.d/${app}_credentials"
 
-		ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
+		ynh_print_info "The credential to the mosquitto server has been saved in the settings of the app"
 	fi
 else
 	#If no MQTT have been set, we delete the mqtt permission.
@@ -130,50 +116,48 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..."
+ynh_script_progression "Upgrading NGINX web server configuration..."
 
-[[ "$domain" != "$mqtt_domain"  ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
+[[ "$domain" != "$mqtt_domain"  ]] && ynh_config_add --template="mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
 
 #Set Hook for nginx domain
 cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
 
 # Create a dedicated NGINX config
-if [[ ! -f "/etc/nginx/conf.d/${domain}.d/api_${app}.conf" ]] 
-then 
-	ynh_print_warn --message="The nginx conf file will now be splitted between standard and api related path"
-	ynh_print_warn --message="Report any manual changes on the new /etc/nginx/conf.d/$domain.d/api_$app.conf file for json command to keep working"
-	ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
-fi
-ynh_add_nginx_config
+if [[ ! -f "/etc/nginx/conf.d/${domain}.d/api_${app}.conf" ]]
 
-#=================================================
-# SPECIFIC UPGRADE
+then
+
+	ynh_print_warn "The nginx conf file will now be splitted between standard and api related path"
+	ynh_print_warn "Report any manual changes on the new /etc/nginx/conf.d/$domain.d/api_$app.conf file for json command to keep working"
+	ynh_config_add --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
+fi
+ynh_config_add_nginx
+
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Upgrading systemd configuration..."
+ynh_script_progression "Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_config_add_systemd
 
-#=================================================
-# GENERIC FINALIZATION
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..."
+ynh_script_progression "Upgrading logrotate configuration..."
 
 mkdir -p /var/log/"$app"
-chown -R domoticz: /var/log/"$app"
+#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R domoticz: /var/log/"$app"
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --logfile="/var/log/$app" --non-append
-[[ ! -z "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto"
+ynh_config_add_logrotate "/var/log/$app"
+[[ ! -z "$mqtt_domain" ]] && ynh_config_add_logrotate "/var/log/mosquitto"
 
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configuring Fail2Ban..." --weight=8
+ynh_script_progression "Configuring Fail2Ban..."
 
 # Make sure a log file exists (mostly for CI tests)
 log_file=/var/log/$app/$app.log
@@ -183,29 +167,28 @@ if [ ! -f "$log_file" ]; then
 fi
 
 # Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$" --max_retry=5
+ynh_config_add_fail2ban --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
+ynh_script_progression "Integrating service in YunoHost..."
 
 yunohost service add "$app" --description="Domotique open sources" --log="/var/log/$app/$app.log"
 [[ "$domain" != "$mqtt_domain"  ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
 
-
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=3
+ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemd_action --service_name="$app" --action="start"
+ynh_systemctl --service="$app" --action="start"
 
 #Restarting mosquitto to take changes from /etc/mosquitto/conf.d/*.conf into account
-[[ "$domain" != "$mqtt_domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
+[[ "$domain" != "$mqtt_domain" ]] && ynh_systemctl --service=mosquitto --action="restart"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"

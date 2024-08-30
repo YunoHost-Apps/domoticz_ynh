@@ -19,7 +19,8 @@ cpe = "cpe:2.3:a:domoticz:domoticz"
 fund = "https://www.paypal.com/donate?token=rF_gUybGmQGia_jzLfu3vkeXRqYLRV-v-BxCTylrTsEN4mB-nDdSVQhg3a-I9LkiqORq70Gtxbo6rq3r&locale.x=US"
 
 [integration]
-yunohost = ">= 11.2"
+yunohost = ">= 11.2.18"
+helpers_version = "2.1"
 architectures = [ "amd64", "armhf", "arm64" ]
 multi_instance = false
 
