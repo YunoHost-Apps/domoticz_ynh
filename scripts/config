@@ -1,0 +1,92 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+
+#=================================================
+# SPECIFIC GETTERS FOR TOML SHORT KEY
+#=================================================
+
+get__mqtt_user() {
+
+echo "$(cat /etc/mosquitto/conf.d/${app}_credentials | grep -oE '^.*+:' | tr -d ':')"
+
+}
+
+get__mqtt_pwd() {
+#Need to retrieve from settings as not readable from the credential file
+echo "$(cat /etc/yunohost/apps/${app}/settings.yml | grep mqtt_pwd | sed 's/mqtt_pwd: //g')"
+
+}
+
+#=================================================
+# SPECIFIC SETTERS FOR TOML SHORT KEY
+#=================================================
+
+
+set__mqtt_user() {
+
+	#retrieve password
+	mqtt_pwd=$(cat /etc/yunohost/apps/${app}/settings.yml | grep mqtt_pwd | sed 's/mqtt_pwd: //g')
+	#Set new user in config file
+	ynh_app_setting_set --app="$app" --key=mqtt_user --value=$mqtt_user
+	
+	#create new credential file
+	echo $mqtt_user:$mqtt_pwd > "/etc/mosquitto/conf.d/"$app"_credentials"
+	mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
+	if [ $? == 0 ]; then
+		ynh_print_info "User successfully changed, you should manually update the domoticz Hardware parameter"
+	else
+		ynh_print_error "Huho, something went wrong, try to see the log"
+	fi
+	
+}
+
+set__mqtt_pwd() {
+	
+	#retrieve user
+	mqtt_user=$(cat /etc/mosquitto/conf.d/domoticz_credentials | grep -oE '^.*+:' | tr -d ':')
+	#Set new password in config file 
+	ynh_app_setting_set --app="$app" --key=mqtt_pwd --value=$mqtt_pwd
+	
+	#create new credential file
+	echo $mqtt_user:$mqtt_pwd > "/etc/mosquitto/conf.d/"$app"_credentials"
+	mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
+	if [ $? == 0 ]; then
+		ynh_print_info "Password successfully changed, you should manually update the domoticz Hardware parameter"
+	else
+		ynh_print_error "Huho, something went wrong, try to see the log"
+	fi
+}
+
+validate__mqtt_user() {
+#Vérifier que Mosquitto est bien activé
+	if [[ -z "${mqtt_user}" ]]; then
+		echo 'A Username is needed for Mosquitto'
+	fi
+
+}
+
+validate__mqtt_pwd() {
+#Vérifier que Mosquitto est bien activé
+	if [[ -z "${mqtt_pwd}" ]]; then
+		echo 'A Password is needed for Mosquitto'
+	fi
+}
+
+
+ynh_app_config_run $1
