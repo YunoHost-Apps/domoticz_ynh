@@ -51,7 +51,7 @@ You may also install the [Mosquitto package](https://github.com/YunoHost-Apps/mo
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/domoticz_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/domoticz_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 
