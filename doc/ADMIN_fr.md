@@ -1,3 +1,8 @@
+## Libssl1.1
+[Domoticz nécessite actuellement libssl1.1 pour fonctionner](https://github.com/domoticz/domoticz/issues/6042). Cependant, Debian 12 ne fournit plus libssl1.1. Afin de contourner cette limitation, ce paquet va donc installer libssl1.1 depuis les dépots de bullseye, ce qui peut potentiellement engendrer des problèmes inattendus (bien que ce soit assez peu probable).
+Si ceci vous pose un problème, merci de ne pas installer cette version.
+Le pacakge libssl1.1 sera retiré dés que Domoticz sera compatible avec libssl3.
+
 ## Broker MQTT Mosquitto
 
 À l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT), [Mosquitto](https://mosquitto.org/), est installé en même temps que Domoticz.
@@ -89,7 +94,7 @@ allow ::/1;
 Ceci autorisera seulement les adresses IPv4 local a accéder aux API de Domoticz.
 Vous pouvez ajouter des adresses IPv6 de la même façon.
 
-## Mise à jours
+## Mise à jour
 
 Les mises à jours depuis l'application ont été désactivées. Bon, en vrai, c'est juste le lien qui est caché, vous pouvez donc en fait toujours faire la mise à jour depuis la ligne de commande si vous savez comment faire. Ceci permet d'éviter certaines mises à jour qui peuvent casser l'intégration avec YunoHost, tel que l'obligation de créer des users depuis la 2023.1.
 

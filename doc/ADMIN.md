@@ -1,3 +1,7 @@
+## Libssl1.1
+[Domoticz currently requires libssl1.1 to work](https://github.com/domoticz/domoticz/issues/6042). However, Debian 12 does not ship libssl1.1 anymore. In order to circumvent this limitation, this package will install libssl1.1 package from bullseye repository on your bookworm install. This may cause unexpected trouble (even if not very liekly). If you are not confortable with that, please do not install.
+We will remove the libssl1.1 as soon as domoticz will be compatible with libssl3.
+
 ## Broker Mosquitto
 
 During installation, a [MQTT](https://en.wikipedia.org/wiki/MQTT) broker, [Mosquitto](https://mosquitto.org/), is installed at the same time as Domoticz.
@@ -42,7 +46,7 @@ If you wish to open direct mqtt protocol from an outside device, you'll need to:
 If you have package 2020.2~ynh3 or below or if you have chosen to not set a domain during initial installation, Mosquitto is not installed by default.
 If you need to activate mosquitto in retrospect, do following actions:
 1. Create a domain or a subdomain (for example: 'mqtt.your.domain.tld')
-2. Connect to your server in command line 
+2. Connect to your server in command line
 3. Type following command : `yunohost app setting __APP__ mqtt_domain -v mqtt.your.domain.tld`
 4. Upgrade Domoticz to last package.
 If you're already on the last package version, use the following command: `yunohost app upgrade __APP__ --force`
