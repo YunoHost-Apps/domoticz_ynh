@@ -33,7 +33,7 @@ For example this system can be used with:
 The MQTT broker Mosquitto is integrated into the package and requires its own domain or subdomain. It's an optional setting.
 You may also install the [Mosquitto package](https://github.com/YunoHost-Apps/mosquitto_ynh) without using the one provided by domoticz_ynh.
 
-**Versión actual:** 2024.6~ynh1
+**Versión actual:** 2024.6~ynh2
 
 ## Capturas
 
@@ -51,7 +51,7 @@ You may also install the [Mosquitto package](https://github.com/YunoHost-Apps/mo
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/domoticz_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/domoticz_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 
