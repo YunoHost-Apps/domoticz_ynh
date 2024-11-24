@@ -95,7 +95,7 @@ ram.runtime = "50M"
         mqtt_websocket.default = 8883
 
         [resources.apt]
-        packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4"
+        packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4 debian-archive-keyring"
         packages_from_raw_bash = """
         if [ "$mqtt_domain" != "$domain" ]; then
             echo mosquitto mosquitto-clients;
