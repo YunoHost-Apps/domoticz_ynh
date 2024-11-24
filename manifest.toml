@@ -108,6 +108,6 @@ ram.runtime = "50M"
         # So if we're in a debian 12 and libssl1.1 is not installed, we will install it from bullseye repo
         # As soon as compilation is done with libssl.so.3, this extra repo must be removed
         extras.libssl.repo="deb http://security.debian.org/debian-security bullseye-security main"
-        extras.libssl.key="5C808C2B65558117"
+        extras.libssl.key="https://security.debian.org/debian-security/dists/bullseye-security/Release.gpg"
         extras.libssl.packages=["libssl1.1"]
         ##############################
