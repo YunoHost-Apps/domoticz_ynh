@@ -95,7 +95,7 @@ ram.runtime = "50M"
         mqtt_websocket.default = 8883
 
         [resources.apt]
-        packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4 debian-archive-keyring"
+        packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4"
         packages_from_raw_bash = """
         if [ "$mqtt_domain" != "$domain" ]; then
             echo mosquitto mosquitto-clients;
@@ -108,6 +108,6 @@ ram.runtime = "50M"
         # So if we're in a debian 12 and libssl1.1 is not installed, we will install it from bullseye repo
         # As soon as compilation is done with libssl.so.3, this extra repo must be removed
         extras.libssl.repo="deb http://security.debian.org/debian-security bullseye-security main"
-        extras.libssl.key="112695A0E562B32A"
+        extras.libssl.key="8DD47936"
         extras.libssl.packages=["libssl1.1"]
         ##############################
