@@ -5,7 +5,9 @@
 
 # Domoticz для YunoHost
 
-[![Уровень интеграции](https://dash.yunohost.org/integration/domoticz.svg)](https://ci-apps.yunohost.org/ci/apps/domoticz/) ![Состояние работы](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![Состояние сопровождения](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)
+[![Уровень интеграции](https://apps.yunohost.org/badge/integration/domoticz)](https://ci-apps.yunohost.org/ci/apps/domoticz/)
+![Состояние работы](https://apps.yunohost.org/badge/state/domoticz)
+![Состояние сопровождения](https://apps.yunohost.org/badge/maintained/domoticz)
 
 [![Установите Domoticz с YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=domoticz)
 

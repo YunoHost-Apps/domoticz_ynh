@@ -5,7 +5,9 @@ It shall NOT be edited by hand.
 
 # Domoticz for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/domoticz.svg)](https://ci-apps.yunohost.org/ci/apps/domoticz/) ![Working status](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)
+[![Integration level](https://apps.yunohost.org/badge/integration/domoticz)](https://ci-apps.yunohost.org/ci/apps/domoticz/)
+![Working status](https://apps.yunohost.org/badge/state/domoticz)
+![Maintenance status](https://apps.yunohost.org/badge/maintained/domoticz)
 
 [![Install Domoticz with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=domoticz)
 
