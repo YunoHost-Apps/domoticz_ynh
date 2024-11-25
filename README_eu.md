@@ -5,7 +5,9 @@ EZ editatu eskuz.
 
 # Domoticz YunoHost-erako
 
-[![Integrazio maila](https://dash.yunohost.org/integration/domoticz.svg)](https://ci-apps.yunohost.org/ci/apps/domoticz/) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)
+[![Integrazio maila](https://apps.yunohost.org/badge/integration/domoticz)](https://ci-apps.yunohost.org/ci/apps/domoticz/)
+![Funtzionamendu egoera](https://apps.yunohost.org/badge/state/domoticz)
+![Mantentze egoera](https://apps.yunohost.org/badge/maintained/domoticz)
 
 [![Instalatu Domoticz YunoHost-ekin](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=domoticz)
 
