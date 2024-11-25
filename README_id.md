@@ -5,7 +5,9 @@ Ini TIDAK boleh diedit dengan tangan.
 
 # Domoticz untuk YunoHost
 
-[![Tingkat integrasi](https://dash.yunohost.org/integration/domoticz.svg)](https://ci-apps.yunohost.org/ci/apps/domoticz/) ![Status kerja](https://ci-apps.yunohost.org/ci/badges/domoticz.status.svg) ![Status pemeliharaan](https://ci-apps.yunohost.org/ci/badges/domoticz.maintain.svg)
+[![Tingkat integrasi](https://apps.yunohost.org/badge/integration/domoticz)](https://ci-apps.yunohost.org/ci/apps/domoticz/)
+![Status kerja](https://apps.yunohost.org/badge/state/domoticz)
+![Status pemeliharaan](https://apps.yunohost.org/badge/maintained/domoticz)
 
 [![Pasang Domoticz dengan YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=domoticz)
 
