@@ -52,11 +52,9 @@ ynh_setup_source --dest_dir="$install_dir"
 if [ ! -f "$install_dir"/domoticz.db ]; then
 	touch "$install_dir"/domoticz.db
 	chmod 640 "$install_dir"/domoticz.db
+	chown "$app:$app" "$install_dir"/domoticz.db
 fi
 
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 750 "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R "$app":"$app" "$install_dir"
 #=================================================
 # SET MOSQUITTO SETTINGS
 #=================================================
@@ -85,9 +83,6 @@ fi
 ynh_script_progression "Configuring NGINX web server..."
 
 [[ "$domain" != "$mqtt_domain" ]] && ynh_config_add --template="mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
-
-#Set Hook for nginx domain
-cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
 
 # Create a dedicated NGINX config
 ynh_config_add --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
