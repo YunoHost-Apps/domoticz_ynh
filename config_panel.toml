@@ -1,0 +1,28 @@
+version = "1.0"
+[main]
+
+[main.mqtt]
+name = "MQTT Broker"
+services = [ 'mosquitto' ]
+
+
+[main.mqtt.mqtt_user]
+ask.en = "Mosquitto User"
+ask.fr = "Utilisateur Mosquitto"
+type = "string"
+
+[main.mqtt.mqtt_pwd]
+ask.en = "Mosquitto Password"
+ask.fr = "Mot de passe Mosquitto"
+type = "string"
+
+
+[main.api]
+name= "API"
+services = [ 'nginx' ]
+
+[main.api.authorized]
+ask.en = "Regex for authorized JSON command"
+ask.fr = "Regex pour les commandes JSON autorisées"
+type= "string"
+bind= "null"

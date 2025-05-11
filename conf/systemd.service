@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=__APP__
 Group=__APP__
-ExecStart=__INSTALL_DIR__/domoticz -www __PORT__ -sslwww 0 -log /var/log/__APP__/__APP__.log -loglevel normal,status,error
+ExecStart=__INSTALL_DIR__/domoticz -www __PORT__ -noupdates -sslwww 0 -log /var/log/__APP__/__APP__.log -loglevel normal,status,error
 WorkingDirectory=__INSTALL_DIR__/
 ExecStartPre=+setcap 'cap_net_bind_service=+ep cap_net_raw=+eip' __INSTALL_DIR__/domoticz
 Restart=on-failure
@@ -43,7 +43,7 @@ CapabilityBoundingSet=~CAP_SYS_TTY_CONFIG
 CapabilityBoundingSet=~CAP_MAC_ADMIN CAP_MAC_OVERRIDE
 #Has to be commented as prevent the service to run
 #CapabilityBoundingSet=~CAP_NET_ADMIN CAP_NET_BROADCAST CAP_NET_RAW
-CapabilityBoundingSet=~CAP_SYS_ADMIN CAP_SYS_PTRACE CAP_SYSLOG 
+CapabilityBoundingSet=~CAP_SYS_ADMIN CAP_SYS_PTRACE CAP_SYSLOG
 
 
 
