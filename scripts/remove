@@ -3,18 +3,11 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-#=================================================
-# STANDARD REMOVE
-#=================================================
-# REMOVE SERVICE INTEGRATION IN YUNOHOST
-#=================================================
-
 if [ "$domain" != "$mqtt_domain" ]; then
 	ynh_script_progression "Removing system configurations related to Mosquitto..."
 	yunohost service remove mosquitto
 	ynh_safe_rm "/etc/mosquitto/conf.d"
 	ynh_safe_rm "/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
-	yunohost tools regen-conf postfix
 fi
 
 ynh_script_progression "Removing system configurations related to $app..."

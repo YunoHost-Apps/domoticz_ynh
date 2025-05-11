@@ -30,11 +30,14 @@ ynh_script_progression "Restoring the NGINX web server configuration..."
 
 ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_restore "/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
-ynh_restore "/etc/nginx/conf.d/$mqtt_domain.d/mqtt_${app}.conf" || true
+if [ "$domain" != "$mqtt_domain" ]; then
+	ynh_restore "/etc/nginx/conf.d/$mqtt_domain.d/mqtt_${app}.conf"
+fi
 
 #=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
+ynh_script_progression "Restoring the user access..."
 #allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
 if grep dialout -q < /etc/group; then
 	usermod -a -G dialout "$app"
@@ -57,8 +60,9 @@ ynh_restore "$install_dir"
 # SET MOSQUITTO SETTINGS
 #=================================================
 if [ "$domain" != "$mqtt_domain" ]; then
-	ynh_script_progression "Reinstalling up mosquitto..."
-	ynh_restore "/etc/mosquitto/conf.d" || true
+	ynh_script_progression "Reinstalling mosquitto settings..."
+	ynh_restore "/etc/mosquitto/conf.d"
+	chmod 755 "/etc/mosquitto/conf.d" #standard restore set 700 : mosquitto user cannot acces the folder
 else
 	#If no MQTT have been set, we delete the mqtt permission.
 	ynh_permission_delete --permission="mqtt"
