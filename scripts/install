@@ -1,25 +1,19 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
 # STORE SETTINGS
 #=================================================
-ynh_script_progression --message="Storing installation settings..."
+ynh_script_progression "Storing installation settings..."
 
 #Will be used in restore script to check that we're restoring on the same OS/Board type
 OS=`lowercase \`uname -s\``
 mach=`uname -m`
 
-ynh_app_setting_set --app="$app" --key=OS --value="$OS"
-ynh_app_setting_set --app="$app" --key=mach --value="$mach"
+ynh_app_setting_set --key=OS --value="$OS"
+ynh_app_setting_set --key=mach --value="$mach"
 
 #path used by api to read/update domoticz
 #Set dedicated variables
@@ -28,14 +22,12 @@ if [ "$path" == "/" ]; then
 else
 	api_path=/api_"$path"
 fi
-ynh_app_setting_set --app="$app" --key=api_path --value="$api_path"
+ynh_app_setting_set --key=api_path --value="$api_path"
 
-#=================================================
-# STANDARD MODIFICATIONS
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..."
+ynh_script_progression "Configuring system user..."
 
 #allow user to access USB / serial port to communicate with tools (RFXtrx, Z-wave dongle, etc.) & i2c bus
 if grep dialout -q < /etc/group; then
@@ -51,7 +43,7 @@ fi
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..." --weight=5
+ynh_script_progression "Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir"
@@ -60,99 +52,86 @@ ynh_setup_source --dest_dir="$install_dir"
 if [ ! -f "$install_dir"/domoticz.db ]; then
 	touch "$install_dir"/domoticz.db
 	chmod 640 "$install_dir"/domoticz.db
+	chown "$app:$app" "$install_dir"/domoticz.db
 fi
-
-chmod 750 "$install_dir"
-chmod -R o-rwx "$install_dir"
-chown -R "$app":"$app" "$install_dir"
-
 
 #=================================================
 # SET MOSQUITTO SETTINGS
 #=================================================
 if [ "$domain" != "$mqtt_domain" ]; then
 
-	ynh_script_progression --message="Setting up mosquitto..." --weight=5
+	ynh_script_progression "Setting up mosquitto..."
 	#Setting up conf file for access
-	ynh_add_config --template="../conf/domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/${app}_mosquitto.conf"
+	ynh_config_add --template="domoticz_mosquitto.conf" --destination="/etc/mosquitto/conf.d/${app}_mosquitto.conf"
 	chmod 644 /etc/mosquitto/conf.d/"$app"_mosquitto.conf
 
 	#Setting up user&pwd for mqtt access
-	ynh_app_setting_set --app="$app" --key=mqtt_user --value=$(ynh_string_random --length=8)
-	ynh_app_setting_set --app="$app" --key=mqtt_pwd --value=$(ynh_string_random)
- 	echo $(ynh_app_setting_get --app="$app" --key=mqtt_user):$(ynh_app_setting_get --app="$app" --key=mqtt_pwd) > "/etc/mosquitto/conf.d/${app}_credentials"
+	ynh_app_setting_set --key=mqtt_user --value=$(ynh_string_random --length=8)
+	ynh_app_setting_set --key=mqtt_pwd --value=$(ynh_string_random)
+ 	echo $(ynh_app_setting_get --key=mqtt_user):$(ynh_app_setting_get --key=mqtt_pwd) > "/etc/mosquitto/conf.d/${app}_credentials"
 	mosquitto_passwd -U "/etc/mosquitto/conf.d/${app}_credentials"
 
-	ynh_print_info --message="The credential to the mosquitto server has been saved in the settings of the app"
+	ynh_print_info "The credential to the mosquitto server has been saved in the settings of the app"
 else
 	#If no MQTT have been set, we delete the mqtt permission.
 	ynh_permission_delete --permission="mqtt"
 fi
 
-
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring NGINX web server..." --weight=2
+ynh_script_progression "Configuring NGINX web server..."
 
-[[ "$domain" != "$mqtt_domain" ]] && ynh_add_config --template="../conf/mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
-
-#Set Hook for nginx domain
-cp -R ../sources/hooks/conf_regen/95-nginx_domoticz /usr/share/yunohost/hooks/conf_regen/
+[[ "$domain" != "$mqtt_domain" ]] && ynh_config_add --template="mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
 
 # Create a dedicated NGINX config
-ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
-ynh_add_nginx_config
-
+ynh_config_add --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
+ynh_config_add_nginx
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..."
+ynh_script_progression "Configuring $app's systemd service..."
 
 # Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_config_add_systemd
 
-#=================================================
-# GENERIC FINALIZATION
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..."
+ynh_script_progression "Configuring log rotation..."
 
 mkdir -p /var/log/"$app"
-chown -R domoticz: /var/log/"$app"
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate
-[[ "$domain" != "$mqtt_domain" ]] && ynh_use_logrotate --logfile="/var/log/mosquitto"
+ynh_config_add_logrotate
+[[ "$domain" != "$mqtt_domain" ]] && ynh_config_add_logrotate "/var/log/mosquitto"
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
+ynh_script_progression "Integrating service in YunoHost..."
 
 yunohost service add "$app" --description="Domotique open sources" --log="/var/log/$app/$app.log"
 [[ "$domain" != "$mqtt_domain" ]] && yunohost service add mosquitto --description="Serveur MQTT pour domoticz" --log="/var/log/mosquitto/mosquitto.log"
 
-
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..."
+ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name="$app" --action="start"
+ynh_systemctl --service="$app" --action="start"
 
 #Restarting mosquitto to take changes into account
-[[ "$domain" != "$mqtt_domain" ]] && ynh_systemd_action --service_name=mosquitto --action="restart"
+[[ "$domain" != "$mqtt_domain" ]] && ynh_systemctl --service=mosquitto --action="restart"
 
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configuring Fail2Ban..." --weight=8
+ynh_script_progression "Configuring Fail2Ban..."
 
 # Make sure a log file exists (mostly for CI tests)
 log_file=/var/log/$app/$app.log
@@ -162,10 +141,10 @@ if [ ! -f "$log_file" ]; then
 fi
 
 # Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$" --max_retry=5
+ynh_config_add_fail2ban --logpath="$log_file" --failregex="^.*Error: Failed login attempt from <HOST>.*$"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed" --last
+ynh_script_progression "Installation of $app completed"
