@@ -47,8 +47,6 @@ ynh_backup "/etc/systemd/system/$app.service"
 
 [[ "$domain" != "$mqtt_domain" ]] && ynh_backup "/etc/mosquitto/conf.d" || true
 
-#ynh_backup "/usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz"
-
 #=================================================
 # END OF SCRIPT
 #=================================================
