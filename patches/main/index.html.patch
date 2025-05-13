@@ -2,7 +2,7 @@
 +++ b/www/index.html	2024-01-26 00:56:22.766868427 +0100
 @@ -154,13 +154,14 @@
  }
- 
+
  function ShowUpdateNotification(Revision, SystemName, DownloadURL) {
 -	var msgtxt=$.t('A new version of Domoticz is Available!...');
 +	<!--var msgtxt=$.t('A new version of Domoticz is Available!...');-->

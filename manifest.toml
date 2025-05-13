@@ -5,7 +5,7 @@ name = "Domoticz"
 description.en = "Lightweight Home Automation System"
 description.fr = "Système domotique léger"
 
-version = "2024.6~ynh2"
+version = "2025.1~ynh1"
 
 maintainers = ["Krakinou"]
 
@@ -19,7 +19,8 @@ cpe = "cpe:2.3:a:domoticz:domoticz"
 fund = "https://www.paypal.com/donate?token=rF_gUybGmQGia_jzLfu3vkeXRqYLRV-v-BxCTylrTsEN4mB-nDdSVQhg3a-I9LkiqORq70Gtxbo6rq3r&locale.x=US"
 
 [integration]
-yunohost = ">= 11.2"
+yunohost = ">= 11.2.18"
+helpers_version = "2.1"
 architectures = [ "amd64", "armhf", "arm64" ]
 multi_instance = false
 
@@ -53,12 +54,12 @@ ram.runtime = "50M"
 
 [resources]
         [resources.sources.main]
-        arm64.url = "https://github.com/domoticz/domoticz/releases/download/2024.6/domoticz_linux_aarch64.tgz"
-        arm64.sha256 = "0023643aaca1e9e4d09c0f972edfbf97850bcfed2cc159945bb083baf1dc6ecc"
-        armhf.url = "https://github.com/domoticz/domoticz/releases/download/2024.6/domoticz_linux_armv7l.tgz"
-        armhf.sha256 = "ed7d9e4c6d86f076e4bb188c173c46d1f0c6c5dda0cb6e80110b7e4e649d93fe"
-        amd64.url = "https://github.com/domoticz/domoticz/releases/download/2024.6/domoticz_linux_x86_64.tgz"
-        amd64.sha256 = "c322b3f2341764e3be7f1139b3b85533e27f2da492eaf4d40d2afe5a6e746688"
+        arm64.url = "https://github.com/domoticz/domoticz/releases/download/2025.1/domoticz_linux_aarch64.tgz"
+        arm64.sha256 = "24f437af38063bd56147ebdc560465ac5be6495bf2f7b430af5e158daf9afab9"
+        armhf.url = "https://github.com/domoticz/domoticz/releases/download/2025.1/domoticz_linux_armv7l.tgz"
+        armhf.sha256 = "b7e8ea8c21b71067c95790cafc91651b5a6389d86582525f0c1f4a44c9d4670d"
+        amd64.url = "https://github.com/domoticz/domoticz/releases/download/2025.1/domoticz_linux_x86_64.tgz"
+        amd64.sha256 = "8dfd881f60100dc6d095d6346d7a508269b1cfadaf1332bde79b9faf9eab9f57"
         format="tar.gz"
         in_subdir=false
         extract=true
