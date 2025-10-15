@@ -1,8 +1,3 @@
-## Libssl1.1
-[Domoticz nécessite actuellement libssl1.1 pour fonctionner](https://github.com/domoticz/domoticz/issues/6042). Cependant, Debian 12 ne fournit plus libssl1.1. Afin de contourner cette limitation, ce paquet va donc installer libssl1.1 depuis les dépots de bullseye, ce qui peut potentiellement engendrer des problèmes inattendus (bien que ce soit assez peu probable).
-Si ceci vous pose un problème, merci de ne pas installer cette version.
-Le pacakge libssl1.1 sera retiré dés que Domoticz sera compatible avec libssl3.
-
 ## Broker MQTT Mosquitto
 
 À l'installation, un broker [MQTT](https://fr.wikipedia.org/wiki/MQTT), [Mosquitto](https://mosquitto.org/), est installé en même temps que Domoticz.
