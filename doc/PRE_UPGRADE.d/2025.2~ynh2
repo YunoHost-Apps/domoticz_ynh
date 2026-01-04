@@ -1,0 +1,2 @@
+# changelog
+ - Fix mqtt port variable in nginx conf regen hook which could lead to incorrect nginx configuration
