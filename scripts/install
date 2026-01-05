@@ -84,9 +84,12 @@ ynh_script_progression "Configuring NGINX web server..."
 
 [[ "$domain" != "$mqtt_domain" ]] && ynh_config_add --template="mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
 
+ynh_add_config --template="regenconf_nginx" --destination="/etc/yunohost/hooks.d/conf_regen/19-nginx_$app"
+
 # Create a dedicated NGINX config
 ynh_config_add --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
 ynh_config_add_nginx
+yunohost tools regen-conf nginx
 
 #=================================================
 # SPECIFIC SETUP
