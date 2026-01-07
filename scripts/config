@@ -23,14 +23,15 @@ ynh_abort_if_errors
 
 get__mqtt_user() {
 
-echo "$(cat /etc/mosquitto/conf.d/${app}_credentials | grep -oE '^.*+:' | tr -d ':')"
-
+if [ -f /etc/mosquitto/conf.d/${app}_credentials ]; then
+    echo "$(cat /etc/mosquitto/conf.d/${app}_credentials | grep -oE '^.*+:' | tr -d ':')"
+fi
 }
 
 get__mqtt_pwd() {
+
 #Need to retrieve from settings as not readable from the credential file
 echo "$(cat /etc/yunohost/apps/${app}/settings.yml | grep mqtt_pwd | sed 's/mqtt_pwd: //g')"
-
 }
 
 #=================================================
@@ -44,7 +45,7 @@ set__mqtt_user() {
 	mqtt_pwd=$(cat /etc/yunohost/apps/${app}/settings.yml | grep mqtt_pwd | sed 's/mqtt_pwd: //g')
 	#Set new user in config file
 	ynh_app_setting_set --app="$app" --key=mqtt_user --value=$mqtt_user
-	
+
 	#create new credential file
 	echo $mqtt_user:$mqtt_pwd > "/etc/mosquitto/conf.d/"$app"_credentials"
 	mosquitto_passwd -U "/etc/mosquitto/conf.d/"$app"_credentials"
@@ -53,14 +54,16 @@ set__mqtt_user() {
 	else
 		ynh_print_error "Huho, something went wrong, try to see the log"
 	fi
-	
+
 }
 
 set__mqtt_pwd() {
-	
+
 	#retrieve user
-	mqtt_user=$(cat /etc/mosquitto/conf.d/domoticz_credentials | grep -oE '^.*+:' | tr -d ':')
-	#Set new password in config file 
+        if [ -f /etc/mosquitto/conf.d/${app}_credentials ]; then
+	    mqtt_user=$(cat /etc/mosquitto/conf.d/${app}_credentials | grep -oE '^.*+:' | tr -d ':')
+	fi
+        #Set new password in config file 
 	ynh_app_setting_set --app="$app" --key=mqtt_pwd --value=$mqtt_pwd
 	
 	#create new credential file

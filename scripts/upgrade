@@ -31,6 +31,14 @@ if [ -f /etc/sudoers.d/domoticz ]; then
 	rm /etc/sudoers.d/domoticz
 fi
 
+#Remove previous hooks that were mistakenly created
+if [ -f /etc/yunohost/hooks.d/conf_regen/50-domoticz ]; then
+	rm /etc/yunohost/hooks.d/conf_regen/50-domoticz
+fi
+if [ -f  /usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz ]; then
+	rm /usr/share/yunohost/hooks/conf_regen/95-nginx_domoticz
+fi
+
 #Create a dedicated path for the api access
 if [ -z "$api_path" ]; then
 	if [ "$path" == "/" ]; then
@@ -115,14 +123,17 @@ ynh_script_progression "Upgrading NGINX web server configuration..."
 
 [[ "$domain" != "$mqtt_domain"  ]] && ynh_config_add --template="mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
 
+ynh_config_add --template="regenconf_nginx" --destination="/usr/share/yunohost/hooks/conf_regen/16-nginx_$app"
+
 # Create a dedicated NGINX config
 if [[ ! -f "/etc/nginx/conf.d/${domain}.d/api_${app}.conf" ]]
 then
 	ynh_print_warn --message="The nginx conf file will now be splitted between standard and api related path"
 	ynh_print_warn --message="Report any manual changes on the new /etc/nginx/conf.d/$domain.d/api_$app.conf file for json command to keep working"
-	ynh_add_config --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
+	ynh_config_add --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
 fi
 ynh_config_add_nginx
+yunohost tools regen-conf nginx
 
 #=================================================
 # SETUP SYSTEMD

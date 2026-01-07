@@ -5,7 +5,7 @@ name = "Domoticz"
 description.en = "Lightweight Home Automation System"
 description.fr = "Système domotique léger"
 
-version = "2025.2~ynh1"
+version = "2025.2~ynh2"
 
 maintainers = ["Krakinou"]
 
