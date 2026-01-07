@@ -83,9 +83,8 @@ fi
 ynh_script_progression "Configuring NGINX web server..."
 
 [[ "$domain" != "$mqtt_domain" ]] && ynh_config_add --template="mqtt_nginx.conf" --destination="/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
-
-mkdir -p /etc/yunohost/hooks.d/conf_regen
-ynh_config_add --template="regenconf_nginx" --destination="/etc/yunohost/hooks.d/conf_regen/19-nginx_$app"
+#for reason unknown to me, conf_regen file are deleted after install when set in /etc/yunohost/hooks.d, so I used /usr/share/yunohost/hooks instead
+ynh_config_add --template="regenconf_nginx" --destination="/usr/share/yunohost/hooks/conf_regen/16-nginx_$app"
 
 # Create a dedicated NGINX config
 ynh_config_add --template="api_nginx.conf" --destination="/etc/nginx/conf.d/${domain}.d/api_${app}.conf"
