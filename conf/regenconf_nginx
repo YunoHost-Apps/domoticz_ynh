@@ -7,7 +7,7 @@ nginx_conf=$pending_dir/../nginx/etc/nginx
 [[ $action == "pre" ]] || exit 0
 
 #Il ne peut y avoir qu'une seule instance de l'apps sur un système, donc pas à besoin de regarder quelle id utiliser
-mqtt_port=$(yunohost app setting domoticz mqtt_websocket_port)
+mqtt_port=$(yunohost app setting domoticz port_mqtt_websocket)
 mqtt_domain=$(yunohost app setting domoticz mqtt_domain)
 domain=$(yunohost app setting domoticz domain)
 nginx_mqtt="$nginx_conf"/conf.d/"$mqtt_domain".conf

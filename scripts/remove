@@ -7,7 +7,9 @@ if [ "$domain" != "$mqtt_domain" ]; then
 	ynh_script_progression "Removing system configurations related to Mosquitto..."
 	yunohost service remove mosquitto
 	ynh_safe_rm "/etc/mosquitto/conf.d"
+	ynh_safe_rm "/usr/share/yunohost/hooks/conf_regen/16-nginx_$app"
 	ynh_safe_rm "/etc/nginx/conf.d/${mqtt_domain}.d/mqtt_${app}.conf"
+        yunohost tools regen-conf nginx
 fi
 
 ynh_script_progression "Removing system configurations related to $app..."
