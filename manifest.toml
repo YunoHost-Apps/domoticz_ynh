@@ -5,7 +5,7 @@ name = "Domoticz"
 description.en = "Lightweight Home Automation System"
 description.fr = "Système domotique léger"
 
-version = "2025.2~ynh2"
+version = "2026.2~ynh1"
 
 maintainers = ["Krakinou"]
 
@@ -54,12 +54,12 @@ ram.runtime = "50M"
 
 [resources]
         [resources.sources.main]
-        arm64.url = "https://github.com/domoticz/domoticz/releases/download/2025.2/domoticz_linux_aarch64.tgz"
-        arm64.sha256 = "a9326ab424665712013e12189e7116bfdfb3c81b9b718094005176de3968d357"
-        armhf.url = "https://github.com/domoticz/domoticz/releases/download/2025.2/domoticz_linux_armv7l.tgz"
-        armhf.sha256 = "a423b7913d3e24b0c4fb489a333c481bd15cd5ee650f094a78a204f479d96aa5"
-        amd64.url = "https://github.com/domoticz/domoticz/releases/download/2025.2/domoticz_linux_x86_64.tgz"
-        amd64.sha256 = "9685988fcd33ade8572a772b2507eba57f95954adf4f5905b528eaa0db0f4765"
+        arm64.url = "https://github.com/domoticz/domoticz/releases/download/2026.2/domoticz_linux_aarch64.tgz"
+        arm64.sha256 = "131a3894b546bfb4ccda2e1463abb4cbbfb59a819c30e1f729770bf79c12f4cf"
+        armhf.url = "https://github.com/domoticz/domoticz/releases/download/2026.2/domoticz_linux_armv7l.tgz"
+        armhf.sha256 = "1deb06f0000261e73974bc6f9de783e3d9ba71923f7aa39bcd90c7b1c2c33b55"
+        amd64.url = "https://github.com/domoticz/domoticz/releases/download/2026.2/domoticz_linux_x86_64.tgz"
+        amd64.sha256 = "aff27859e01c3502db77ed1d11d98ac55b95c6a9c9ee45fa8f1c65d4cd695da6"
         format="tar.gz"
         in_subdir=false
         extract=true
@@ -95,7 +95,7 @@ ram.runtime = "50M"
         mqtt_websocket.default = 8883
 
         [resources.apt]
-        packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4"
+        packages = "libudev-dev, python3-dev, libcurl4, libusb-0.1-4 libmosquitto1"
         packages_from_raw_bash = """
         if [ "$mqtt_domain" != "$domain" ]; then
             echo mosquitto mosquitto-clients;
