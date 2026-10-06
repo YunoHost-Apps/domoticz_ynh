@@ -99,6 +99,8 @@ ram.runtime = "50M"
         packages_from_raw_bash = """
         if [ "$mqtt_domain" != "$domain" ]; then
             echo mosquitto mosquitto-clients;
+        else
+            echo libmosquitto1;
         fi;
         """
 
