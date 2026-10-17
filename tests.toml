@@ -15,10 +15,10 @@ test_format = 1.0
 
     args.mqtt_domain="sub.domain.tld"
 
-    test_upgrade_from.c161dff.name = "2024.6"
-    test_upgrade_from.c161dff.args.mqtt_domain="sub.domain.tld"
-    test_upgrade_from.c161dff.args.domain="sub.domain.tld"
-    test_upgrade_from.c161dff.args.path="/domoticz"
+    test_upgrade_from.d7830fc.name = "2025.2"
+    test_upgrade_from.d7830fc.args.mqtt_domain="sub.domain.tld"
+    test_upgrade_from.d7830fc.args.domain="sub.domain.tld"
+    test_upgrade_from.d7830fc.args.path="/domoticz"
 
 [With_Mosquitto_upgrade_with_mosquitto]
     preinstall = """
@@ -30,10 +30,10 @@ test_format = 1.0
 
     exclude = ["package_linter"]
 
-    test_upgrade_from.c161dff.name = "2024.6 with mosquitto"
-    test_upgrade_from.c161dff.args.mqtt_domain="mqtt.domain.tld"
-    test_upgrade_from.c161dff.args.domain="sub.domain.tld"
-    test_upgrade_from.c161dff.args.path="/domoticz"
+    test_upgrade_from.d7830fc.name = "2025.2 with mosquitto"
+    test_upgrade_from.d7830fc.args.mqtt_domain="mqtt.domain.tld"
+    test_upgrade_from.d7830fc.args.domain="sub.domain.tld"
+    test_upgrade_from.d7830fc.args.path="/domoticz"
 
 [Without_Mosquitto_upgrade_with_mosquitto]
     preinstall = """
@@ -47,9 +47,9 @@ test_format = 1.0
     """
 
     args.mqtt_domain="sub.domain.tld"
-    only = ["upgrade","upgrade.c161dff"]
+    only = ["upgrade","upgrade.d7830fc"]
 
-    test_upgrade_from.c161dff.name = "2024.6 without mosquitto"
-    test_upgrade_from.c161dff.args.mqtt_domain="sub.domain.tld"
-    test_upgrade_from.c161dff.args.domain="sub.domain.tld"
-    test_upgrade_from.c161dff.args.path="/domoticz"
+    test_upgrade_from.d7830fc.name = "2025.2 without mosquitto"
+    test_upgrade_from.d7830fc.args.mqtt_domain="sub.domain.tld"
+    test_upgrade_from.d7830fc.args.domain="sub.domain.tld"
+    test_upgrade_from.d7830fc.args.path="/domoticz"
