@@ -5,7 +5,7 @@ name = "Domoticz"
 description.en = "Lightweight Home Automation System"
 description.fr = "Système domotique léger"
 
-version = "2026.3~ynh1"
+version = "2026.4~ynh1"
 
 maintainers = ["Krakinou"]
 
@@ -54,12 +54,12 @@ ram.runtime = "50M"
 
 [resources]
         [resources.sources.main]
-        arm64.url = "https://github.com/domoticz/domoticz/releases/download/2026.3/domoticz_linux_aarch64.tgz"
-        arm64.sha256 = "334a2bf06e118a370b8c60aed0d73da18154a829c878f9aa63a0a988a9bd4b9c"
-        armhf.url = "https://github.com/domoticz/domoticz/releases/download/2026.3/domoticz_linux_armv7l.tgz"
-        armhf.sha256 = "f3f6423bacee1444dc899379bcc6aa30e029117b9b10a6e7f24a24883586fd55"
-        amd64.url = "https://github.com/domoticz/domoticz/releases/download/2026.3/domoticz_linux_x86_64.tgz"
-        amd64.sha256 = "7575267867abef7628d425fd0105c369b571da21ce1266f614232608db9e17c3"
+        arm64.url = "https://github.com/domoticz/domoticz/releases/download/2026.4/domoticz_linux_aarch64.tgz"
+        arm64.sha256 = "c7bffff723f2b0c81fcebfd803dfb61ebcf6db06442e93ae36085f2e83f25184"
+        armhf.url = "https://github.com/domoticz/domoticz/releases/download/2026.4/domoticz_linux_armv7l.tgz"
+        armhf.sha256 = "05466603589009bc2d864d2ee94b477ebedd415883a0ac48cc654b8ddc688d9e"
+        amd64.url = "https://github.com/domoticz/domoticz/releases/download/2026.4/domoticz_linux_x86_64.tgz"
+        amd64.sha256 = "47b110bb028d3fa5e15dd107965687a2d020159bc821be5920602e69e5328acc"
         format="tar.gz"
         in_subdir=false
         extract=true
